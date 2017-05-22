@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        myWindow window = new myWindow();
+        MyWindow window = new MyWindow();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
     }
