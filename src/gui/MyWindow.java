@@ -10,10 +10,10 @@ import java.io.File;
  */
 public class MyWindow extends JFrame implements ActionListener {
 
-    private JButton bLoad, bExit;
+    private JButton bLoad, bGetDistance, bCalculate, bExit;
 
     public MyWindow() {
-        setSize(800,600);
+        setSize(400, 300);
         setTitle("VRP System");
         setLayout(null);
 
@@ -22,8 +22,20 @@ public class MyWindow extends JFrame implements ActionListener {
         add(bLoad);
         bLoad.addActionListener(this);
 
+        bGetDistance = new JButton("Get distance matrix");
+        bGetDistance.setBounds(50, 100, 300, 30);
+        add(bGetDistance);
+        bGetDistance.addActionListener(this);
+        bGetDistance.setEnabled(false);
+
+        bCalculate = new JButton("Calculate");
+        bCalculate.setBounds(50, 150, 300, 30);
+        add(bCalculate);
+        bCalculate.addActionListener(this);
+        bCalculate.setEnabled(false);
+
         bExit = new JButton("Exit");
-        bExit.setBounds(50,100,300,30);
+        bExit.setBounds(50, 200, 300, 30);
         add(bExit);
         bExit.addActionListener(this);
     }
@@ -32,14 +44,24 @@ public class MyWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
+            bGetDistance.setEnabled(false);
+            bCalculate.setEnabled(false);
             try {
                 FileHandler fileHandler = new FileHandler();
-                File clientsInput = fileHandler.chooseFile(this);
-                fileHandler.readFile(clientsInput);
+                File clientsInputFile = fileHandler.chooseFile(this);
+                if (clientsInputFile != null) {
+                    fileHandler.readFile(clientsInputFile);
+                    bGetDistance.setEnabled(true);
+                }
             } catch (Exception ex) {
-                System.out.println("Unexpected error with file.");
+                System.out.println("Unexpected error while processing the file.");
                 ex.printStackTrace();
             }
+        } else if (source == bGetDistance) {
+            bCalculate.setEnabled(true);
+
+        } else if (source == bCalculate) {
+
         } else if (source == bExit) {
             dispose();
         }
