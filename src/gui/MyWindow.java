@@ -1,11 +1,9 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by mbala on 26.04.17.
@@ -34,28 +32,17 @@ public class MyWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
-            File clientsCoordinates = chooseFile();
+            try {
+                FileHandler fileHandler = new FileHandler();
+                File clientsInput = fileHandler.chooseFile(this);
+                fileHandler.readFile(clientsInput);
+            } catch (Exception ex) {
+                System.out.println("Unexpected error with file.");
+                ex.printStackTrace();
+            }
         } else if (source == bExit) {
             dispose();
         }
 
     }
-
-    public File chooseFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Pliki tekstowe csv","csv"));
-        int result = fileChooser.showOpenDialog(this);
-        File selectedFile = null;
-        if (result == JFileChooser.APPROVE_OPTION) {
-            selectedFile = fileChooser.getSelectedFile();
-            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-        }
-        return selectedFile;
-    }
-
-    public void readFile(File myFile) throws IOException {
-
-    }
-
 }
