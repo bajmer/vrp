@@ -1,5 +1,7 @@
 package gui;
 
+import network.DistanceMatrix;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,13 +60,21 @@ public class MyWindow extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         } else if (source == bGetDistance) {
-            bCalculate.setEnabled(true);
+            try {
+                DistanceMatrix distanceMatrix = new DistanceMatrix();
+                distanceMatrix.parseURL();
+                distanceMatrix.calculateDistanceMatrix();
+                bCalculate.setEnabled(true);
+            } catch (Exception ex) {
+                System.out.println("Unexpected error while getting the distance matrix.");
+                ex.printStackTrace();
+            }
+
 
         } else if (source == bCalculate) {
 
         } else if (source == bExit) {
             dispose();
         }
-
     }
 }
