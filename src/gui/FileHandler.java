@@ -2,7 +2,7 @@ package gui;
 
 import org.apache.commons.lang3.StringUtils;
 import project.Client;
-import project.ClientsHandler;
+import project.ClientsDatabase;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -53,8 +53,8 @@ public class FileHandler {
                     continue;
                 }
                 Client client = new Client(lat, lon);
-                ClientsHandler.getClientsList().add(client);
-                System.out.println("Szer: " + client.getLatitude() + "  Dl: " + client.getLongitude());
+                ClientsDatabase.getClientsList().add(client);
+                System.out.println("ID: " + client.getId() + " Szer: " + client.getLatitude() + "  Dl: " + client.getLongitude());
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package gui;
 
 import network.DistanceMatrix;
+import project.Client;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,6 +49,7 @@ public class MyWindow extends JFrame implements ActionListener {
         if (source == bLoad) {
             bGetDistance.setEnabled(false);
             bCalculate.setEnabled(false);
+            Client.setClientID(1);
             try {
                 FileHandler fileHandler = new FileHandler();
                 File clientsInputFile = fileHandler.chooseFile(this);
