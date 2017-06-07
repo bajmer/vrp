@@ -29,7 +29,7 @@ public class MyWindow extends JFrame implements ActionListener {
         bGetDistance.setBounds(50, 100, 300, 30);
         add(bGetDistance);
         bGetDistance.addActionListener(this);
-        bGetDistance.setEnabled(false);
+        //bGetDistance.setEnabled(false);
 
         bCalculate = new JButton("Calculate");
         bCalculate.setBounds(50, 150, 300, 30);
@@ -47,7 +47,7 @@ public class MyWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
-            bGetDistance.setEnabled(false);
+            //bGetDistance.setEnabled(false);
             bCalculate.setEnabled(false);
             Client.setClientID(1);
             try {
@@ -64,7 +64,7 @@ public class MyWindow extends JFrame implements ActionListener {
         } else if (source == bGetDistance) {
             try {
                 DistanceMatrix distanceMatrix = new DistanceMatrix();
-                distanceMatrix.parseURL();
+                //distanceMatrix.parseURL();
                 distanceMatrix.calculateDistanceMatrix();
                 bCalculate.setEnabled(true);
             } catch (Exception ex) {
