@@ -65,7 +65,8 @@ public class MyWindow extends JFrame implements ActionListener {
             try {
                 DistanceMatrix distanceMatrix = new DistanceMatrix();
                 //distanceMatrix.parseURL();
-                distanceMatrix.calculateDistanceMatrix();
+                //distanceMatrix.calculateDistanceMatrix();
+                distanceMatrix.fakeCalculateDistanceMatrix();
                 bCalculate.setEnabled(true);
             } catch (Exception ex) {
                 System.out.println("Unexpected error while getting the distance matrix.");

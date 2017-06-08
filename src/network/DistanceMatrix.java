@@ -69,4 +69,57 @@ public class DistanceMatrix {
             }
         }
     }
+
+    public void fakeCalculateDistanceMatrix() {
+        try {
+            MockClients mockClients = new MockClients();
+            int counter = 1;
+            for (Client i : mockClients.getListOfClients()) {
+                for (Client j : mockClients.getListOfClients()) {
+                    StringBuilder sbin = new StringBuilder();
+                    sbin.append(baseURL);
+                    sbin.append(i.getLongitude());
+                    sbin.append(",");
+                    sbin.append(i.getLatitude());
+                    sbin.append(";");
+                    sbin.append(j.getLongitude());
+                    sbin.append(",");
+                    sbin.append(j.getLatitude());
+                    sbin.append("?generate_hints=false&overview=false");
+                    connection = (HttpURLConnection) new URL(sbin.toString()).openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setUseCaches(false);
+                    connection.setReadTimeout(2000);
+                    connection.connect();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            sb.append(counter);
+                            sb.append(line);
+                            sb.append("\n");
+
+                            System.out.println(sb.toString());
+                        }
+
+                    } else {
+                        System.out.println("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
+                    }
+                    counter++;
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Unexpected network error.");
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
 }
