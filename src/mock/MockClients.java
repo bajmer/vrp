@@ -10,10 +10,6 @@ import java.util.List;
  */
 public class MockClients {
 
-    public List<Client> getListOfClients() {
-        return listOfClients;
-    }
-
     private List<Client> listOfClients;
 
     public MockClients() {
@@ -157,6 +153,10 @@ public class MockClients {
 
         listOfClients.add(new Client(52.72298552457069, 21.2091064453125));
 
+    }
+
+    public List<Client> getListOfClients() {
+        return listOfClients;
     }
 }
 

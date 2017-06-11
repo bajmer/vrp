@@ -41,6 +41,7 @@ public class FileHandler {
 
     public void readFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            ClientsDatabase.getClientsList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
