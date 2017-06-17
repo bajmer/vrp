@@ -30,8 +30,16 @@ public class DistanceMatrix {
     public void calculateDistanceMatrix() {
         try {
             //MockClients mockClients = new MockClients();
-            for (Client src : ClientsDatabase.getClientsList()) {
-                for (Client dst : ClientsDatabase.getClientsList()) {
+            for (int i = 0; i < ClientsDatabase.getClientsList().size(); i++) {
+                for (int j = i; j < ClientsDatabase.getClientsList().size(); j++) {
+                    Client src = ClientsDatabase.getClientsList().get(i);
+                    Client dst = ClientsDatabase.getClientsList().get(j);
+                    if (j == i) {
+                        src.getDistances().put(dst.getId(), 0.0);
+                        continue;
+                    }
+//            for (Client src : ClientsDatabase.getClientsList()) {
+//                for (Client dst : ClientsDatabase.getClientsList()) {
                     String routeURL = parseURL(src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude());
                     JSONObject jsonObject = sendRequest(routeURL);
                     if (jsonObject != null) {
@@ -39,6 +47,7 @@ public class DistanceMatrix {
                         System.out.println("Distance " + src.getId() + "-" + dst.getId() + ": " + distanceInKm);
 
                         src.getDistances().put(dst.getId(), distanceInKm);
+                        dst.getDistances().put(src.getId(), distanceInKm);
                     } else {
                         System.out.println("JSON object is null!");
                     }
