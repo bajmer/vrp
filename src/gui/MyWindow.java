@@ -1,8 +1,8 @@
 package gui;
 
+import algorithm.Problem;
 import network.DistanceMatrix;
 import project.Client;
-import project.ClientsDatabase;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -68,10 +68,10 @@ public class MyWindow extends JFrame implements ActionListener {
             bGetDistance.setEnabled(false);
             bCalculate.setEnabled(true);
         } else if (source == bCalculate) {
-            for (Client client : ClientsDatabase.getClientsList()) {
-                client.getDistances().forEach((k, v) -> System.out.println(client.getId() + "-" + k + " Distance: " + v + " km"));
-            }
-
+//            for (Client client : ClientsDatabase.getClientsList()) {
+//                client.getDistances().forEach((k, v) -> System.out.println(client.getId() + "-" + k + " Distance: " + v + " km"));
+//            }
+            Problem problem = new Problem();
         } else if (source == bExit) {
             dispose();
         }

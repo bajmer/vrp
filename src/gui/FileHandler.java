@@ -1,6 +1,7 @@
 package gui;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import project.Client;
 import project.ClientsDatabase;
 
@@ -9,6 +10,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -18,6 +23,11 @@ import java.io.IOException;
 public class FileHandler {
 
     private final String separator = ";";
+    private final double defaultPackageWeight = 0.0;
+    private final double defaultPackageCapacity = 0.0;
+    private final String defaultMinDeliveryHour = "08:00";
+    private final String defaultMaxDeliveryHour = "18:00";
+    private final String defaultServiceTime = "00:15";
 
     public FileHandler() {
 
@@ -47,18 +57,65 @@ public class FileHandler {
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, separator);
-                double lat = Double.parseDouble(fields[0]);
-                double lon = Double.parseDouble(fields[1]);
-                if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-                    System.out.println("Invalid client data in line: " + lineNumber);
+
+                String name = fields[0];
+                double lat;
+                double lon;
+
+                if (NumberUtils.isParsable(fields[1]) && NumberUtils.isParsable(fields[2])) {
+                    lat = Double.parseDouble(fields[1]);
+                    lon = Double.parseDouble(fields[2]);
+                    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+                        System.out.println("Coordinates are out of range in line " + lineNumber);
+                        continue;
+                    }
+                } else {
+                    System.out.println("Cannot parse coordinates in line " + lineNumber);
                     continue;
                 }
-                Client client = new Client(lat, lon);
+
+                double weight = defaultPackageWeight;
+                if (NumberUtils.isParsable(fields[3])) {
+                    weight = Double.parseDouble(fields[3]);
+                }
+
+                double capacity = defaultPackageCapacity;
+                if (NumberUtils.isParsable(fields[4])) {
+                    capacity = Double.parseDouble(fields[4]);
+                }
+
+                String minDeliveryHour = fields[5];
+                String maxDeliveryHour = fields[6];
+                try {
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                    Date begin = dateFormat.parse(minDeliveryHour);
+                    Date end = dateFormat.parse(maxDeliveryHour);
+
+                    if (begin.before(dateFormat.parse(defaultMinDeliveryHour))) {
+                        minDeliveryHour = defaultMinDeliveryHour;
+                    }
+                    if (end.after(dateFormat.parse(defaultMaxDeliveryHour))) {
+                        maxDeliveryHour = defaultMaxDeliveryHour;
+                    }
+
+                } catch (ParseException e) {
+                    minDeliveryHour = defaultMinDeliveryHour;
+                    maxDeliveryHour = defaultMaxDeliveryHour;
+                    System.out.println("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
+                }
+
+                Client client = new Client(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
                 ClientsDatabase.getClientsList().add(client);
-                System.out.println("ID: " + client.getId() + " Szer: " + client.getLatitude() + "  Dl: " + client.getLongitude());
+                System.out.println("ID: " + client.getId()
+                        + ", Nazwa: " + client.getName()
+                        + ", Szer: " + client.getLatitude()
+                        + ", Dl: " + client.getLongitude()
+                        + ", Masa: " + client.getPackageWeight()
+                        + ", Objetosc: " + client.getPackageCapacity()
+                        + ", Okno czasowe: " + client.getMinDeliveryHour().toString() + "-" + client.getMaxDeliveryHour().toString());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unexpected error while reading the file.");
         }
     }
 }
