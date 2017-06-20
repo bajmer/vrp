@@ -2,8 +2,8 @@ package gui;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import project.Client;
-import project.ClientsDatabase;
+import project.Customer;
+import project.CustomerDatabase;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -51,7 +51,7 @@ public class FileHandler {
 
     public void readFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            ClientsDatabase.getClientsList().clear();
+            CustomerDatabase.getCustomerList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
@@ -104,15 +104,15 @@ public class FileHandler {
                     System.out.println("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
                 }
 
-                Client client = new Client(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
-                ClientsDatabase.getClientsList().add(client);
-                System.out.println("ID: " + client.getId()
-                        + ", Nazwa: " + client.getName()
-                        + ", Szer: " + client.getLatitude()
-                        + ", Dl: " + client.getLongitude()
-                        + ", Masa: " + client.getPackageWeight()
-                        + ", Objetosc: " + client.getPackageCapacity()
-                        + ", Okno czasowe: " + client.getMinDeliveryHour().toString() + "-" + client.getMaxDeliveryHour().toString());
+                Customer customer = new Customer(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
+                CustomerDatabase.getCustomerList().add(customer);
+                System.out.println("ID: " + customer.getId()
+                        + ", Nazwa: " + customer.getName()
+                        + ", Szer: " + customer.getLatitude()
+                        + ", Dl: " + customer.getLongitude()
+                        + ", Masa: " + customer.getPackageWeight()
+                        + ", Objetosc: " + customer.getPackageCapacity()
+                        + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
             }
         } catch (IOException e) {
             System.out.println("Unexpected error while reading the file.");

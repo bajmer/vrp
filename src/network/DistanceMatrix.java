@@ -1,8 +1,8 @@
 package network;
 
 import org.json.JSONObject;
-import project.Client;
-import project.ClientsDatabase;
+import project.Customer;
+import project.CustomerDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,16 +30,16 @@ public class DistanceMatrix {
     public void calculateDistanceMatrix() {
         try {
             //MockClients mockClients = new MockClients();
-            for (int i = 0; i < ClientsDatabase.getClientsList().size(); i++) {
-                for (int j = i; j < ClientsDatabase.getClientsList().size(); j++) {
-                    Client src = ClientsDatabase.getClientsList().get(i);
-                    Client dst = ClientsDatabase.getClientsList().get(j);
+            for (int i = 0; i < CustomerDatabase.getCustomerList().size(); i++) {
+                for (int j = i; j < CustomerDatabase.getCustomerList().size(); j++) {
+                    Customer src = CustomerDatabase.getCustomerList().get(i);
+                    Customer dst = CustomerDatabase.getCustomerList().get(j);
                     if (j == i) {
                         src.getDistances().put(dst.getId(), 0.0);
                         continue;
                     }
-//            for (Client src : ClientsDatabase.getClientsList()) {
-//                for (Client dst : ClientsDatabase.getClientsList()) {
+//            for (Customer src : CustomerDatabase.getCustomerList()) {
+//                for (Customer dst : CustomerDatabase.getCustomerList()) {
                     String routeURL = parseURL(src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude());
                     JSONObject jsonObject = sendRequest(routeURL);
                     if (jsonObject != null) {

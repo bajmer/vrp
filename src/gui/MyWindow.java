@@ -2,7 +2,7 @@ package gui;
 
 import algorithm.Problem;
 import network.DistanceMatrix;
-import project.Client;
+import project.Customer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -50,12 +50,12 @@ public class MyWindow extends JFrame implements ActionListener {
         if (source == bLoad) {
             bGetDistance.setEnabled(false);
             bCalculate.setEnabled(false);
-            Client.setClientID(1);
+            Customer.setCustomerID(1);
             try {
                 FileHandler fileHandler = new FileHandler();
-                File clientsInputFile = fileHandler.chooseFile(this);
-                if (clientsInputFile != null) {
-                    fileHandler.readFile(clientsInputFile);
+                File customersInputFile = fileHandler.chooseFile(this);
+                if (customersInputFile != null) {
+                    fileHandler.readFile(customersInputFile);
                     bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
@@ -68,8 +68,8 @@ public class MyWindow extends JFrame implements ActionListener {
             bGetDistance.setEnabled(false);
             bCalculate.setEnabled(true);
         } else if (source == bCalculate) {
-//            for (Client client : ClientsDatabase.getClientsList()) {
-//                client.getDistances().forEach((k, v) -> System.out.println(client.getId() + "-" + k + " Distance: " + v + " km"));
+//            for (Customer customer : CustomerDatabase.getCustomerList()) {
+//                customer.getDistances().forEach((k, v) -> System.out.println(customer.getId() + "-" + k + " Distance: " + v + " km"));
 //            }
             Problem problem = new Problem();
         } else if (source == bExit) {

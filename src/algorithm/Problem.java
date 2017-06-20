@@ -1,7 +1,7 @@
 package algorithm;
 
-import project.Client;
-import project.ClientsDatabase;
+import project.Customer;
+import project.CustomerDatabase;
 
 /**
  * Created by Marcin on 2017-06-17.
@@ -9,10 +9,11 @@ import project.ClientsDatabase;
 public class Problem {
 
     private int problemID;
-    private Client depot;
+    //private int
+    private Customer depot;
 
     public Problem() {
-        depot = ClientsDatabase.getClientsList().get(0);
+        depot = CustomerDatabase.getCustomerList().get(0);
         System.out.println("depot ID: " + depot.getId());
     }
 

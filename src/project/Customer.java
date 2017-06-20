@@ -6,9 +6,9 @@ import java.util.Map;
 /**
  * Created by mbala on 22.05.17.
  */
-public class Client {
+public class Customer {
 
-    private static int clientID = 1;
+    private static int customerID = 1;
     private int id;
     private String name;
     private double latitude;
@@ -20,9 +20,9 @@ public class Client {
 
     private Map<Integer, Double> distances = new HashMap<>();
 
-    public Client(String name, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
-        this.id = clientID;
-        clientID++;
+    public Customer(String name, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
+        this.id = customerID;
+        customerID++;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -32,12 +32,12 @@ public class Client {
         this.maxDeliveryHour = maxDeliveryHour;
     }
 
-    public static int getClientID() {
-        return clientID;
+    public static int getCustomerID() {
+        return customerID;
     }
 
-    public static void setClientID(int clientID) {
-        Client.clientID = clientID;
+    public static void setCustomerID(int customerID) {
+        Customer.customerID = customerID;
     }
 
     public String getName() {
