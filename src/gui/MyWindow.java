@@ -1,6 +1,5 @@
 package gui;
 
-import algorithm.Problem;
 import network.DistanceMatrix;
 import project.Customer;
 
@@ -14,10 +13,13 @@ import java.io.File;
  */
 public class MyWindow extends JFrame implements ActionListener {
 
+    private final String[] algorithmsList = {"Clark-Wright", "Second", "Third"};
     private JButton bLoad, bGetDistance, bCalculate, bExit;
+    private JComboBox boxAlgorithm;
+    private String algorithmName = "Clark-Wright";
 
     public MyWindow() {
-        setSize(400, 300);
+        setSize(400, 400);
         setTitle("VRP System");
         setLayout(null);
 
@@ -32,14 +34,21 @@ public class MyWindow extends JFrame implements ActionListener {
         bGetDistance.addActionListener(this);
         bGetDistance.setEnabled(false);
 
+        boxAlgorithm = new JComboBox(algorithmsList);
+        boxAlgorithm.setBounds(50, 150, 300, 30);
+        boxAlgorithm.setSelectedIndex(0);
+        add(boxAlgorithm);
+        boxAlgorithm.addActionListener(this);
+        boxAlgorithm.setEnabled(false);
+
         bCalculate = new JButton("Calculate");
-        bCalculate.setBounds(50, 150, 300, 30);
+        bCalculate.setBounds(50, 200, 300, 30);
         add(bCalculate);
         bCalculate.addActionListener(this);
         bCalculate.setEnabled(false);
 
         bExit = new JButton("Exit");
-        bExit.setBounds(50, 200, 300, 30);
+        bExit.setBounds(50, 250, 300, 30);
         add(bExit);
         bExit.addActionListener(this);
     }
@@ -49,6 +58,7 @@ public class MyWindow extends JFrame implements ActionListener {
         Object source = e.getSource();
         if (source == bLoad) {
             bGetDistance.setEnabled(false);
+            boxAlgorithm.setEnabled(false);
             bCalculate.setEnabled(false);
             Customer.setCustomerID(1);
             try {
@@ -66,12 +76,23 @@ public class MyWindow extends JFrame implements ActionListener {
             DistanceMatrix distanceMatrix = new DistanceMatrix();
             distanceMatrix.calculateDistanceMatrix();
             bGetDistance.setEnabled(false);
+            boxAlgorithm.setEnabled(true);
+        } else if (source == boxAlgorithm) {
+            algorithmName = boxAlgorithm.getSelectedItem().toString();
             bCalculate.setEnabled(true);
+            System.out.println("Algorithm name: " + algorithmName);
         } else if (source == bCalculate) {
 //            for (Customer customer : CustomerDatabase.getCustomerList()) {
 //                customer.getDistances().forEach((k, v) -> System.out.println(customer.getId() + "-" + k + " Distance: " + v + " km"));
 //            }
-            Problem problem = new Problem();
+//            Problem problem = new Problem();
+            if (algorithmName.equals("Clark-Wright")) {
+                System.out.println("Odpalam algorytm " + algorithmName);
+            } else if (algorithmName.equals("Second")) {
+                System.out.println("Odpalam algorytm " + algorithmName);
+            } else if (algorithmName.equals("Third")) {
+                System.out.println("Odpalam algorytm " + algorithmName);
+            }
         } else if (source == bExit) {
             dispose();
         }
