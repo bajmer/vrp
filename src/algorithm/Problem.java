@@ -23,7 +23,6 @@ public class Problem {
         this.numberOfCustomers = CustomerDatabase.getCustomerList().size() - 1;
         this.numberOfVehicles = numberOfVehicles;
         this.vehicleCapacity = vehicleCapacity;
-        //System.out.println("depot ID: " + depot.getId());
     }
 
     public int getProblemID() {
