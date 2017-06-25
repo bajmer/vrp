@@ -2,7 +2,8 @@ package network;
 
 import org.json.JSONObject;
 import project.Customer;
-import project.CustomerDatabase;
+import project.Database;
+import project.RouteSegment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,27 +30,22 @@ public class DistanceMatrix {
 
     public void calculateDistanceMatrix() {
         try {
-            //MockClients mockClients = new MockClients();
-            for (int i = 0; i < CustomerDatabase.getCustomerList().size(); i++) {
-                for (int j = i; j < CustomerDatabase.getCustomerList().size(); j++) {
-                    Customer src = CustomerDatabase.getCustomerList().get(i);
-                    Customer dst = CustomerDatabase.getCustomerList().get(j);
-                    if (j == i) {
-                        src.getDistances().put(dst.getId(), 0.0);
-                        continue;
-                    }
-//            for (Customer src : CustomerDatabase.getCustomerList()) {
-//                for (Customer dst : CustomerDatabase.getCustomerList()) {
-                    String routeURL = parseURL(src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude());
-                    JSONObject jsonObject = sendRequest(routeURL);
-                    if (jsonObject != null) {
-                        double distanceInKm = getDistanceInKmFromJSON(jsonObject);
-                        System.out.println("Distance " + src.getId() + "-" + dst.getId() + ": " + distanceInKm);
-
-                        src.getDistances().put(dst.getId(), distanceInKm);
-                        dst.getDistances().put(src.getId(), distanceInKm);
-                    } else {
-                        System.out.println("JSON object is null!");
+            for (int i = 0; i < Database.getCustomerList().size(); i++) {
+                for (int j = i; j < Database.getCustomerList().size(); j++) {
+                    Customer src = Database.getCustomerList().get(i);
+                    Customer dst = Database.getCustomerList().get(j);
+                    if (j != i) {
+                        String routeURL = parseURL(src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude());
+                        JSONObject jsonObject = sendRequest(routeURL);
+                        if (jsonObject != null) {
+                            double distanceInKm = getDistanceInKmFromJSON(jsonObject);
+                            Database.getRouteSegmentsList().add(new RouteSegment(src.getId(), dst.getId(), distanceInKm));
+                            src.getDistances().put(dst.getId(), distanceInKm);
+                            dst.getDistances().put(src.getId(), distanceInKm);
+                            System.out.println("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
+                        } else {
+                            System.out.println("JSON object is null!");
+                        }
                     }
                 }
             }

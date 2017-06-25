@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class Customer {
 
-    private static int customerID = 1;
+    private static int customerID;
     private int id;
     private String name;
     private double latitude;

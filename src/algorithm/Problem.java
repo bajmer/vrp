@@ -1,7 +1,7 @@
 package algorithm;
 
 import project.Customer;
-import project.CustomerDatabase;
+import project.Database;
 
 /**
  * Created by Marcin on 2017-06-17.
@@ -19,8 +19,8 @@ public class Problem {
         ID++;
         this.problemID = ID;
         this.problemTypeID = problemTypeID;
-        this.depot = CustomerDatabase.getCustomerList().get(0);
-        this.numberOfCustomers = CustomerDatabase.getCustomerList().size() - 1;
+        this.depot = Database.getCustomerList().get(0);
+        this.numberOfCustomers = Database.getCustomerList().size() - 1;
         this.numberOfVehicles = numberOfVehicles;
         this.vehicleCapacity = vehicleCapacity;
     }

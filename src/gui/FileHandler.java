@@ -3,7 +3,7 @@ package gui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import project.Customer;
-import project.CustomerDatabase;
+import project.Database;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -51,7 +51,8 @@ public class FileHandler {
 
     public void readFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            CustomerDatabase.getCustomerList().clear();
+            Database.getCustomerList().clear();
+            Database.getRouteSegmentsList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
@@ -105,7 +106,7 @@ public class FileHandler {
                 }
 
                 Customer customer = new Customer(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
-                CustomerDatabase.getCustomerList().add(customer);
+                Database.getCustomerList().add(customer);
                 System.out.println("ID: " + customer.getId()
                         + ", Nazwa: " + customer.getName()
                         + ", Szer: " + customer.getLatitude()

@@ -1,5 +1,6 @@
 package gui;
 
+import algorithm.Clark_Wright_Algorithm;
 import algorithm.Problem;
 import network.DistanceMatrix;
 import project.Customer;
@@ -102,7 +103,7 @@ public class MyWindow extends JFrame implements ActionListener {
             numberOfVehicles.setEnabled(false);
             vehicleCapacity.setEnabled(false);
             bCalculate.setEnabled(false);
-            Customer.setCustomerID(1);
+            Customer.setCustomerID(0);
             try {
                 FileHandler fileHandler = new FileHandler();
                 File customersInputFile = fileHandler.chooseFile(this);
@@ -126,9 +127,9 @@ public class MyWindow extends JFrame implements ActionListener {
             vehicleCapacity.setEnabled(true);
             bCalculate.setEnabled(true);
         } else if (source == bCalculate) {
-//            for (Customer customer : CustomerDatabase.getCustomerList()) {
-//                customer.getDistances().forEach((k, v) -> System.out.println(customer.getId() + "-" + k + " Distance: " + v + " km"));
-//            }
+//            algorithmID.setEnabled(false);
+//            numberOfVehicles.setEnabled(false);
+//            vehicleCapacity.setEnabled(false);
             try {
                 int algorithmIDInt = Integer.parseInt(algorithmID.getText());
                 int numberOfVehiclesInt = Integer.parseInt(numberOfVehicles.getText());
@@ -136,6 +137,10 @@ public class MyWindow extends JFrame implements ActionListener {
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
                 if (algorithmName.equals("Clark-Wright")) {
                     System.out.println("Running the Clark-Wright algorithm...");
+                    Clark_Wright_Algorithm clark_wright_algorithm = new Clark_Wright_Algorithm(problem);
+                    clark_wright_algorithm.createSavings();
+                    clark_wright_algorithm.sortSavings();
+//                    clark_wright_algorithm.getSavings().forEach(i -> System.out.println(i.getSaving()));
                 } else if (algorithmName.equals("Second algorithm")) {
 
                 } else if (algorithmName.equals("Third algorithm")) {
