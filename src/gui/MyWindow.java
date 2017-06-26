@@ -1,7 +1,6 @@
 package gui;
 
-import algorithm.Clark_Wright_Algorithm;
-import algorithm.Problem;
+import algorithm.*;
 import network.DistanceMatrix;
 import project.Customer;
 
@@ -137,14 +136,16 @@ public class MyWindow extends JFrame implements ActionListener {
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
                 if (algorithmName.equals("Clark-Wright")) {
                     System.out.println("Running the Clark-Wright algorithm...");
-                    Clark_Wright_Algorithm clark_wright_algorithm = new Clark_Wright_Algorithm(problem);
-                    clark_wright_algorithm.createSavings();
-                    clark_wright_algorithm.sortSavings();
-//                    clark_wright_algorithm.getSavings().forEach(i -> System.out.println(i.getSaving()));
+                    Algorithm clark_wright_algorithm = new Clark_Wright_Algorithm(problem);
+                    clark_wright_algorithm.runAlgorithm();
                 } else if (algorithmName.equals("Second algorithm")) {
-
+                    System.out.println("Running the Second algorithm...");
+                    Algorithm second_algorithm = new Second_Algorithm(problem);
+                    second_algorithm.runAlgorithm();
                 } else if (algorithmName.equals("Third algorithm")) {
-
+                    System.out.println("Running the Third algorithm...");
+                    Algorithm third_algorithm = new Third_Algorithm(problem);
+                    third_algorithm.runAlgorithm();
                 }
             } catch (Exception ex) {
                 System.out.println("Unexpected error while calculating a solution.");

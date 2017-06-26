@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by Marcin on 2017-06-21.
  */
-public class Clark_Wright_Algorithm {
+public class Clark_Wright_Algorithm extends Algorithm {
 
-    private List<Saving> savings = new ArrayList<>();
-    private Problem problem;
+    private List<Saving> savings;
 
     public Clark_Wright_Algorithm(Problem problem) {
-        this.problem = problem;
+        super(problem);
+        savings = new ArrayList<>();
     }
 
     public List<Saving> getSavings() {
@@ -28,16 +28,14 @@ public class Clark_Wright_Algorithm {
         this.savings = routeSegmentsWithSavings;
     }
 
-    public Problem getProblem() {
-        return problem;
-    }
-
-    public void setProblem(Problem problem) {
-        this.problem = problem;
+    @Override
+    public void runAlgorithm() {
+        createSavings();
+        sortSavings();
     }
 
     public void createSavings() {
-        Customer depot = problem.getDepot();
+        Customer depot = super.getProblem().getDepot();
         for (int i = 0; i < Database.getCustomerList().size(); i++) {
             for (int j = i; j < Database.getCustomerList().size(); j++) {
                 if (i > 0 && i != j) {
