@@ -17,6 +17,7 @@ public class Clark_Wright_Algorithm extends Algorithm {
 
     public Clark_Wright_Algorithm(Problem problem) {
         super(problem);
+        super.setAlgorithmName("Clark-Wright Algorithm");
         savings = new ArrayList<>();
     }
 
@@ -32,9 +33,11 @@ public class Clark_Wright_Algorithm extends Algorithm {
     public void runAlgorithm() {
         createSavings();
         sortSavings();
+        Solution clarkWrightSolution = calculateSolution();
+        saveSolution(clarkWrightSolution);
     }
 
-    public void createSavings() {
+    private void createSavings() {
         Customer depot = super.getProblem().getDepot();
         for (int i = 0; i < Database.getCustomerList().size(); i++) {
             for (int j = i; j < Database.getCustomerList().size(); j++) {
@@ -50,7 +53,17 @@ public class Clark_Wright_Algorithm extends Algorithm {
         }
     }
 
-    public void sortSavings() {
+    private void sortSavings() {
         Collections.sort(savings, Comparator.comparingDouble(Saving::getSaving).reversed());
+    }
+
+    private Solution calculateSolution() {
+        Solution solution = new Solution(getProblem().getProblemID(), getAlgorithmName());
+
+        return solution;
+    }
+
+    private void saveSolution(Solution solution) {
+
     }
 }
