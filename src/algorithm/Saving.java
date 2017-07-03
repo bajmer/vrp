@@ -8,29 +8,29 @@ import project.Customer;
 public class Saving {
 
     double saving;
-    private Customer src;
-    private Customer dst;
+    private Customer first;
+    private Customer second;
 
-    public Saving(Customer src, Customer dst, double saving) {
-        this.src = src;
-        this.dst = dst;
+    public Saving(Customer first, Customer second, double saving) {
+        this.first = first;
+        this.second = second;
         this.saving = saving;
     }
 
-    public Customer getSrc() {
-        return src;
+    public Customer getFirst() {
+        return first;
     }
 
-    public void setSrc(Customer src) {
-        this.src = src;
+    public void setFirst(Customer first) {
+        this.first = first;
     }
 
-    public Customer getDst() {
-        return dst;
+    public Customer getSecond() {
+        return second;
     }
 
-    public void setDst(Customer dst) {
-        this.dst = dst;
+    public void setSecond(Customer second) {
+        this.second = second;
     }
 
     public double getSaving() {

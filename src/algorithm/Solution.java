@@ -10,12 +10,12 @@ import java.util.ArrayList;
 public class Solution {
     private int solutionID;
     private String usedAlgorithm;
-    private ArrayList<Route> listOfSolutions;
+    private ArrayList<Route> listOfRoutes;
 
     public Solution(int problemID, String usedAlgorithm) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
-        this.listOfSolutions = new ArrayList<Route>();
+        this.listOfRoutes = new ArrayList<Route>();
     }
 
     public int getSolutionID() {
@@ -26,12 +26,12 @@ public class Solution {
         this.solutionID = solutionID;
     }
 
-    public ArrayList<Route> getListOfSolutions() {
-        return listOfSolutions;
+    public ArrayList<Route> getListOfRoutes() {
+        return listOfRoutes;
     }
 
-    public void setListOfSolutions(ArrayList<Route> listOfSolutions) {
-        this.listOfSolutions = listOfSolutions;
+    public void setListOfRoutes(ArrayList<Route> listOfRoutes) {
+        this.listOfRoutes = listOfRoutes;
     }
 
     public String getUsedAlgorithm() {

@@ -13,4 +13,9 @@ public class Third_Algorithm extends Algorithm {
     public void runAlgorithm() {
 
     }
+
+    @Override
+    public void saveSolution() {
+
+    }
 }

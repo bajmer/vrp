@@ -7,6 +7,7 @@ public abstract class Algorithm {
 
     private Problem problem;
     private String algorithmName;
+    private Solution solution;
 
     public Algorithm(Problem problem) {
         this.problem = problem;
@@ -28,5 +29,15 @@ public abstract class Algorithm {
         this.algorithmName = algorithmName;
     }
 
+    public Solution getSolution() {
+        return solution;
+    }
+
+    public void setSolution(Solution solution) {
+        this.solution = solution;
+    }
+
     public abstract void runAlgorithm();
+
+    public abstract void saveSolution();
 }
