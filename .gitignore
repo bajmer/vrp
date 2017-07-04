@@ -38,6 +38,9 @@ cmake-build-debug/
 # IntelliJ
 /out/
 /lib/
+/logs/
+/logs/*.log
+/logs/*.zip
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

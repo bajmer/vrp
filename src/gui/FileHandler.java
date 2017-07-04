@@ -2,6 +2,8 @@ package gui;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import project.Customer;
 import project.Database;
 
@@ -21,6 +23,8 @@ import java.util.Date;
  */
 
 public class FileHandler {
+
+    private static final Logger logger = LogManager.getLogger(FileHandler.class);
 
     private final String separator = ";";
     private final double defaultPackageWeight = 0.0;
@@ -42,9 +46,9 @@ public class FileHandler {
         File selectedFile = null;
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
-            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            logger.debug("Selected file: " + selectedFile.getAbsolutePath());
         } else {
-            System.out.println("File is not selected.");
+            logger.info("File is not selected.");
         }
         return selectedFile;
     }
@@ -67,11 +71,11 @@ public class FileHandler {
                     lat = Double.parseDouble(fields[1]);
                     lon = Double.parseDouble(fields[2]);
                     if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-                        System.out.println("Coordinates are out of range in line " + lineNumber);
+                        logger.warn("Coordinates are out of range in line " + lineNumber);
                         continue;
                     }
                 } else {
-                    System.out.println("Cannot parse coordinates in line " + lineNumber);
+                    logger.warn("Cannot parse coordinates in line " + lineNumber);
                     continue;
                 }
 
@@ -102,12 +106,12 @@ public class FileHandler {
                 } catch (ParseException e) {
                     minDeliveryHour = defaultMinDeliveryHour;
                     maxDeliveryHour = defaultMaxDeliveryHour;
-                    System.out.println("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
+                    logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.", e);
                 }
 
                 Customer customer = new Customer(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
                 Database.getCustomerList().add(customer);
-                System.out.println("ID: " + customer.getId()
+                logger.info("ID: " + customer.getId()
                         + ", Nazwa: " + customer.getName()
                         + ", Szer: " + customer.getLatitude()
                         + ", Dl: " + customer.getLongitude()
@@ -116,7 +120,7 @@ public class FileHandler {
                         + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
             }
         } catch (IOException e) {
-            System.out.println("Unexpected error while reading the file.");
+            logger.error("Unexpected error while reading the file!", e);
         }
     }
 }

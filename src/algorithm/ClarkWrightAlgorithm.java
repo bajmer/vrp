@@ -1,5 +1,7 @@
 package algorithm;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import project.Customer;
 import project.Database;
 import project.Route;
@@ -12,12 +14,14 @@ import java.util.List;
 /**
  * Created by Marcin on 2017-06-21.
  */
-public class Clark_Wright_Algorithm extends Algorithm {
+public class ClarkWrightAlgorithm extends Algorithm {
+
+    static final Logger logger = LogManager.getLogger(ClarkWrightAlgorithm.class);
 
     private final String name = "Clark-Wright Algorithm";
     private List<Saving> savings;
 
-    public Clark_Wright_Algorithm(Problem problem) {
+    public ClarkWrightAlgorithm(Problem problem) {
         super(problem);
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name));
@@ -36,7 +40,7 @@ public class Clark_Wright_Algorithm extends Algorithm {
     public void runAlgorithm() {
         createSavings();
         sortSavings();
-        savings.forEach(Saving -> System.out.println("Lista oszczednosci: " + Saving.getFirst().getId() + "-" + Saving.getSecond().getId()));
+        savings.forEach(Saving -> logger.debug("Sorted savings: " + Saving.getFirst().getId() + "-" + Saving.getSecond().getId()));
         calculateSolution();
         saveSolution();
     }
@@ -51,7 +55,7 @@ public class Clark_Wright_Algorithm extends Algorithm {
 
                     double saving = depot.getDistances().get(first.getId()) + depot.getDistances().get(second.getId()) - first.getDistances().get(second.getId());
                     savings.add(new Saving(first, second, saving));
-                    System.out.println("Saving for " + first.getId() + "-" + second.getId() + ": " + saving + " km");
+                    logger.debug("Saving for customers " + first.getId() + "-" + second.getId() + ": " + saving + " km");
                 }
             }
         }
@@ -63,14 +67,16 @@ public class Clark_Wright_Algorithm extends Algorithm {
 
     private void calculateSolution() {
         for (Saving saving : savings) {
-            System.out.println("Badanie oszczednosci " + saving.getFirst().getId() + " - " + saving.getSecond().getId());
+            logger.debug("Savings for loop: " + saving.getFirst().getId() + "-" + saving.getSecond().getId());
 //            żaden klient nie należy do trasy
             if (!isCustomerInRoute(saving.getFirst()) && !isCustomerInRoute(saving.getSecond())) {
                 if ((saving.getFirst().getPackageWeight() + saving.getSecond().getPackageWeight()) <= getProblem().getVehicleCapacity()) {
                     Route route = new Route();
                     route.addCustomer(saving.getFirst());
                     route.addCustomer(saving.getSecond());
-                    System.out.println("Nowa trasa ID " + route.getId() + ": " + saving.getFirst().getId() + "-" + saving.getSecond().getId());
+                    logger.debug("Creating new route with ID " + route.getId() + " for customers: " + saving.getFirst().getId() + "-" + saving.getSecond().getId());
+                    logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                    route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
 
                     if (!getSolution().getListOfRoutes().contains(route)) {
                         getSolution().getListOfRoutes().add(route);
@@ -83,15 +89,15 @@ public class Clark_Wright_Algorithm extends Algorithm {
                     if (route.canAddCustomer(saving.getFirst().getPackageWeight(), getProblem().getVehicleCapacity())) {
                         if (route.isCustomerFirstInRoute(saving.getSecond())) {
                             route.addCustomerFirstPlace(saving.getFirst());
-                            System.out.println("Dodanie klienta " + saving.getFirst().getId() + " na początek trasy o ID " + route.getId());
-                            route.getCustomersInRoute().forEach(Customer -> System.out.print(Customer.getId() + "-"));
-                            System.out.println();
+                            logger.debug("Customer with id " + saving.getFirst().getId() + " added as FIRST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                             break;
                         } else if (route.isCustomerLastInRoute(saving.getSecond())) {
                             route.addCustomer(saving.getFirst());
-                            System.out.println("Dodanie klienta " + saving.getFirst().getId() + " na koniec trasy o ID " + route.getId());
-                            route.getCustomersInRoute().forEach(Customer -> System.out.print(Customer.getId() + "-"));
-                            System.out.println();
+                            logger.debug("Customer with id " + saving.getFirst().getId() + " added as LAST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                             break;
                         }
                     }
@@ -103,15 +109,15 @@ public class Clark_Wright_Algorithm extends Algorithm {
                     if (route.canAddCustomer(saving.getSecond().getPackageWeight(), getProblem().getVehicleCapacity())) {
                         if (route.isCustomerFirstInRoute(saving.getFirst())) {
                             route.addCustomerFirstPlace(saving.getSecond());
-                            System.out.println("Dodanie klienta " + saving.getSecond().getId() + " na początek trasy o ID " + route.getId());
-                            route.getCustomersInRoute().forEach(Customer -> System.out.print(Customer.getId() + "-"));
-                            System.out.println();
+                            logger.debug("Customer with id " + saving.getSecond().getId() + " added as FIRST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                             break;
                         } else if (route.isCustomerLastInRoute(saving.getFirst())) {
                             route.addCustomer(saving.getSecond());
-                            System.out.println("Dodanie klienta " + saving.getSecond().getId() + " na koniec trasy o ID " + route.getId());
-                            route.getCustomersInRoute().forEach(Customer -> System.out.print(Customer.getId() + "-"));
-                            System.out.println();
+                            logger.debug("Customer with id " + saving.getSecond().getId() + " added as LAST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                             break;
                         }
                     }

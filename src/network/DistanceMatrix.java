@@ -1,5 +1,7 @@
 package network;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import project.Customer;
 import project.Database;
@@ -19,7 +21,10 @@ import java.net.URL;
  */
 public class DistanceMatrix {
 
-    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+    private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
+
+    //    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+    private final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
     private final String endOfURL = "?generate_hints=false&overview=false";
 
     //private String fullURL = "http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219";
@@ -42,16 +47,15 @@ public class DistanceMatrix {
                             Database.getRouteSegmentsList().add(new RouteSegment(src.getId(), dst.getId(), distanceInKm));
                             src.getDistances().put(dst.getId(), distanceInKm);
                             dst.getDistances().put(src.getId(), distanceInKm);
-                            System.out.println("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
+                            logger.info("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
                         } else {
-                            System.out.println("JSON object is null!");
+                            logger.info("JSON object is null!");
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error while calculating distance matrix.");
-            e.printStackTrace();
+            logger.error("Error while calculating distance matrix.", e);
         }
     }
 
@@ -73,15 +77,15 @@ public class DistanceMatrix {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 response = in.readLine();
             } else {
-                System.out.println("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
+                logger.warn("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
             }
         } catch (MalformedURLException e) {
-            System.out.println("Bad URL address!");
+            logger.error("Bad URL address!", e);
         } catch (ConnectException e) {
-            System.out.println("Application cannot connect to server!");
+            logger.error("Application cannot connect to server!", e);
             throw e;
         } catch (IOException e) {
-            System.out.println("Unexpected error while sending request!");
+            logger.error("Unexpected error while sending request!", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -99,7 +103,7 @@ public class DistanceMatrix {
         try {
             distance = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("distance");
         } catch (org.json.JSONException e) {
-            System.out.println("Error while getting distance from JSON object!");
+            logger.error("Error while getting distance from JSON object!", e);
         }
         if (distance >= 0) {
             double distanceKm = distance * 0.001;

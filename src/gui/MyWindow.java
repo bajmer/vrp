@@ -2,6 +2,8 @@ package gui;
 
 import algorithm.*;
 import network.DistanceMatrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import project.Customer;
 
 import javax.swing.*;
@@ -16,8 +18,10 @@ import java.text.NumberFormat;
  */
 public class MyWindow extends JFrame implements ActionListener {
 
+    private static final Logger logger = LogManager.getLogger(MyWindow.class);
+
     private JButton bLoad, bGetDistance, bCalculate, bExit;
-    private JComboBox boxAlgorithm;
+    private JComboBox<String> boxAlgorithm;
     private String algorithmName;
     private JFormattedTextField algorithmID;
     private JFormattedTextField numberOfVehicles;
@@ -39,8 +43,10 @@ public class MyWindow extends JFrame implements ActionListener {
         bGetDistance.addActionListener(this);
         bGetDistance.setEnabled(false);
 
-        String[] algorithmsList = {"Clark-Wright", "Second", "Third"};
-        boxAlgorithm = new JComboBox(algorithmsList);
+        boxAlgorithm = new JComboBox<String>();
+        boxAlgorithm.addItem("Clark-Wright");
+        boxAlgorithm.addItem("Second");
+        boxAlgorithm.addItem("Third");
         boxAlgorithm.setBounds(20, 80, 200, 20);
         boxAlgorithm.setSelectedIndex(0);
         add(boxAlgorithm);
@@ -111,8 +117,7 @@ public class MyWindow extends JFrame implements ActionListener {
                     bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
-                System.out.println("Unexpected error while processing the file.");
-                ex.printStackTrace();
+                logger.error("Unexpected error while processing the file.", ex);
             }
         } else if (source == bGetDistance) {
             DistanceMatrix distanceMatrix = new DistanceMatrix();
@@ -135,24 +140,25 @@ public class MyWindow extends JFrame implements ActionListener {
                 int vehicleCapacityInt = Integer.parseInt(vehicleCapacity.getText());
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
                 if (algorithmName.equals("Clark-Wright")) {
-                    System.out.println("Running the Clark-Wright algorithm...");
-                    Algorithm clark_wright_algorithm = new Clark_Wright_Algorithm(problem);
+                    logger.info("Running the Clark-Wright algorithm...");
+                    Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
                     clark_wright_algorithm.runAlgorithm();
                 } else if (algorithmName.equals("Second algorithm")) {
-                    System.out.println("Running the Second algorithm...");
+                    logger.info("Running the Second algorithm...");
                     Algorithm second_algorithm = new Second_Algorithm(problem);
                     second_algorithm.runAlgorithm();
                 } else if (algorithmName.equals("Third algorithm")) {
-                    System.out.println("Running the Third algorithm...");
+                    logger.info("Running the Third algorithm...");
                     Algorithm third_algorithm = new Third_Algorithm(problem);
                     third_algorithm.runAlgorithm();
                 }
             } catch (Exception ex) {
-                System.out.println("Unexpected error while calculating a solution.");
-                ex.printStackTrace();
+                logger.error("Unexpected error while calculating a solution.", ex);
             }
         } else if (source == bExit) {
             dispose();
+            logger.info("Application stopped.");
+            logger.info("*********************************************************************************************************************************************");
         }
     }
 }
