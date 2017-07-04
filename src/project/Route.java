@@ -10,6 +10,7 @@ public class Route {
     private static int routeID = 0;
     private int id;
     private ArrayList<Customer> customersInRoute;
+    private double totalDistance;
     private double currentPackagesWeight;
     //private double currentPackagesCapacity;
 
@@ -17,6 +18,7 @@ public class Route {
         routeID++;
         id = routeID;
         customersInRoute = new ArrayList<Customer>();
+        totalDistance = 0.0;
         currentPackagesWeight = 0.0;
         //currentPackagesCapacity = 0.0;
     }
@@ -35,6 +37,14 @@ public class Route {
 
     public void setCustomersInRoute(ArrayList<Customer> customersInRoute) {
         this.customersInRoute = customersInRoute;
+    }
+
+    public double getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(double totalDistance) {
+        this.totalDistance = totalDistance;
     }
 
     public double getCurrentPackagesWeight() {
@@ -61,6 +71,11 @@ public void addCustomer(Customer customer) {
         int firstPlace = 0;
         customersInRoute.add(firstPlace, customer);
         currentPackagesWeight += customer.getPackageWeight();
+    }
+
+    public void mergeRoute(Route route) {
+        this.customersInRoute.addAll(route.getCustomersInRoute());
+        currentPackagesWeight += route.getCurrentPackagesWeight();
     }
 
     public boolean canAddCustomer(double packageWeight, double weightLimit) {
