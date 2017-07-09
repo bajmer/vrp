@@ -23,8 +23,8 @@ public class DistanceMatrix {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
 
-    //    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
-    private final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
+    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+    //    private final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
     private final String endOfURL = "?generate_hints=false&overview=false";
 
     //private String fullURL = "http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219";
@@ -44,7 +44,8 @@ public class DistanceMatrix {
                         JSONObject jsonObject = sendRequest(routeURL);
                         if (jsonObject != null) {
                             double distanceInKm = getDistanceInKmFromJSON(jsonObject);
-                            Database.getRouteSegmentsList().add(new RouteSegment(src.getId(), dst.getId(), distanceInKm));
+//                            zawsze srcID < dstID!!!
+                            Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm));
                             src.getDistances().put(dst.getId(), distanceInKm);
                             dst.getDistances().put(src.getId(), distanceInKm);
                             logger.info("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");

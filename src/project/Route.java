@@ -55,21 +55,22 @@ public class Route {
         this.currentPackagesWeight = currentPackagesWeight;
     }
 
-//    public double getCurrentPackagesCapacity() {
+    //    public double getCurrentPackagesCapacity() {
 //        return currentPackagesCapacity;
 //    }
 //
 //    public void setCurrentPackagesCapacity(double currentPackagesCapacity) {
 //        this.currentPackagesCapacity = currentPackagesCapacity;
 //    }
-public void addCustomer(Customer customer) {
-    customersInRoute.add(customer);
-    currentPackagesWeight += customer.getPackageWeight();
-}
 
-    public void addCustomerFirstPlace(Customer customer) {
-        int firstPlace = 0;
-        customersInRoute.add(firstPlace, customer);
+    public void addCustomerToFirstPosition(Customer customer) {
+        int firstPosition = 0;
+        customersInRoute.add(firstPosition, customer);
+        currentPackagesWeight += customer.getPackageWeight();
+    }
+
+    public void addCustomerToLastPosition(Customer customer) {
+        customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
     }
 
@@ -86,11 +87,11 @@ public void addCustomer(Customer customer) {
         return currentPackagesWeight + packageWeight <= weightLimit;
     }
 
-    public boolean isCustomerFirstInRoute(Customer customer) {
+    public boolean isCustomerOnFirstPosition(Customer customer) {
         return customersInRoute.get(0).equals(customer);
     }
 
-    public boolean isCustomerLastInRoute(Customer customer) {
+    public boolean isCustomerOnLastPosition(Customer customer) {
         return customersInRoute.get(customersInRoute.size() - 1).equals(customer);
     }
 }

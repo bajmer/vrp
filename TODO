@@ -7,3 +7,4 @@
 6) Implementacja algorytmu 3
 7) Geolokacja, pobieranie współrzędnych na podstawie adresów klientów.
 8) Przekształcić algorytm clarka wrighta, aby saving było polem klasy RouteSegment.
+9) Wciśnięcie load powinno czyścić pamięć programu, tzn. klasę database.
