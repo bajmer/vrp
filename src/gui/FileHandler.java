@@ -63,7 +63,7 @@ public class FileHandler {
                 lineNumber++;
                 String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, separator);
 
-                String name = fields[0];
+                String address = fields[0];
                 double lat;
                 double lon;
 
@@ -109,10 +109,10 @@ public class FileHandler {
                     logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.", e);
                 }
 
-                Customer customer = new Customer(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
+                Customer customer = new Customer(address, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
                 Database.getCustomerList().add(customer);
                 logger.info("ID: " + customer.getId()
-                        + ", Nazwa: " + customer.getName()
+                        + ", Adres: " + customer.getAddress()
                         + ", Szer: " + customer.getLatitude()
                         + ", Dl: " + customer.getLongitude()
                         + ", Masa: " + customer.getPackageWeight()

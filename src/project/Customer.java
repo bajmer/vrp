@@ -10,7 +10,7 @@ public class Customer {
 
     private static int customerID;
     private int id;
-    private String name;
+    private String address;
     private double latitude;
     private double longitude;
     private double packageWeight;
@@ -20,10 +20,10 @@ public class Customer {
 
     private Map<Integer, Double> distances = new HashMap<>();
 
-    public Customer(String name, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
+    public Customer(String address, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
         customerID++;
-        this.name = name;
+        this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.packageWeight = packageWeight;
@@ -40,12 +40,12 @@ public class Customer {
         Customer.customerID = customerID;
     }
 
-    public String getName() {
-        return name;
+    public String getAddress() {
+        return address;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getId() {
