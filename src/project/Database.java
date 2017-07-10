@@ -17,7 +17,7 @@ public class Database {
         return customerList;
     }
 
-    public static void setCustomerList() {
+    public static void setCustomerList(List<Customer> customerList) {
         Database.customerList = customerList;
     }
 

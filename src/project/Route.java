@@ -63,20 +63,23 @@ public class Route {
 //        this.currentPackagesCapacity = currentPackagesCapacity;
 //    }
 
-    public void addCustomerToFirstPosition(Customer customer) {
+    public void addCustomerToFirstPosition(Customer customer, double distance) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
+        totalDistance += distance;
     }
 
-    public void addCustomerToLastPosition(Customer customer) {
+    public void addCustomerToLastPosition(Customer customer, double distance) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
+        totalDistance += distance;
     }
 
     public void mergeRoute(Route route) {
-        this.customersInRoute.addAll(route.getCustomersInRoute());
+        customersInRoute.addAll(route.getCustomersInRoute());
         currentPackagesWeight += route.getCurrentPackagesWeight();
+        totalDistance += route.getTotalDistance();
     }
 
     public boolean canAddCustomer(double packageWeight, double weightLimit) {
