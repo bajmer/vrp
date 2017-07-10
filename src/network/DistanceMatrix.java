@@ -7,19 +7,12 @@ import project.Customer;
 import project.Database;
 import project.RouteSegment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Created by mbala on 25.05.17.
  */
-public class DistanceMatrix {
+public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
 
@@ -40,7 +33,7 @@ public class DistanceMatrix {
                     Customer src = Database.getCustomerList().get(i);
                     Customer dst = Database.getCustomerList().get(j);
                     if (j != i) {
-                        String routeURL = parseURL(src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude());
+                        String routeURL = parseURL(beginOfURL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), endOfURL);
                         JSONObject jsonObject = sendRequest(routeURL);
                         if (jsonObject != null) {
                             double distanceInKm = getDistanceInKmFromJSON(jsonObject);
@@ -60,45 +53,6 @@ public class DistanceMatrix {
         }
     }
 
-    private String parseURL(double srcLong, double srcLat, double dstLong, double dstLat) {
-        return beginOfURL + srcLong + "," + srcLat + ";" + dstLong + "," + dstLat + endOfURL;
-    }
-
-    private JSONObject sendRequest(String routeURL) throws ConnectException {
-        HttpURLConnection connection = null;
-        String response = null;
-        try {
-            connection = (HttpURLConnection) new URL(routeURL).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setUseCaches(false);
-            connection.setReadTimeout(1000);
-            connection.connect();
-
-            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                response = in.readLine();
-            } else {
-                logger.warn("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
-            }
-        } catch (MalformedURLException e) {
-            logger.error("Bad URL address!", e);
-        } catch (ConnectException e) {
-            logger.error("Application cannot connect to server!", e);
-            throw e;
-        } catch (IOException e) {
-            logger.error("Unexpected error while sending request!", e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        if (response != null) {
-            return new JSONObject(response);
-        } else {
-            return null;
-        }
-    }
-
     private double getDistanceInKmFromJSON(JSONObject jsonObject) {
         double distance = -1; //jeżeli odległość jest ujemna, wówczas algorytm vrp będzie ją pomijał
         try {
@@ -108,8 +62,7 @@ public class DistanceMatrix {
         }
         if (distance >= 0) {
             double distanceKm = distance * 0.001;
-            double roundedDistanceKm = new BigDecimal(distanceKm).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-            return roundedDistanceKm;
+            return new BigDecimal(distanceKm).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         } else {
             return distance;
         }

@@ -2,6 +2,7 @@ package gui;
 
 import algorithm.*;
 import network.DistanceMatrix;
+import network.Geolocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import project.Customer;
@@ -120,6 +121,8 @@ public class MyWindow extends JFrame implements ActionListener {
                 logger.error("Unexpected error while processing the file.", ex);
             }
         } else if (source == bGetDistance) {
+            Geolocation geolocation = new Geolocation();
+            geolocation.getCustomersCoordinatesFromAddresses();
             DistanceMatrix distanceMatrix = new DistanceMatrix();
             distanceMatrix.calculateDistanceMatrix();
             bGetDistance.setEnabled(false);
