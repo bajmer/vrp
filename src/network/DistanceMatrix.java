@@ -26,31 +26,51 @@ public class DistanceMatrix extends JSON {
     public DistanceMatrix() {
     }
 
-    public void calculateDistanceMatrix() {
+    public void downloadDistanceMatrix() throws Exception {
+        logger.info("Downloading distance matrix...");
         try {
             for (int i = 0; i < Database.getCustomerList().size(); i++) {
                 for (int j = i; j < Database.getCustomerList().size(); j++) {
                     Customer src = Database.getCustomerList().get(i);
                     Customer dst = Database.getCustomerList().get(j);
+                    logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
                     if (j != i) {
-                        String routeURL = parseURL(beginOfURL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), endOfURL);
-                        JSONObject jsonObject = sendRequest(routeURL);
-                        if (jsonObject != null) {
-                            double distanceInKm = getDistanceInKmFromJSON(jsonObject);
+                        double srcLat = src.getLatitude();
+                        double srcLon = src.getLongitude();
+                        double dstLat = dst.getLatitude();
+                        double dstLon = dst.getLongitude();
+                        if (srcLat != 0 && srcLon != 0) {
+                            if (dstLat != 0 && dstLon != 0) {
+                                String routeURL = parseURL(beginOfURL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), endOfURL);
+                                JSONObject jsonObject = sendRequest(routeURL);
+                                if (jsonObject != null) {
+                                    double distanceInKm = getDistanceInKmFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
-                            Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm));
-                            src.getDistances().put(dst.getId(), distanceInKm);
-                            dst.getDistances().put(src.getId(), distanceInKm);
-                            logger.info("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
+                                    if (distanceInKm > 0) {
+                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm));
+                                        src.getDistances().put(dst.getId(), distanceInKm);
+                                        dst.getDistances().put(src.getId(), distanceInKm);
+                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
+                                    } else {
+                                        logger.warn("There is incorrect distance for customers " + src.getId() + " and " + dst.getId() + ". New route segment is not created!");
+                                    }
+                                } else {
+                                    logger.warn("Response from server for customers " + src.getId() + " and " + dst.getId() + " contain NULL JSON object!");
+                                }
+                            } else {
+                                logger.warn("Customer " + dst.getId() + " has got incorrect coordinates!");
+                            }
                         } else {
-                            logger.info("JSON object is null!");
+                            logger.warn("Customer " + src.getId() + " has got incorrect coordinates!");
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while calculating distance matrix.", e);
+            logger.error("Error while downloading distance matrix!");
+            throw e;
         }
+        logger.info("Downloading distance matrix has been completed.");
     }
 
     private double getDistanceInKmFromJSON(JSONObject jsonObject) {
@@ -58,12 +78,13 @@ public class DistanceMatrix extends JSON {
         try {
             distance = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("distance");
         } catch (org.json.JSONException e) {
-            logger.error("Error while getting distance from JSON object!", e);
+            logger.error("Error while getting distance from JSON object!");
         }
         if (distance >= 0) {
             double distanceKm = distance * 0.001;
             return new BigDecimal(distanceKm).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         } else {
+
             return distance;
         }
     }

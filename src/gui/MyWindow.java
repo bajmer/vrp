@@ -118,15 +118,20 @@ public class MyWindow extends JFrame implements ActionListener {
                     bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
-                logger.error("Unexpected error while processing the file.", ex);
+                logger.error("Unexpected error while processing the file!", ex);
             }
         } else if (source == bGetDistance) {
-            Geolocation geolocation = new Geolocation();
-            geolocation.getCustomersCoordinatesFromAddresses();
-            DistanceMatrix distanceMatrix = new DistanceMatrix();
-            distanceMatrix.calculateDistanceMatrix();
-            bGetDistance.setEnabled(false);
-            boxAlgorithm.setEnabled(true);
+            try {
+                Geolocation geolocation = new Geolocation();
+                geolocation.downloadCustomersCoordinates();
+                DistanceMatrix distanceMatrix = new DistanceMatrix();
+                distanceMatrix.downloadDistanceMatrix();
+                bGetDistance.setEnabled(false);
+                boxAlgorithm.setEnabled(true);
+
+            } catch (Exception ex) {
+                logger.error("Unexpected error while addresses geolocating and downloading the distance matrix from server!", ex);
+            }
         } else if (source == boxAlgorithm) {
             algorithmName = boxAlgorithm.getSelectedItem().toString();
             algorithmID.setEnabled(true);
@@ -143,7 +148,6 @@ public class MyWindow extends JFrame implements ActionListener {
                 int vehicleCapacityInt = Integer.parseInt(vehicleCapacity.getText());
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
                 if (algorithmName.equals("Clark-Wright")) {
-                    logger.info("Running the Clark-Wright algorithm...");
                     Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
                     clark_wright_algorithm.runAlgorithm();
                 } else if (algorithmName.equals("Second algorithm")) {
@@ -156,7 +160,7 @@ public class MyWindow extends JFrame implements ActionListener {
                     third_algorithm.runAlgorithm();
                 }
             } catch (Exception ex) {
-                logger.error("Unexpected error while calculating a solution.", ex);
+                logger.error("Unexpected error while calculating a solution!", ex);
             }
         } else if (source == bExit) {
             dispose();

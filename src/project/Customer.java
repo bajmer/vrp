@@ -11,8 +11,8 @@ public class Customer {
     private static int customerID;
     private int id;
     private String address;
-    private double latitude;
-    private double longitude;
+    private double latitude = 0;
+    private double longitude = 0;
     private double packageWeight;
     private double packageCapacity;
     private String minDeliveryHour;
@@ -20,12 +20,10 @@ public class Customer {
 
     private Map<Integer, Double> distances = new HashMap<>();
 
-    public Customer(String address, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
+    public Customer(String address, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
         customerID++;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.packageWeight = packageWeight;
         this.packageCapacity = packageCapacity;
         this.minDeliveryHour = minDeliveryHour;

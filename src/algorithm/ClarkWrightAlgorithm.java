@@ -34,14 +34,15 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     @Override
     public void runAlgorithm() {
+        logger.info("Running the Clark-Wright algorithm...");
         createSavings();
         sortSavings();
-        routeSegments.forEach(RouteSegment -> logger.debug("Sorted savings: " + RouteSegment.getSrc().getId() + "-" + RouteSegment.getDst().getId()));
         calculateSolution();
         saveSolution();
     }
 
     private void createSavings() {
+        logger.info("Creating savings...");
         Customer depot = super.getProblem().getDepot();
         for (int i = 1; i < customers.size(); i++) {
             for (int j = i; j < customers.size(); j++) {
@@ -50,28 +51,33 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     Customer second = customers.get(j);
                     int firstID = customers.get(i).getId();
                     int secondID = customers.get(j).getId();
+                    if ((depot.getDistances().get(firstID) != null) && (depot.getDistances().get(secondID) != null) && (first.getDistances().get(secondID) != null)) {
+                        double saving = depot.getDistances().get(firstID) + depot.getDistances().get(secondID) - first.getDistances().get(secondID);
+                        for (RouteSegment segment : routeSegments) {
+                            int srcID = segment.getSrc().getId();
+                            int dstID = segment.getDst().getId();
 
-                    double saving = depot.getDistances().get(firstID) + depot.getDistances().get(secondID) - first.getDistances().get(secondID);
-                    for (RouteSegment segment : routeSegments) {
-                        int srcID = segment.getSrc().getId();
-                        int dstID = segment.getDst().getId();
-
-                        if (srcID == firstID && dstID == secondID) {
-                            segment.setClarkWrightSaving(saving);
-                            break;
+                            if (srcID == firstID && dstID == secondID) {
+                                segment.setClarkWrightSaving(saving);
+                                break;
+                            }
                         }
+                        logger.debug("Saving for customers " + firstID + "-" + secondID + "= " + saving + " km");
                     }
-                    logger.debug("Saving for customers " + firstID + "-" + secondID + "= " + saving + " km");
                 }
             }
         }
+        logger.info("Creating savings has been completed.");
     }
 
     private void sortSavings() {
+        logger.info("Sorting route segments by savings...");
         Collections.sort(routeSegments, Comparator.comparingDouble(RouteSegment::getClarkWrightSaving).reversed());
+        logger.info("Sorting route segments by savings has been completed.");
     }
 
     private void calculateSolution() {
+        logger.info("Calculating the solution...");
         double maxCapacity = getProblem().getVehicleCapacity();
         for (RouteSegment segment : routeSegments) {
             Customer src = segment.getSrc();
@@ -91,7 +97,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                         logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
 
                         if (!routes.contains(route)) {
-                            logger.info("Adding route \"" + route.getId() + "\" to solution.");
+                            logger.debug("Adding route \"" + route.getId() + "\" to solution.");
                             routes.add(route);
                         }
                     }
@@ -166,13 +172,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
                 }
 
                 if (tmpRoute != null) {
-                    logger.info("Removing route \"" + tmpRoute.getId() + "\" from solution because of merge.");
+                    logger.debug("Removing route \"" + tmpRoute.getId() + "\" from solution because of merge.");
                     routes.remove(tmpRoute);
                 }
             }
         }
 //        dodanie do tras odcinków od magazynu i do magazynu
         addDepotNodeAsFirstAndLast();
+        logger.info("Calculating the solution has been completed.");
     }
 
     private boolean isCustomerInRoute(Customer customer) {
@@ -198,11 +205,13 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     @Override
     public void saveSolution() {
+        logger.info("Saving solution...");
         logger.info("Wyznaczono " + routes.size() + " tras");
         for (Route route : routes) {
-            logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
+            logger.info("-----> Trasa nr " + routes.indexOf(route) + ": łączna długość - " + route.getTotalDistance()
                     + " km, łączna masa paczek - " + route.getCurrentPackagesWeight() + " kg");
-            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+            route.getCustomersInRoute().forEach(Customer -> logger.info(Customer.getId() + "-"));
         }
+        logger.info("Saving solution has been completed.");
     }
 }

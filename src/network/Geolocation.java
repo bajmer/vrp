@@ -14,6 +14,7 @@ import java.util.List;
  * Created by mbala on 10.07.17.
  */
 public class Geolocation extends JSON {
+
     private static final Logger logger = LogManager.getLogger(Geolocation.class);
 
     private static final String separator = ",";
@@ -24,7 +25,8 @@ public class Geolocation extends JSON {
     public Geolocation() {
     }
 
-    public void getCustomersCoordinatesFromAddresses() {
+    public void downloadCustomersCoordinates() throws Exception {
+        logger.info("Downloading customers coordinates...");
         try {
             for (Customer customer : Database.getCustomerList()) {
                 String fullAddress = customer.getAddress();
@@ -33,16 +35,22 @@ public class Geolocation extends JSON {
                 JSONObject jsonObject = sendRequest(URL);
                 if (jsonObject != null) {
                     List<Double> coordinates = getCoordinatesFromJSON(jsonObject);
-                    customer.setLatitude(coordinates.get(0));
-                    customer.setLongitude(coordinates.get(1));
-                    logger.info("Coordinates for customer " + customer.getId() + "---" + customer.getAddress() + ": latitude:" + customer.getLatitude() + ", longitude:" + customer.getLongitude());
+                    if (coordinates.size() == 2) {
+                        customer.setLatitude(coordinates.get(0));
+                        customer.setLongitude(coordinates.get(1));
+                        logger.debug("Customer " + customer.getId() + "--" + customer.getAddress() + " has new coordinates: latitude: " + customer.getLatitude() + ", longitude: " + customer.getLongitude());
+                    } else {
+                        logger.warn("Failed to fetch coordinates for customer " + customer.getId() + "--" + customer.getAddress());
+                    }
                 } else {
-                    logger.info("JSON object is null!");
+                    logger.warn("Response from server for customer " + customer.getId() + " contain NULL JSON object!");
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while getting customers coordinates.", e);
+            logger.error("Error while addresses geolocating!");
+            throw e;
         }
+        logger.info("Downloading customers coordinates has been completed.");
     }
 
     private List<Double> getCoordinatesFromJSON(JSONObject jsonObject) {
@@ -53,7 +61,7 @@ public class Geolocation extends JSON {
             coordinates.add(lat);
             coordinates.add(lon);
         } catch (org.json.JSONException e) {
-            logger.error("Error while getting distance from JSON object!", e);
+            logger.error("Error while getting coordinates from JSON object!");
         }
         return coordinates;
     }

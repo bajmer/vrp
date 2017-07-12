@@ -46,11 +46,12 @@ public class JSON {
                 + "&city=" + city + "&country=Polska";
     }
 
-    public JSONObject sendRequest(String routeURL) throws ConnectException {
+    public JSONObject sendRequest(String url) throws ConnectException {
+        logger.debug("Sending a request to URL: " + url + " ...");
         HttpURLConnection connection = null;
         String response = null;
         try {
-            connection = (HttpURLConnection) new URL(routeURL).openConnection();
+            connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("GET");
             connection.setUseCaches(false);
             connection.setReadTimeout(5000);
@@ -63,18 +64,18 @@ public class JSON {
                 logger.warn("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
             }
         } catch (MalformedURLException e) {
-            logger.error("Bad URL address!", e);
+            logger.error("Bad URL address!");
         } catch (ConnectException e) {
-            logger.error("Application cannot connect to server!", e);
+            logger.error("Application cannot connect to server!");
             throw e;
         } catch (IOException e) {
-            logger.error("Unexpected error while sending request!", e);
+            logger.error("Unexpected error while sending request!");
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
-        if (response != null) {
+        if (response != null && response.length() > 2) {
             if (response.startsWith("[") && response.endsWith("]")) {
                 response = response.substring(1, response.length() - 1);
             }
