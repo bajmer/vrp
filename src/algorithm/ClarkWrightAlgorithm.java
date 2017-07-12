@@ -206,6 +206,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
     @Override
     public void saveSolution() {
         logger.info("Saving solution...");
+        Database.getSolutionsList().add(getSolution());
         logger.info("Wyznaczono " + routes.size() + " tras");
         for (Route route : routes) {
             logger.info("-----> Trasa nr " + routes.indexOf(route) + ": łączna długość - " + route.getTotalDistance()

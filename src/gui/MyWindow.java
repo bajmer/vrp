@@ -3,6 +3,7 @@ package gui;
 import algorithm.*;
 import network.DistanceMatrix;
 import network.Geolocation;
+import network.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import project.Customer;
@@ -21,13 +22,6 @@ public class MyWindow extends JFrame implements ActionListener {
 
     private static final Logger logger = LogManager.getLogger(MyWindow.class);
 
-//    String imageUrl = "https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&region=pl" +
-//            "&markers=color:blue%7Clabel:12%7C52.16149,20.91405|52.15313995,21.0413007247795|52.6305844,20.3774021|" +
-//            "52.68144,20.25678|52.7839375,20.1182809|52.4006751,20.312020291701|52.1264653,20.6650247|" +
-//            "52.1746017,22.2779659516626|52.29114745,21.1263683577007|53.1129202,20.3743188|52.7062653,21.088928|" +
-//            "52.8759448,20.6182627|51.4145421,21.1787179|52.86584,21.09744|53.0860305,21.57039905|" +
-//            "&path=color:0xff0000ff|weight:3|52.16149,20.91405|52.15313995,21.0413007247795|52.6305844,20.3774021|52.68144,20.25678|52.7839375,20.1182809|52.4006751,20.312020291701|52.1264653,20.6650247|52.1746017,22.2779659516626|52.29114745,21.1263683577007|53.1129202,20.3743188|52.7062653,21.088928|52.8759448,20.6182627|51.4145421,21.1787179|52.86584,21.09744|53.0860305,21.57039905" +
-//            "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
 //    https://stackoverflow.com/questions/17598074/google-map-in-java-swing
 
     private JButton bLoad, bGetDistance, bCalculate, bExit;
@@ -36,9 +30,10 @@ public class MyWindow extends JFrame implements ActionListener {
     private JFormattedTextField algorithmID;
     private JFormattedTextField numberOfVehicles;
     private JFormattedTextField vehicleCapacity;
+    private JLabel mapImage;
 
     public MyWindow() {
-        setSize(255, 300);
+        setSize(950, 700);
         setTitle("VRP System");
         setLayout(null);
 
@@ -106,6 +101,9 @@ public class MyWindow extends JFrame implements ActionListener {
         bExit.setBounds(20, 230, 200, 20);
         add(bExit);
         bExit.addActionListener(this);
+
+//        mapImage = new JLabel();
+//        mapImage.setBounds(250, 20, 640, 640);
     }
 
     @Override
@@ -156,16 +154,24 @@ public class MyWindow extends JFrame implements ActionListener {
                 int numberOfVehiclesInt = Integer.parseInt(numberOfVehicles.getText());
                 int vehicleCapacityInt = Integer.parseInt(vehicleCapacity.getText());
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
-                if (algorithmName.equals("Clark-Wright")) {
-                    Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
-                    clark_wright_algorithm.runAlgorithm();
-                } else if (algorithmName.equals("Second algorithm")) {
-                    Algorithm second_algorithm = new Second_Algorithm(problem);
-                    second_algorithm.runAlgorithm();
-                } else if (algorithmName.equals("Third algorithm")) {
-                    Algorithm third_algorithm = new Third_Algorithm(problem);
-                    third_algorithm.runAlgorithm();
+                switch (algorithmName) {
+                    case "Clark-Wright":
+                        Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
+                        clark_wright_algorithm.runAlgorithm();
+                        break;
+                    case "Second algorithm":
+                        Algorithm second_algorithm = new Second_Algorithm(problem);
+                        second_algorithm.runAlgorithm();
+                        break;
+                    case "Third algorithm":
+                        Algorithm third_algorithm = new Third_Algorithm(problem);
+                        third_algorithm.runAlgorithm();
+                        break;
                 }
+                Map map = new Map();
+                mapImage = map.displaySolutionOnScreen();
+                add(mapImage);
+                repaint();
             } catch (Exception ex) {
                 logger.error("Unexpected error while calculating a solution!", ex);
             }
