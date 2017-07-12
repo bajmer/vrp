@@ -38,7 +38,7 @@ public class Geolocation extends JSON {
                     if (coordinates.size() == 2) {
                         customer.setLatitude(coordinates.get(0));
                         customer.setLongitude(coordinates.get(1));
-                        logger.debug("Customer " + customer.getId() + "--" + customer.getAddress() + " has new coordinates: latitude: " + customer.getLatitude() + ", longitude: " + customer.getLongitude());
+                        logger.debug("Customer " + customer.getId() + "--" + customer.getAddress() + " has new coordinates: (latitude,longitude): " + customer.getLatitude() + "," + customer.getLongitude());
                     } else {
                         logger.warn("Failed to fetch coordinates for customer " + customer.getId() + "--" + customer.getAddress());
                     }
