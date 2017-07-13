@@ -24,29 +24,30 @@ public class MyWindow extends JFrame implements ActionListener {
 
 //    https://stackoverflow.com/questions/17598074/google-map-in-java-swing
 
-    private JButton bLoad, bGetDistance, bCalculate, bExit;
+    private JButton bLoad, bGetDistance, bCalculate, bShowMap, bExit;
     private JComboBox<String> boxAlgorithm;
     private String algorithmName;
-    private JFormattedTextField algorithmID;
-    private JFormattedTextField numberOfVehicles;
-    private JFormattedTextField vehicleCapacity;
+    private JFormattedTextField fAlgorithmID;
+    private JFormattedTextField fNumberOfVehicles;
+    private JFormattedTextField fVehicleCapacity;
     private JLabel mapImage;
+    private String mapWindowName;
 
     public MyWindow() {
-        setSize(950, 700);
+        setSize(240, 300);
         setTitle("VRP System");
         setLayout(null);
 
         bLoad = new JButton("Load data");
         bLoad.setBounds(20, 20, 200, 20);
-        add(bLoad);
         bLoad.addActionListener(this);
+        add(bLoad);
 
         bGetDistance = new JButton("Get distance matrix");
         bGetDistance.setBounds(20, 50, 200, 20);
-        add(bGetDistance);
         bGetDistance.addActionListener(this);
         bGetDistance.setEnabled(false);
+        add(bGetDistance);
 
         boxAlgorithm = new JComboBox<String>();
         boxAlgorithm.addItem("Clark-Wright");
@@ -54,9 +55,9 @@ public class MyWindow extends JFrame implements ActionListener {
         boxAlgorithm.addItem("Third");
         boxAlgorithm.setBounds(20, 80, 200, 20);
         boxAlgorithm.setSelectedIndex(0);
-        add(boxAlgorithm);
         boxAlgorithm.addActionListener(this);
         boxAlgorithm.setEnabled(false);
+        add(boxAlgorithm);
 
         NumberFormat integerFormat = NumberFormat.getIntegerInstance();
         integerFormat.setGroupingUsed(false);
@@ -68,42 +69,45 @@ public class MyWindow extends JFrame implements ActionListener {
         algorithmIDText.setBounds(20, 110, 160, 20);
         algorithmIDText.setHorizontalAlignment(SwingConstants.LEFT);
         add(algorithmIDText);
-        algorithmID = new JFormattedTextField(numberFormatter);
-        algorithmID.setBounds(180, 110, 40, 20);
-        add(algorithmID);
-        algorithmID.setEnabled(false);
+        fAlgorithmID = new JFormattedTextField(numberFormatter);
+        fAlgorithmID.setBounds(180, 110, 40, 20);
+        fAlgorithmID.setEnabled(false);
+        add(fAlgorithmID);
 
         JLabel numberOfVehiclesText = new JLabel("Number of vehicles:");
         numberOfVehiclesText.setBounds(20, 140, 160, 20);
         numberOfVehiclesText.setHorizontalAlignment(SwingConstants.LEFT);
         add(numberOfVehiclesText);
-        numberOfVehicles = new JFormattedTextField(numberFormatter);
-        numberOfVehicles.setBounds(180, 140, 40, 20);
-        add(numberOfVehicles);
-        numberOfVehicles.setEnabled(false);
+        fNumberOfVehicles = new JFormattedTextField(numberFormatter);
+        fNumberOfVehicles.setBounds(180, 140, 40, 20);
+        fNumberOfVehicles.setEnabled(false);
+        add(fNumberOfVehicles);
 
         JLabel vehicleCapacityText = new JLabel("Vehicle capacity [kg]:");
         vehicleCapacityText.setBounds(20, 170, 160, 20);
         vehicleCapacityText.setHorizontalAlignment(SwingConstants.LEFT);
         add(vehicleCapacityText);
-        vehicleCapacity = new JFormattedTextField(numberFormatter);
-        vehicleCapacity.setBounds(180, 170, 40, 20);
-        add(vehicleCapacity);
-        vehicleCapacity.setEnabled(false);
+        fVehicleCapacity = new JFormattedTextField(numberFormatter);
+        fVehicleCapacity.setBounds(180, 170, 40, 20);
+        fVehicleCapacity.setEnabled(false);
+        add(fVehicleCapacity);
 
         bCalculate = new JButton("Calculate");
         bCalculate.setBounds(20, 200, 200, 20);
-        add(bCalculate);
         bCalculate.addActionListener(this);
         bCalculate.setEnabled(false);
+        add(bCalculate);
+
+        bShowMap = new JButton("Show solution on map");
+        bShowMap.setBounds(20, 230, 200, 20);
+        bShowMap.addActionListener(this);
+        bShowMap.setEnabled(false);
+        add(bShowMap);
 
         bExit = new JButton("Exit");
-        bExit.setBounds(20, 230, 200, 20);
-        add(bExit);
+        bExit.setBounds(20, 260, 200, 20);
         bExit.addActionListener(this);
-
-//        mapImage = new JLabel();
-//        mapImage.setBounds(250, 20, 640, 640);
+        add(bExit);
     }
 
     @Override
@@ -112,10 +116,12 @@ public class MyWindow extends JFrame implements ActionListener {
         if (source == bLoad) {
             bGetDistance.setEnabled(false);
             boxAlgorithm.setEnabled(false);
-            algorithmID.setEnabled(false);
-            numberOfVehicles.setEnabled(false);
-            vehicleCapacity.setEnabled(false);
+            fAlgorithmID.setEnabled(false);
+            fNumberOfVehicles.setEnabled(false);
+            fVehicleCapacity.setEnabled(false);
             bCalculate.setEnabled(false);
+            bShowMap.setEnabled(false);
+
             Customer.setCustomerID(0);
             try {
                 FileHandler fileHandler = new FileHandler();
@@ -141,18 +147,18 @@ public class MyWindow extends JFrame implements ActionListener {
             }
         } else if (source == boxAlgorithm) {
             algorithmName = boxAlgorithm.getSelectedItem().toString();
-            algorithmID.setEnabled(true);
-            numberOfVehicles.setEnabled(true);
-            vehicleCapacity.setEnabled(true);
+            fAlgorithmID.setEnabled(true);
+            fNumberOfVehicles.setEnabled(true);
+            fVehicleCapacity.setEnabled(true);
             bCalculate.setEnabled(true);
         } else if (source == bCalculate) {
-//            algorithmID.setEnabled(false);
-//            numberOfVehicles.setEnabled(false);
-//            vehicleCapacity.setEnabled(false);
+//            fAlgorithmID.setEnabled(false);
+//            fNumberOfVehicles.setEnabled(false);
+//            fVehicleCapacity.setEnabled(false);
             try {
-                int algorithmIDInt = Integer.parseInt(algorithmID.getText());
-                int numberOfVehiclesInt = Integer.parseInt(numberOfVehicles.getText());
-                int vehicleCapacityInt = Integer.parseInt(vehicleCapacity.getText());
+                int algorithmIDInt = Integer.parseInt(fAlgorithmID.getText());
+                int numberOfVehiclesInt = Integer.parseInt(fNumberOfVehicles.getText());
+                int vehicleCapacityInt = Integer.parseInt(fVehicleCapacity.getText());
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
                 switch (algorithmName) {
                     case "Clark-Wright":
@@ -168,17 +174,30 @@ public class MyWindow extends JFrame implements ActionListener {
                         third_algorithm.runAlgorithm();
                         break;
                 }
-                Map map = new Map();
-                mapImage = map.displaySolutionOnScreen();
-                add(mapImage);
-                repaint();
+                bShowMap.setEnabled(true);
             } catch (Exception ex) {
                 logger.error("Unexpected error while calculating a solution!", ex);
             }
+
+            try {
+                Map map = new Map();
+                mapImage = map.displaySolutionOnScreen();
+                mapWindowName = map.getImageName();
+            } catch (Exception ex) {
+                logger.error("Unexpected error while displaying solution on the screen!", ex);
+            }
+
+        } else if (source == bShowMap) {
+            JFrame mapWindow = new JFrame(mapWindowName);
+            mapWindow.setSize(640, 640);
+            mapWindow.setLocation(240, 0);
+            mapWindow.setVisible(true);
+            mapWindow.add(mapImage);
         } else if (source == bExit) {
             dispose();
             logger.info("Application stopped.");
             logger.info("*********************************************************************************************************************************************");
+            System.exit(0);
         }
     }
 }

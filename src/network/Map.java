@@ -23,22 +23,31 @@ import java.util.List;
 public class Map {
 
     private static final Logger logger = LogManager.getLogger(Map.class);
-
-    private static final String destinationFile = "map.jpg";
-    private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=8&size=640x640&maptype=roadmap&region=pl";
+    private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&scale=2&size=640x640&maptype=roadmap&language=pl";
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
     private static final List<String> colours = Arrays.asList("0xFF0000FF", "0xFFFF00FF", "0x0000FFFF", "0xCC00FFFF", "0x006600FF", "0xFF6600FF", "0x000000FF", "0x00FF00FF", "0x808000FF", "0x00FFFFFF");
-
+    private String imageName;
 
     public Map() {
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
     public JLabel displaySolutionOnScreen() {
-        logger.info("Displaying solution map on the screen...");
+        logger.info("Creating an image of solution map...");
         try {
+            int lastSolutionID = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1).getSolutionID();
+            String lastSolutionAlgorithm = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1).getUsedAlgorithm();
+            imageName = "img/Solution_" + lastSolutionID + "_" + lastSolutionAlgorithm;
             String url = parseURL(beginOfURL, endOfURL);
             InputStream inputStream = new URL(url).openStream();
-            OutputStream outputStream = new FileOutputStream(destinationFile);
+            OutputStream outputStream = new FileOutputStream(imageName);
 
             byte[] b = new byte[2048];
             int length;
@@ -55,24 +64,25 @@ public class Map {
             logger.error("Unexpected error while connecting to server!");
         }
 
-        JLabel map = new JLabel(new ImageIcon((new ImageIcon(destinationFile)).getImage()));
+        JLabel map = new JLabel(new ImageIcon((new ImageIcon(imageName)).getImage()));
         map.setBounds(250, 20, 640, 640);
         map.setVisible(true);
-//        test.add(new JLabel(new ImageIcon((new ImageIcon("image.jpg")).getImage().getScaledInstance(630, 600,
-//                java.awt.Image.SCALE_SMOOTH))));
 
-//        mapImage = new JLabel();
-//        mapImage.setBounds(250, 20, 640, 640);
-
-        logger.info("Displaying solution map on the screen has been completed.");
+        logger.info("Creating an image of solution map has been completed.");
         return map;
     }
 
     private String parseURL(String beginOfURL, String endOfURL) {
         StringBuilder path = new StringBuilder();
         StringBuilder marker = new StringBuilder();
-        marker.append("&markers=size:small|color:red|label:C");
+        Database.getCustomerList().get(0);
+        marker.append("&markers=size:small|color:red|label:0");
+        marker.append("|").append(Database.getCustomerList().get(0).getLatitude()).append(",").append(Database.getCustomerList().get(0).getLongitude());
+        marker.append("&markers=size:small|color:blue|label:1");
         for (Customer c : Database.getCustomerList()) {
+            if (c.getId() == 0) {
+                continue;
+            }
             double lat = c.getLatitude();
             double lon = c.getLongitude();
             if (lat != 0 && lon != 0) {
