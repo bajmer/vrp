@@ -181,7 +181,7 @@ public class MyWindow extends JFrame implements ActionListener {
 
             try {
                 Map map = new Map();
-                mapImage = map.displaySolutionOnScreen();
+                mapImage = map.createSolutionImages();
                 mapWindowName = map.getImageName();
             } catch (Exception ex) {
                 logger.error("Unexpected error while displaying solution on the screen!", ex);

@@ -207,11 +207,19 @@ public class ClarkWrightAlgorithm extends Algorithm {
     public void saveSolution() {
         logger.info("Saving solution...");
         Database.getSolutionsList().add(getSolution());
-        logger.info("Wyznaczono " + routes.size() + " tras");
+        logger.info("Wyznaczono " + routes.size() + " tras.");
         for (Route route : routes) {
-            logger.info("-----> Trasa nr " + routes.indexOf(route) + ": łączna długość - " + route.getTotalDistance()
+            logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
                     + " km, łączna masa paczek - " + route.getCurrentPackagesWeight() + " kg");
-            route.getCustomersInRoute().forEach(Customer -> logger.info(Customer.getId() + "-"));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
+                Customer c = route.getCustomersInRoute().get(i);
+                sb.append(c.getId());
+                if (i != route.getCustomersInRoute().size() - 1) {
+                    sb.append("--");
+                }
+            }
+            logger.info(sb.toString());
         }
         logger.info("Saving solution has been completed.");
     }

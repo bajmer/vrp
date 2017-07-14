@@ -23,7 +23,7 @@ import java.util.List;
 public class Map {
 
     private static final Logger logger = LogManager.getLogger(Map.class);
-    private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&scale=2&size=640x640&maptype=roadmap&language=pl";
+    private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
     private static final List<String> colours = Arrays.asList("0xFF0000FF", "0xFFFF00FF", "0x0000FFFF", "0xCC00FFFF", "0x006600FF", "0xFF6600FF", "0x000000FF", "0x00FF00FF", "0x808000FF", "0x00FFFFFF");
     private String imageName;
@@ -39,13 +39,33 @@ public class Map {
         this.imageName = imageName;
     }
 
-    public JLabel displaySolutionOnScreen() {
-        logger.info("Creating an image of solution map...");
+    public JLabel createSolutionImages() {
+        logger.info("Creating an images of solution...");
+        Solution newestSolution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
+        int lastSolutionID = newestSolution.getSolutionID();
+        String lastSolutionAlgorithm = newestSolution.getUsedAlgorithm();
+
+        imageName = "img/Solution_" + lastSolutionID + "_" + lastSolutionAlgorithm;
+        String url = parseURLForAll(beginOfURL, endOfURL);
+        sendRequestToGoogleMaps(url, imageName);
+
+        for (Route route : newestSolution.getListOfRoutes()) {
+            String imageName = "img/Solution_" + lastSolutionID + "_" + lastSolutionAlgorithm + "_route_" + route.getId();
+            String urlForSingleRoute = parseURLForSingleRoute(beginOfURL, endOfURL, route);
+            sendRequestToGoogleMaps(urlForSingleRoute, imageName);
+        }
+
+        JLabel map = new JLabel(new ImageIcon((new ImageIcon(imageName)).getImage()));
+        map.setBounds(250, 20, 640, 640);
+        map.setVisible(true);
+
+        logger.info("Creating an images of solution has been completed.");
+        return map;
+    }
+
+    private void sendRequestToGoogleMaps(String url, String imageName) {
+        logger.debug("Sending request to Google Maps...");
         try {
-            int lastSolutionID = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1).getSolutionID();
-            String lastSolutionAlgorithm = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1).getUsedAlgorithm();
-            imageName = "img/Solution_" + lastSolutionID + "_" + lastSolutionAlgorithm;
-            String url = parseURL(beginOfURL, endOfURL);
             InputStream inputStream = new URL(url).openStream();
             OutputStream outputStream = new FileOutputStream(imageName);
 
@@ -58,21 +78,16 @@ public class Map {
 
             inputStream.close();
             outputStream.close();
+
         } catch (MalformedURLException e) {
             logger.error("Bad URL address!");
         } catch (IOException e) {
             logger.error("Unexpected error while connecting to server!");
         }
-
-        JLabel map = new JLabel(new ImageIcon((new ImageIcon(imageName)).getImage()));
-        map.setBounds(250, 20, 640, 640);
-        map.setVisible(true);
-
-        logger.info("Creating an image of solution map has been completed.");
-        return map;
+        logger.debug("Sending request to Google Maps has been completed.");
     }
 
-    private String parseURL(String beginOfURL, String endOfURL) {
+    private String parseURLForAll(String beginOfURL, String endOfURL) {
         StringBuilder path = new StringBuilder();
         StringBuilder marker = new StringBuilder();
         Database.getCustomerList().get(0);
@@ -104,6 +119,30 @@ public class Map {
             if (colourIndex == 10) {
                 colourIndex = 0;
             }
+        }
+        return beginOfURL + marker.toString() + path.toString() + endOfURL;
+    }
+
+    private String parseURLForSingleRoute(String beginOfURL, String endOfURL, Route route) {
+        StringBuilder path = new StringBuilder();
+        StringBuilder marker = new StringBuilder();
+        Database.getCustomerList().get(0);
+        marker.append("&markers=size:small|color:red|label:0");
+        marker.append("|").append(Database.getCustomerList().get(0).getLatitude()).append(",").append(Database.getCustomerList().get(0).getLongitude());
+        marker.append("&markers=size:small|color:blue|label:1");
+        for (Customer c : Database.getCustomerList()) {
+            if (c.getId() == 0) {
+                continue;
+            }
+            double lat = c.getLatitude();
+            double lon = c.getLongitude();
+            if (lat != 0 && lon != 0) {
+                marker.append("|").append(lat).append(",").append(lon);
+            }
+        }
+        path.append("&path=color:0xFF0000FF|weight:2");
+        for (Customer c : route.getCustomersInRoute()) {
+            path.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
         }
         return beginOfURL + marker.toString() + path.toString() + endOfURL;
     }
