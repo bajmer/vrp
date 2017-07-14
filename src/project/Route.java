@@ -11,6 +11,7 @@ public class Route {
     private int id;
     private ArrayList<Customer> customersInRoute;
     private double totalDistance;
+    private double totalDuration;
     private double currentPackagesWeight;
     //private double currentPackagesCapacity;
 
@@ -19,6 +20,7 @@ public class Route {
         id = routeID;
         customersInRoute = new ArrayList<Customer>();
         totalDistance = 0.0;
+        totalDuration = 0.0;
         currentPackagesWeight = 0.0;
         //currentPackagesCapacity = 0.0;
     }
@@ -47,6 +49,14 @@ public class Route {
         this.totalDistance = totalDistance;
     }
 
+    public double getTotalDuration() {
+        return totalDuration;
+    }
+
+    public void setTotalDuration(double totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
     public double getCurrentPackagesWeight() {
         return currentPackagesWeight;
     }
@@ -63,23 +73,26 @@ public class Route {
 //        this.currentPackagesCapacity = currentPackagesCapacity;
 //    }
 
-    public void addCustomerToFirstPosition(Customer customer, double distance) {
+    public void addCustomerToFirstPosition(Customer customer, double distance, double duration) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
         totalDistance += distance;
+        totalDuration += duration;
     }
 
-    public void addCustomerToLastPosition(Customer customer, double distance) {
+    public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
         totalDistance += distance;
+        totalDuration += duration;
     }
 
     public void mergeRoute(Route route) {
         customersInRoute.addAll(route.getCustomersInRoute());
         currentPackagesWeight += route.getCurrentPackagesWeight();
         totalDistance += route.getTotalDistance();
+        totalDuration += route.getTotalDuration();
     }
 
     public boolean canAddCustomer(double packageWeight, double weightLimit) {

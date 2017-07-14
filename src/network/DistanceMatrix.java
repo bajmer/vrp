@@ -43,13 +43,16 @@ public class DistanceMatrix extends JSON {
                                 String routeURL = parseURL(beginOfURL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), endOfURL);
                                 JSONObject jsonObject = sendRequest(routeURL);
                                 if (jsonObject != null) {
-                                    double distanceInKm = getDistanceInKmFromJSON(jsonObject);
+                                    double distanceInKm = getDistanceFromJSON(jsonObject);
+                                    double durationInMin = getDurationFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
                                     if (distanceInKm > 0) {
-                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm));
+                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin));
                                         src.getDistances().put(dst.getId(), distanceInKm);
+                                        src.getDurations().put(dst.getId(), durationInMin);
                                         dst.getDistances().put(src.getId(), distanceInKm);
-                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km");
+                                        dst.getDurations().put(src.getId(), durationInMin);
+                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km, " + durationInMin + " min.");
                                     } else {
                                         logger.warn("There is incorrect distance for customers " + src.getId() + " and " + dst.getId() + ". New route segment is not created!");
                                     }
@@ -72,7 +75,7 @@ public class DistanceMatrix extends JSON {
         logger.info("Downloading distance matrix has been completed.");
     }
 
-    private double getDistanceInKmFromJSON(JSONObject jsonObject) {
+    private double getDistanceFromJSON(JSONObject jsonObject) {
         double distance = -1; //jeżeli odległość jest ujemna, wówczas algorytm vrp będzie ją pomijał
         try {
             distance = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("distance");
@@ -85,6 +88,22 @@ public class DistanceMatrix extends JSON {
         } else {
 
             return distance;
+        }
+    }
+
+    private double getDurationFromJSON(JSONObject jsonObject) {
+        double duration = -1; //jeżeli czas jest ujemny, wówczas algorytm vrp będzie ją pomijał
+        try {
+            duration = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("duration");
+        } catch (org.json.JSONException e) {
+            logger.error("Error while getting duration from JSON object!");
+        }
+        if (duration >= 0) {
+            double durationInMinutes = duration / 60;
+            return new BigDecimal(durationInMinutes).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+        } else {
+
+            return duration;
         }
     }
 }

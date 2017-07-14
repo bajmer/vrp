@@ -1,10 +1,7 @@
 //TODO
 1) Ładowność pojazdu jako masa paczek.
 2) Podzielenie ładowności pojazdu na masę i objętość paczek.
-3) Prezentacja wyników na mapie.
-4) Implementacja algorytmu Clarka-Wrighta.
 5) Implementacja algorytmu 2
 6) Implementacja algorytmu 3
-7) Geolokacja, pobieranie współrzędnych na podstawie adresów klientów.
-8) Przekształcić algorytm clarka wrighta, aby saving było polem klasy RouteSegment.
 9) Wciśnięcie load powinno czyścić pamięć programu, tzn. klasę database.
+10) Pobieranie czasu trwania przejazdu między klientami.

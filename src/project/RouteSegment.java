@@ -10,15 +10,16 @@ public class RouteSegment {
     private Customer src;
     private Customer dst;
     private double distance;
-    private String timeOfTravel;
+    private double duration;
     private double clarkWrightSaving;
 
-    public RouteSegment(Customer src, Customer dst, double distance) {
+    public RouteSegment(Customer src, Customer dst, double distance, double duration) {
         this.id = routeSegmentID;
         routeSegmentID++;
         this.src = src;
         this.dst = dst;
         this.distance = distance;
+        this.duration = duration;
     }
 
     public int getId() {
@@ -53,12 +54,12 @@ public class RouteSegment {
         this.distance = distance;
     }
 
-    public String getTimeOfTravel() {
-        return timeOfTravel;
+    public double getDuration() {
+        return duration;
     }
 
-    public void setTimeOfTravel(String timeOfTravel) {
-        this.timeOfTravel = timeOfTravel;
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     public double getClarkWrightSaving() {

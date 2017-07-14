@@ -19,6 +19,7 @@ public class Customer {
     private String maxDeliveryHour;
 
     private Map<Integer, Double> distances = new HashMap<>();
+    private Map<Integer, Double> durations = new HashMap<>();
 
     public Customer(String address, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
@@ -76,6 +77,14 @@ public class Customer {
 
     public void setDistances(Map<Integer, Double> distances) {
         this.distances = distances;
+    }
+
+    public Map<Integer, Double> getDurations() {
+        return durations;
+    }
+
+    public void setDurations(Map<Integer, Double> durations) {
+        this.durations = durations;
     }
 
     public double getPackageWeight() {

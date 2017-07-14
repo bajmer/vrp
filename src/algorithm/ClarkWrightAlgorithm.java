@@ -83,14 +83,15 @@ public class ClarkWrightAlgorithm extends Algorithm {
             Customer src = segment.getSrc();
             Customer dst = segment.getDst();
             Double distance = segment.getDistance();
+            Double duration = segment.getDuration();
             if (src.getId() != 0 && dst.getId() != 0) {
                 logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
 //            żaden klient nie należy do trasy
                 if (!isCustomerInRoute(src) && !isCustomerInRoute(dst)) {
                     if ((src.getPackageWeight() + dst.getPackageWeight()) <= maxCapacity) {
                         Route route = new Route();
-                        route.addCustomerToFirstPosition(src, 0);
-                        route.addCustomerToLastPosition(dst, distance);
+                        route.addCustomerToFirstPosition(src, 0, 0);
+                        route.addCustomerToLastPosition(dst, distance, duration);
                         logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
                         logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                         route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -107,14 +108,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     for (Route route : routes) {
                         if (route.canAddCustomer(src.getPackageWeight(), maxCapacity)) {
                             if (route.isCustomerOnFirstPosition(dst)) {
-                                route.addCustomerToFirstPosition(src, distance);
+                                route.addCustomerToFirstPosition(src, distance, duration);
                                 logger.debug("Customer with id " + src.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                                 logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
                                 break;
                             } else if (route.isCustomerOnLastPosition(dst)) {
-                                route.addCustomerToLastPosition(src, distance);
+                                route.addCustomerToLastPosition(src, distance, duration);
                                 logger.debug("Customer with id " + src.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -129,14 +130,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     for (Route route : routes) {
                         if (route.canAddCustomer(dst.getPackageWeight(), maxCapacity)) {
                             if (route.isCustomerOnFirstPosition(src)) {
-                                route.addCustomerToFirstPosition(dst, distance);
+                                route.addCustomerToFirstPosition(dst, distance, duration);
                                 logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                                 logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
                                 break;
                             } else if (route.isCustomerOnLastPosition(src)) {
-                                route.addCustomerToLastPosition(dst, distance);
+                                route.addCustomerToLastPosition(dst, distance, duration);
                                 logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -198,8 +199,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
         for (Route route : routes) {
             int firstCustomerID = route.getCustomersInRoute().get(0).getId();
             int lastCustomerID = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1).getId();
-            route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID));
-            route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID));
+            route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID));
+            route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
         }
     }
 
@@ -210,7 +211,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Wyznaczono " + routes.size() + " tras.");
         for (Route route : routes) {
             logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
-                    + " km, łączna masa paczek - " + route.getCurrentPackagesWeight() + " kg");
+                    + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight() + " kg");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);
