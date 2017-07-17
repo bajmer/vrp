@@ -13,16 +13,18 @@ public class Problem {
     private Customer depot;
     private int numberOfCustomers;
     private int numberOfVehicles;
-    private int vehicleCapacity;
+    private double weightLimitPerVehicle;
+    private double sizeLimitPerVehicle;
 
-    public Problem(int problemTypeID, int numberOfVehicles, int vehicleCapacity) {
+    public Problem(int problemTypeID, int numberOfVehicles, double weightLimitPerVehicle, double sizeLimitPerVehicle) {
         ID++;
         this.problemID = ID;
         this.problemTypeID = problemTypeID;
         this.depot = Database.getCustomerList().get(0);
         this.numberOfCustomers = Database.getCustomerList().size() - 1;
         this.numberOfVehicles = numberOfVehicles;
-        this.vehicleCapacity = vehicleCapacity;
+        this.weightLimitPerVehicle = weightLimitPerVehicle;
+        this.sizeLimitPerVehicle = sizeLimitPerVehicle;
     }
 
     public int getProblemID() {
@@ -65,11 +67,19 @@ public class Problem {
         this.numberOfVehicles = numberOfVehicles;
     }
 
-    public int getVehicleCapacity() {
-        return vehicleCapacity;
+    public double getWeightLimitPerVehicle() {
+        return weightLimitPerVehicle;
     }
 
-    public void setVehicleCapacity(int vehicleCapacity) {
-        this.vehicleCapacity = vehicleCapacity;
+    public void setWeightLimitPerVehicle(double weightLimitPerVehicle) {
+        this.weightLimitPerVehicle = weightLimitPerVehicle;
+    }
+
+    public double getSizeLimitPerVehicle() {
+        return sizeLimitPerVehicle;
+    }
+
+    public void setSizeLimitPerVehicle(double sizeLimitPerVehicle) {
+        this.sizeLimitPerVehicle = sizeLimitPerVehicle;
     }
 }

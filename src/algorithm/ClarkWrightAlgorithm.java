@@ -78,7 +78,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     private void calculateSolution() {
         logger.info("Calculating the solution...");
-        double maxCapacity = getProblem().getVehicleCapacity();
+        double weightLimit = getProblem().getWeightLimitPerVehicle();
+        double sizeLimit = getProblem().getSizeLimitPerVehicle();
         for (RouteSegment segment : routeSegments) {
             Customer src = segment.getSrc();
             Customer dst = segment.getDst();
@@ -88,7 +89,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
                 logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
 //            żaden klient nie należy do trasy
                 if (!isCustomerInRoute(src) && !isCustomerInRoute(dst)) {
-                    if ((src.getPackageWeight() + dst.getPackageWeight()) <= maxCapacity) {
+                    if (src.getPackageWeight() + dst.getPackageWeight() <= weightLimit
+                            && src.getPackageSize() + dst.getPackageSize() <= sizeLimit) {
                         Route route = new Route();
                         route.addCustomerToFirstPosition(src, 0, 0);
                         route.addCustomerToLastPosition(dst, distance, duration);
@@ -106,7 +108,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
 //            pierwszy klient nie należy do trasy, a drugi jest brzegowym węzłem trasy
                 else if (!isCustomerInRoute(src)) {
                     for (Route route : routes) {
-                        if (route.canAddCustomer(src.getPackageWeight(), maxCapacity)) {
+                        if (route.canAddCustomer(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(dst)) {
                                 route.addCustomerToFirstPosition(src, distance, duration);
                                 logger.debug("Customer with id " + src.getId() + " added as FIRST node to route " + route.getId());
@@ -128,7 +130,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
 //            drugi klient nie należy do trasy, a pierwszy jest brzegowym węzłem trasy
                 else if (!isCustomerInRoute(dst)) {
                     for (Route route : routes) {
-                        if (route.canAddCustomer(dst.getPackageWeight(), maxCapacity)) {
+                        if (route.canAddCustomer(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(src)) {
                                 route.addCustomerToFirstPosition(dst, distance, duration);
                                 logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
@@ -158,7 +160,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
                         if (routeA != routeB) {
                             if ((routeA.isCustomerOnLastPosition(src) && routeB.isCustomerOnFirstPosition(dst))
                                     || (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnFirstPosition(src))) {
-                                if ((routeA.getCurrentPackagesWeight() + routeB.getCurrentPackagesWeight()) <= maxCapacity) {
+                                if (routeA.getCurrentPackagesWeight() + routeB.getCurrentPackagesWeight() <= weightLimit
+                                        && routeA.getCurrentPackagesSize() + routeB.getCurrentPackagesSize() <= sizeLimit) {
                                     routeA.mergeRoute(routeB);
                                     tmpRoute = routeB;
                                     logger.debug("Route \"" + routeA.getId() + "\" was merged with route \"" + routeB.getId() + "\"");
@@ -211,7 +214,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Wyznaczono " + routes.size() + " tras.");
         for (Route route : routes) {
             logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
-                    + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight() + " kg");
+                    + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight()
+                    + " kg, łączna objętość paczek - " + route.getCurrentPackagesSize() + " m3.");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);

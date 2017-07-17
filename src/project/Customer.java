@@ -8,25 +8,25 @@ import java.util.Map;
  */
 public class Customer {
 
+    private static final double serviceTime = 5; //czas obsługi klienta w minutach
     private static int customerID;
     private int id;
     private String address;
     private double latitude = 0;
     private double longitude = 0;
     private double packageWeight;
-    private double packageCapacity;
+    private double packageSize;
     private String minDeliveryHour;
     private String maxDeliveryHour;
-
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Double> durations = new HashMap<>();
 
-    public Customer(String address, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
+    public Customer(String address, double packageWeight, double packageSize, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
         customerID++;
         this.address = address;
         this.packageWeight = packageWeight;
-        this.packageCapacity = packageCapacity;
+        this.packageSize = packageSize;
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
     }
@@ -95,12 +95,12 @@ public class Customer {
         this.packageWeight = packageWeight;
     }
 
-    public double getPackageCapacity() {
-        return packageCapacity;
+    public double getPackageSize() {
+        return packageSize;
     }
 
-    public void setPackageCapacity(double packageCapacity) {
-        this.packageCapacity = packageCapacity;
+    public void setPackageSize(double packageSize) {
+        this.packageSize = packageSize;
     }
 
     public String getMinDeliveryHour() {
@@ -117,5 +117,9 @@ public class Customer {
 
     public void setMaxDeliveryHour(String maxDeliveryHour) {
         this.maxDeliveryHour = maxDeliveryHour;
+    }
+
+    public double getServiceTime() {
+        return serviceTime;
     }
 }

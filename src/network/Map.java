@@ -25,7 +25,20 @@ public class Map {
     private static final Logger logger = LogManager.getLogger(Map.class);
     private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
-    private static final List<String> colours = Arrays.asList("0xFF0000FF", "0xFFFF00FF", "0x0000FFFF", "0xCC00FFFF", "0x006600FF", "0xFF6600FF", "0x000000FF", "0x00FF00FF", "0x808000FF", "0x00FFFFFF");
+    private static final List<String> colours = Arrays.asList(
+            "0x000000FF",
+            "0xFF0000FF",
+            "0x00FF00FF",
+            "0x0000FFFF",
+            "0xFFFF00FF",
+            "0x00FFFFFF",
+            "0xFF00FFFF",
+            "0xFFBB88FF",
+            "0x88FFBBFF",
+            "0xBB88FFFF",
+            "0xFF88BBFF",
+            "0xBBFF88FF",
+            "0x88BBFFFF");
     private String imageName;
 
     public Map() {
@@ -111,12 +124,12 @@ public class Map {
             String colour = colours.get(colourIndex);
             path.append("&path=color:");
             path.append(colour);
-            path.append("|weight:2");
+            path.append("|weight:3");
             for (Customer c : route.getCustomersInRoute()) {
                 path.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
             }
             colourIndex++;
-            if (colourIndex == 10) {
+            if (colourIndex == 13) {
                 colourIndex = 0;
             }
         }

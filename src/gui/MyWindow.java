@@ -22,29 +22,35 @@ public class MyWindow extends JFrame implements ActionListener {
 
     private static final Logger logger = LogManager.getLogger(MyWindow.class);
 
-//    https://stackoverflow.com/questions/17598074/google-map-in-java-swing
+    private static final int xPos = 20;
+    private static final int xDiff = 0;
+    private static final int yPos = 20;
+    private static final int yDiff = 30;
+    private static final int xSize = 200;
+    private static final int ySize = 20;
 
     private JButton bLoad, bGetDistance, bCalculate, bShowMap, bExit;
     private JComboBox<String> boxAlgorithm;
     private String algorithmName;
     private JFormattedTextField fAlgorithmID;
     private JFormattedTextField fNumberOfVehicles;
-    private JFormattedTextField fVehicleCapacity;
+    private JFormattedTextField fWeightLimit;
+    private JFormattedTextField fSizeLimit;
     private JLabel mapImage;
     private String mapWindowName;
 
     public MyWindow() {
-        setSize(240, 300);
+        setSize(240, 330);
         setTitle("VRP System");
         setLayout(null);
 
         bLoad = new JButton("Load data");
-        bLoad.setBounds(20, 20, 200, 20);
+        bLoad.setBounds(xPos, yPos + 0 * yDiff, xSize, ySize);
         bLoad.addActionListener(this);
         add(bLoad);
 
         bGetDistance = new JButton("Get distance matrix");
-        bGetDistance.setBounds(20, 50, 200, 20);
+        bGetDistance.setBounds(xPos, yPos + 1 * yDiff, xSize, ySize);
         bGetDistance.addActionListener(this);
         bGetDistance.setEnabled(false);
         add(bGetDistance);
@@ -53,7 +59,7 @@ public class MyWindow extends JFrame implements ActionListener {
         boxAlgorithm.addItem("Clark-Wright");
         boxAlgorithm.addItem("Second");
         boxAlgorithm.addItem("Third");
-        boxAlgorithm.setBounds(20, 80, 200, 20);
+        boxAlgorithm.setBounds(xPos, yPos + 2 * yDiff, xSize, ySize);
         boxAlgorithm.setSelectedIndex(0);
         boxAlgorithm.addActionListener(this);
         boxAlgorithm.setEnabled(false);
@@ -66,46 +72,63 @@ public class MyWindow extends JFrame implements ActionListener {
         numberFormatter.setAllowsInvalid(false);
 
         JLabel algorithmIDText = new JLabel("Algorithm ID:");
-        algorithmIDText.setBounds(20, 110, 160, 20);
+        algorithmIDText.setBounds(xPos, yPos + 3 * yDiff, 160, 20);
         algorithmIDText.setHorizontalAlignment(SwingConstants.LEFT);
         add(algorithmIDText);
         fAlgorithmID = new JFormattedTextField(numberFormatter);
-        fAlgorithmID.setBounds(180, 110, 40, 20);
+        fAlgorithmID.setBounds(180, yPos + 3 * yDiff, 40, 20);
         fAlgorithmID.setEnabled(false);
         add(fAlgorithmID);
 
         JLabel numberOfVehiclesText = new JLabel("Number of vehicles:");
-        numberOfVehiclesText.setBounds(20, 140, 160, 20);
+        numberOfVehiclesText.setBounds(xPos, yPos + 4 * yDiff, 160, 20);
         numberOfVehiclesText.setHorizontalAlignment(SwingConstants.LEFT);
         add(numberOfVehiclesText);
         fNumberOfVehicles = new JFormattedTextField(numberFormatter);
-        fNumberOfVehicles.setBounds(180, 140, 40, 20);
+        fNumberOfVehicles.setBounds(180, yPos + 4 * yDiff, 40, 20);
         fNumberOfVehicles.setEnabled(false);
         add(fNumberOfVehicles);
 
-        JLabel vehicleCapacityText = new JLabel("Vehicle capacity [kg]:");
-        vehicleCapacityText.setBounds(20, 170, 160, 20);
-        vehicleCapacityText.setHorizontalAlignment(SwingConstants.LEFT);
-        add(vehicleCapacityText);
-        fVehicleCapacity = new JFormattedTextField(numberFormatter);
-        fVehicleCapacity.setBounds(180, 170, 40, 20);
-        fVehicleCapacity.setEnabled(false);
-        add(fVehicleCapacity);
+        JLabel weightLimitText = new JLabel("Vehicle capacity [kg]:");
+        weightLimitText.setBounds(xPos, yPos + 5 * yDiff, 160, 20);
+        weightLimitText.setHorizontalAlignment(SwingConstants.LEFT);
+        add(weightLimitText);
+        fWeightLimit = new JFormattedTextField(numberFormatter);
+        fWeightLimit.setBounds(180, yPos + 5 * yDiff, 40, 20);
+        fWeightLimit.setEnabled(false);
+        add(fWeightLimit);
+
+        JLabel sizeLimitText = new JLabel("Vehicle capacity [m3]:");
+        sizeLimitText.setBounds(xPos, yPos + 6 * yDiff, 160, 20);
+        sizeLimitText.setHorizontalAlignment(SwingConstants.LEFT);
+        add(sizeLimitText);
+        fSizeLimit = new JFormattedTextField(numberFormatter);
+        fSizeLimit.setBounds(180, yPos + 6 * yDiff, 40, 20);
+        fSizeLimit.setEnabled(false);
+        add(fSizeLimit);
+
+//        mock pól tekstowych
+        if (true) {
+            fAlgorithmID.setText("1");
+            fNumberOfVehicles.setText("1");
+            fWeightLimit.setText("1400"); //dla Mercedes Sprinter 2017, Standard z rozstawem osi 3665 mm, z dachem normalnym
+            fSizeLimit.setText("9"); //dla Mercedes Sprinter 2017, Standard z rozstawem osi 3665 mm, z dachem normalnym
+        }
 
         bCalculate = new JButton("Calculate");
-        bCalculate.setBounds(20, 200, 200, 20);
+        bCalculate.setBounds(xPos, yPos + 7 * yDiff, xSize, ySize);
         bCalculate.addActionListener(this);
         bCalculate.setEnabled(false);
         add(bCalculate);
 
         bShowMap = new JButton("Show solution on map");
-        bShowMap.setBounds(20, 230, 200, 20);
+        bShowMap.setBounds(xPos, yPos + 8 * yDiff, xSize, ySize);
         bShowMap.addActionListener(this);
         bShowMap.setEnabled(false);
         add(bShowMap);
 
         bExit = new JButton("Exit");
-        bExit.setBounds(20, 260, 200, 20);
+        bExit.setBounds(xPos, yPos + 9 * yDiff, xSize, ySize);
         bExit.addActionListener(this);
         add(bExit);
     }
@@ -118,7 +141,8 @@ public class MyWindow extends JFrame implements ActionListener {
             boxAlgorithm.setEnabled(false);
             fAlgorithmID.setEnabled(false);
             fNumberOfVehicles.setEnabled(false);
-            fVehicleCapacity.setEnabled(false);
+            fWeightLimit.setEnabled(false);
+            fSizeLimit.setEnabled(false);
             bCalculate.setEnabled(false);
             bShowMap.setEnabled(false);
 
@@ -149,17 +173,19 @@ public class MyWindow extends JFrame implements ActionListener {
             algorithmName = boxAlgorithm.getSelectedItem().toString();
             fAlgorithmID.setEnabled(true);
             fNumberOfVehicles.setEnabled(true);
-            fVehicleCapacity.setEnabled(true);
+            fWeightLimit.setEnabled(true);
+            fSizeLimit.setEnabled(true);
             bCalculate.setEnabled(true);
         } else if (source == bCalculate) {
 //            fAlgorithmID.setEnabled(false);
 //            fNumberOfVehicles.setEnabled(false);
-//            fVehicleCapacity.setEnabled(false);
+//            fWeightLimit.setEnabled(false);
             try {
                 int algorithmIDInt = Integer.parseInt(fAlgorithmID.getText());
                 int numberOfVehiclesInt = Integer.parseInt(fNumberOfVehicles.getText());
-                int vehicleCapacityInt = Integer.parseInt(fVehicleCapacity.getText());
-                Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, vehicleCapacityInt);
+                double weightLimitDouble = Double.parseDouble(fWeightLimit.getText());
+                double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
+                Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, weightLimitDouble, sizeLimitDouble);
                 switch (algorithmName) {
                     case "Clark-Wright":
                         Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);

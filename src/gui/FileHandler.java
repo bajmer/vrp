@@ -115,7 +115,7 @@ public class FileHandler {
                 logger.debug("ID: " + customer.getId()
                         + ", Adres: " + customer.getAddress()
                         + ", Masa: " + customer.getPackageWeight()
-                        + ", Objetosc: " + customer.getPackageCapacity()
+                        + ", Objetosc: " + customer.getPackageSize()
                         + ", Okno czasowe: " + customer.getMinDeliveryHour() + "-" + customer.getMaxDeliveryHour());
             }
         } catch (IOException e) {

@@ -13,7 +13,7 @@ public class Route {
     private double totalDistance;
     private double totalDuration;
     private double currentPackagesWeight;
-    //private double currentPackagesCapacity;
+    private double currentPackagesSize;
 
     public Route() {
         routeID++;
@@ -22,7 +22,7 @@ public class Route {
         totalDistance = 0.0;
         totalDuration = 0.0;
         currentPackagesWeight = 0.0;
-        //currentPackagesCapacity = 0.0;
+        currentPackagesSize = 0.0;
     }
 
     public int getId() {
@@ -65,42 +65,50 @@ public class Route {
         this.currentPackagesWeight = currentPackagesWeight;
     }
 
-    //    public double getCurrentPackagesCapacity() {
-//        return currentPackagesCapacity;
-//    }
-//
-//    public void setCurrentPackagesCapacity(double currentPackagesCapacity) {
-//        this.currentPackagesCapacity = currentPackagesCapacity;
-//    }
+    public double getCurrentPackagesSize() {
+        return currentPackagesSize;
+    }
+
+    public void setCurrentPackagesSize(double currentPackagesSize) {
+        this.currentPackagesSize = currentPackagesSize;
+    }
 
     public void addCustomerToFirstPosition(Customer customer, double distance, double duration) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
+        currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration += duration;
+        totalDuration += duration + customer.getServiceTime();
     }
 
     public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
+        currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration += duration;
+        totalDuration += duration + customer.getServiceTime();
     }
 
     public void mergeRoute(Route route) {
         customersInRoute.addAll(route.getCustomersInRoute());
         currentPackagesWeight += route.getCurrentPackagesWeight();
+        currentPackagesSize += route.getCurrentPackagesSize();
         totalDistance += route.getTotalDistance();
         totalDuration += route.getTotalDuration();
     }
 
-    public boolean canAddCustomer(double packageWeight, double weightLimit) {
-        return canAddWeight(packageWeight, weightLimit);
+    //    funkcja sprawdzająca warunki dodania klienta do trasy
+    public boolean canAddCustomer(double packageWeight, double weightLimit, double packageSize, double sizeLimit) {
+        return canAddWeight(packageWeight, weightLimit) && canAddSize(packageSize, sizeLimit);
     }
 
     private boolean canAddWeight(double packageWeight, double weightLimit) {
         return currentPackagesWeight + packageWeight <= weightLimit;
+    }
+
+    private boolean canAddSize(double packageSize, double sizeLimit) {
+        return currentPackagesSize + packageSize <= sizeLimit;
     }
 
     public boolean isCustomerOnFirstPosition(Customer customer) {
