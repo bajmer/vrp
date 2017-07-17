@@ -1,6 +1,6 @@
-//package mock;
+//package com.vrp.bajmer.mock;
 //
-//import project.Customer;
+//import com.vrp.bajmer.core.Customer;
 //
 //import java.util.ArrayList;
 //import java.util.List;

@@ -1,4 +1,4 @@
-package project;
+package com.vrp.bajmer.core;
 
 /**
  * Created by Marcin on 2017-06-25.

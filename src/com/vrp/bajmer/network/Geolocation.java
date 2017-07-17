@@ -1,11 +1,11 @@
-package network;
+package com.vrp.bajmer.network;
 
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Storage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import project.Customer;
-import project.Database;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Geolocation extends JSON {
     public void downloadCustomersCoordinates() throws Exception {
         logger.info("Downloading customers coordinates...");
         try {
-            for (Customer customer : Database.getCustomerList()) {
+            for (Customer customer : Storage.getCustomerList()) {
                 String fullAddress = customer.getAddress();
                 String[] addressFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, separator);
                 String URL = parseURL(beginOfURL, addressFields);
@@ -54,7 +54,7 @@ public class Geolocation extends JSON {
     }
 
     private List<Double> getCoordinatesFromJSON(JSONObject jsonObject) {
-        List<Double> coordinates = new ArrayList<Double>();
+        List<Double> coordinates = new ArrayList<>();
         try {
             double lat = jsonObject.getDouble("lat");
             double lon = jsonObject.getDouble("lon");

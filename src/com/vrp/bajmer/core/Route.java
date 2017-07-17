@@ -1,4 +1,4 @@
-package project;
+package com.vrp.bajmer.core;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class Route {
     public Route() {
         routeID++;
         id = routeID;
-        customersInRoute = new ArrayList<Customer>();
+        customersInRoute = new ArrayList<>();
         totalDistance = 0.0;
         totalDuration = 0.0;
         currentPackagesWeight = 0.0;

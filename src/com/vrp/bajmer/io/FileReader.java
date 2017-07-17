@@ -1,16 +1,16 @@
-package gui;
+package com.vrp.bajmer.io;
 
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Storage;
+import com.vrp.bajmer.gui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import project.Customer;
-import project.Database;
 
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,9 +22,9 @@ import java.util.Date;
  * Created by mbala on 24.05.17.
  */
 
-public class FileHandler {
+public class FileReader {
 
-    private static final Logger logger = LogManager.getLogger(FileHandler.class);
+    private static final Logger logger = LogManager.getLogger(FileReader.class);
 
     private final String separator = ";";
     private final double defaultPackageWeight = 0.0;
@@ -33,11 +33,11 @@ public class FileHandler {
     private final String defaultMaxDeliveryHour = "18:00";
     private final String defaultServiceTime = "00:15";
 
-    public FileHandler() {
+    public FileReader() {
 
     }
 
-    public File chooseFile(MyWindow parentWindow) {
+    public File chooseFile(MainWindow parentWindow) {
         logger.info("Choosing file with customers data...");
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -54,9 +54,9 @@ public class FileHandler {
 
     public void readFile(File file) throws IOException {
         logger.info("Reading file...");
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            Database.getCustomerList().clear();
-            Database.getRouteSegmentsList().clear();
+        try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
+            Storage.getCustomerList().clear();
+            Storage.getRouteSegmentsList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
@@ -111,7 +111,7 @@ public class FileHandler {
                 }
 
                 Customer customer = new Customer(address, weight, capacity, minDeliveryHour, maxDeliveryHour);
-                Database.getCustomerList().add(customer);
+                Storage.getCustomerList().add(customer);
                 logger.debug("ID: " + customer.getId()
                         + ", Adres: " + customer.getAddress()
                         + ", Masa: " + customer.getPackageWeight()

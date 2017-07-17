@@ -1,4 +1,7 @@
-package algorithm;
+package com.vrp.bajmer.algorithm;
+
+import com.vrp.bajmer.core.Problem;
+import com.vrp.bajmer.core.Solution;
 
 /**
  * Created by Marcin on 2017-06-26.

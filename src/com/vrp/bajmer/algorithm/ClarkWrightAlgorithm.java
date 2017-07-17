@@ -1,11 +1,8 @@
-package algorithm;
+package com.vrp.bajmer.algorithm;
 
+import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import project.Customer;
-import project.Database;
-import project.Route;
-import project.RouteSegment;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,14 +24,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
         super(problem);
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name));
-        customers = Database.getCustomerList();
-        routeSegments = Database.getRouteSegmentsList();
+        customers = Storage.getCustomerList();
+        routeSegments = Storage.getRouteSegmentsList();
         routes = super.getSolution().getListOfRoutes();
     }
 
     @Override
     public void runAlgorithm() {
-        logger.info("Running the Clark-Wright algorithm...");
+        logger.info("Running the Clark-Wright com.vrp.bajmer.algorithm...");
         createSavings();
         sortSavings();
         searchSolution();
@@ -232,7 +229,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration + " min.");
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
-        Database.getSolutionsList().add(super.getSolution());
+        Storage.getSolutionsList().add(super.getSolution());
         logger.info("Saving solution has been completed.");
     }
 }

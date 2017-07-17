@@ -1,11 +1,11 @@
-package network;
+package com.vrp.bajmer.network;
 
-import algorithm.Solution;
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Route;
+import com.vrp.bajmer.core.Solution;
+import com.vrp.bajmer.core.Storage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import project.Customer;
-import project.Database;
-import project.Route;
 
 import javax.swing.*;
 import java.io.FileOutputStream;
@@ -20,9 +20,9 @@ import java.util.List;
 /**
  * Created by Marcin on 2017-07-12.
  */
-public class Map {
+public class SolutionImage {
 
-    private static final Logger logger = LogManager.getLogger(Map.class);
+    private static final Logger logger = LogManager.getLogger(SolutionImage.class);
     private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
     private static final List<String> colours = Arrays.asList(
@@ -41,7 +41,7 @@ public class Map {
             "0x006400FF"); //dark green
     private String imageName;
 
-    public Map() {
+    public SolutionImage() {
     }
 
     public String getImageName() {
@@ -54,7 +54,7 @@ public class Map {
 
     public JLabel createSolutionImages() {
         logger.info("Creating an images of solution...");
-        Solution newestSolution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
+        Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
         int lastSolutionID = newestSolution.getSolutionID();
         String lastSolutionAlgorithm = newestSolution.getUsedAlgorithm();
 
@@ -103,11 +103,11 @@ public class Map {
     private String parseURLForAll(String beginOfURL, String endOfURL) {
         StringBuilder path = new StringBuilder();
         StringBuilder marker = new StringBuilder();
-        Database.getCustomerList().get(0);
+        Storage.getCustomerList().get(0);
         marker.append("&markers=size:small|color:red|label:0");
-        marker.append("|").append(Database.getCustomerList().get(0).getLatitude()).append(",").append(Database.getCustomerList().get(0).getLongitude());
+        marker.append("|").append(Storage.getCustomerList().get(0).getLatitude()).append(",").append(Storage.getCustomerList().get(0).getLongitude());
         marker.append("&markers=size:small|color:blue|label:1");
-        for (Customer c : Database.getCustomerList()) {
+        for (Customer c : Storage.getCustomerList()) {
             if (c.getId() == 0) {
                 continue;
             }
@@ -118,7 +118,7 @@ public class Map {
             }
         }
 
-        Solution solution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
+        Solution solution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
         int colourIndex = 0;
         for (Route route : solution.getListOfRoutes()) {
             String colour = colours.get(colourIndex);
@@ -139,11 +139,11 @@ public class Map {
     private String parseURLForSingleRoute(String beginOfURL, String endOfURL, Route route) {
         StringBuilder path = new StringBuilder();
         StringBuilder marker = new StringBuilder();
-        Database.getCustomerList().get(0);
+        Storage.getCustomerList().get(0);
         marker.append("&markers=size:small|color:red|label:0");
-        marker.append("|").append(Database.getCustomerList().get(0).getLatitude()).append(",").append(Database.getCustomerList().get(0).getLongitude());
+        marker.append("|").append(Storage.getCustomerList().get(0).getLatitude()).append(",").append(Storage.getCustomerList().get(0).getLongitude());
         marker.append("&markers=size:small|color:blue|label:1");
-        for (Customer c : Database.getCustomerList()) {
+        for (Customer c : Storage.getCustomerList()) {
             if (c.getId() == 0) {
                 continue;
             }

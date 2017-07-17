@@ -1,12 +1,17 @@
-package gui;
+package com.vrp.bajmer.gui;
 
-import algorithm.*;
-import network.DistanceMatrix;
-import network.Geolocation;
-import network.Map;
+import com.vrp.bajmer.algorithm.Algorithm;
+import com.vrp.bajmer.algorithm.ClarkWrightAlgorithm;
+import com.vrp.bajmer.algorithm.Second_Algorithm;
+import com.vrp.bajmer.algorithm.Third_Algorithm;
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Problem;
+import com.vrp.bajmer.io.FileReader;
+import com.vrp.bajmer.network.DistanceMatrix;
+import com.vrp.bajmer.network.Geolocation;
+import com.vrp.bajmer.network.SolutionImage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import project.Customer;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
@@ -18,9 +23,9 @@ import java.text.NumberFormat;
 /**
  * Created by mbala on 26.04.17.
  */
-public class MyWindow extends JFrame implements ActionListener {
+public class MainWindow extends JFrame implements ActionListener {
 
-    private static final Logger logger = LogManager.getLogger(MyWindow.class);
+    private static final Logger logger = LogManager.getLogger(MainWindow.class);
 
     private static final int xPos = 20;
     private static final int xDiff = 0;
@@ -39,23 +44,23 @@ public class MyWindow extends JFrame implements ActionListener {
     private JLabel mapImage;
     private String mapWindowName;
 
-    public MyWindow() {
+    public MainWindow() {
         setSize(240, 330);
         setTitle("VRP System");
         setLayout(null);
 
         bLoad = new JButton("Load data");
-        bLoad.setBounds(xPos, yPos + 0 * yDiff, xSize, ySize);
+        bLoad.setBounds(xPos, yPos, xSize, ySize);
         bLoad.addActionListener(this);
         add(bLoad);
 
         bGetDistance = new JButton("Get distance matrix");
-        bGetDistance.setBounds(xPos, yPos + 1 * yDiff, xSize, ySize);
+        bGetDistance.setBounds(xPos, yPos + yDiff, xSize, ySize);
         bGetDistance.addActionListener(this);
         bGetDistance.setEnabled(false);
         add(bGetDistance);
 
-        boxAlgorithm = new JComboBox<String>();
+        boxAlgorithm = new JComboBox<>();
         boxAlgorithm.addItem("Clark-Wright");
         boxAlgorithm.addItem("Second");
         boxAlgorithm.addItem("Third");
@@ -107,7 +112,7 @@ public class MyWindow extends JFrame implements ActionListener {
         fSizeLimit.setEnabled(false);
         add(fSizeLimit);
 
-//        mock pól tekstowych
+//        com.vrp.bajmer.mock pól tekstowych
         if (true) {
             fAlgorithmID.setText("1");
             fNumberOfVehicles.setText("1");
@@ -148,10 +153,10 @@ public class MyWindow extends JFrame implements ActionListener {
 
             Customer.setCustomerID(0);
             try {
-                FileHandler fileHandler = new FileHandler();
-                File customersInputFile = fileHandler.chooseFile(this);
+                FileReader fileReader = new FileReader();
+                File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
-                    fileHandler.readFile(customersInputFile);
+                    fileReader.readFile(customersInputFile);
                     bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
@@ -191,11 +196,11 @@ public class MyWindow extends JFrame implements ActionListener {
                         Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
-                    case "Second algorithm":
+                    case "Second com.vrp.bajmer.algorithm":
                         Algorithm second_algorithm = new Second_Algorithm(problem);
                         second_algorithm.runAlgorithm();
                         break;
-                    case "Third algorithm":
+                    case "Third com.vrp.bajmer.algorithm":
                         Algorithm third_algorithm = new Third_Algorithm(problem);
                         third_algorithm.runAlgorithm();
                         break;
@@ -206,9 +211,9 @@ public class MyWindow extends JFrame implements ActionListener {
             }
 
             try {
-                Map map = new Map();
-                mapImage = map.createSolutionImages();
-                mapWindowName = map.getImageName();
+                SolutionImage solutionImage = new SolutionImage();
+                mapImage = solutionImage.createSolutionImages();
+                mapWindowName = solutionImage.getImageName();
             } catch (Exception ex) {
                 logger.error("Unexpected error while displaying solution on the screen!", ex);
             }

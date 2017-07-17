@@ -1,6 +1,6 @@
-package project;
+package com.vrp.bajmer.core;
 
-import gui.MyWindow;
+import com.vrp.bajmer.gui.MainWindow;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +14,7 @@ public class Main {
 
         logger.info("*********************************************************************************************************************************************");
         logger.info("Application started.");
-        MyWindow window = new MyWindow();
+        MainWindow window = new MainWindow();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
     }

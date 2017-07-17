@@ -1,4 +1,4 @@
-package project;
+package com.vrp.bajmer.core;
 
 import java.util.HashMap;
 import java.util.Map;

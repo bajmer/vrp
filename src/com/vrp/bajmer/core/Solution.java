@@ -1,6 +1,4 @@
-package algorithm;
-
-import project.Route;
+package com.vrp.bajmer.core;
 
 import java.util.ArrayList;
 
@@ -17,7 +15,7 @@ public class Solution {
     public Solution(int problemID, String usedAlgorithm) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
-        this.listOfRoutes = new ArrayList<Route>();
+        this.listOfRoutes = new ArrayList<>();
         this.totalDistanceCost = 0.0;
         this.totalDurationCost = 0.0;
     }
