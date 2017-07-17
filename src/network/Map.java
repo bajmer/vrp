@@ -26,19 +26,19 @@ public class Map {
     private static final String beginOfURL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
     private static final List<String> colours = Arrays.asList(
-            "0x000000FF",
-            "0xFF0000FF",
-            "0x00FF00FF",
-            "0x0000FFFF",
-            "0xFFFF00FF",
-            "0x00FFFFFF",
-            "0xFF00FFFF",
-            "0xFFBB88FF",
-            "0x88FFBBFF",
-            "0xBB88FFFF",
-            "0xFF88BBFF",
-            "0xBBFF88FF",
-            "0x88BBFFFF");
+            "0x000000FF", //black
+            "0xFF0000FF", //red
+            "0x00FF00FF", //lime
+            "0x0000FFFF", //blue
+            "0xFFFF00FF", //yellow
+            "0x00FFFFFF", //aqua
+            "0xFF00FFFF", //magenta
+            "0xA52A2AFF", //brown
+            "0x8B008BFF", //dark magenta
+            "0x808000FF", //olive
+            "0xFFA500FF", //orange
+            "0x9ACD32FF", //yellow green
+            "0x006400FF"); //dark green
     private String imageName;
 
     public Map() {

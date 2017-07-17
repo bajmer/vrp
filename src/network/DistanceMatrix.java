@@ -86,7 +86,6 @@ public class DistanceMatrix extends JSON {
             double distanceKm = distance * 0.001;
             return new BigDecimal(distanceKm).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         } else {
-
             return distance;
         }
     }
@@ -102,7 +101,6 @@ public class DistanceMatrix extends JSON {
             double durationInMinutes = duration / 60;
             return new BigDecimal(durationInMinutes).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         } else {
-
             return duration;
         }
     }

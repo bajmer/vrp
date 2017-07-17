@@ -29,7 +29,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         super.setSolution(new Solution(problem.getProblemID(), name));
         customers = Database.getCustomerList();
         routeSegments = Database.getRouteSegmentsList();
-        routes = getSolution().getListOfRoutes();
+        routes = super.getSolution().getListOfRoutes();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Running the Clark-Wright algorithm...");
         createSavings();
         sortSavings();
-        calculateSolution();
+        searchSolution();
         saveSolution();
     }
 
@@ -76,7 +76,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Sorting route segments by savings has been completed.");
     }
 
-    private void calculateSolution() {
+    private void searchSolution() {
         logger.info("Calculating the solution...");
         double weightLimit = getProblem().getWeightLimitPerVehicle();
         double sizeLimit = getProblem().getSizeLimitPerVehicle();
@@ -210,9 +210,12 @@ public class ClarkWrightAlgorithm extends Algorithm {
     @Override
     public void saveSolution() {
         logger.info("Saving solution...");
-        Database.getSolutionsList().add(getSolution());
         logger.info("Wyznaczono " + routes.size() + " tras.");
+        double totalDistance = 0;
+        double totalDuration = 0;
         for (Route route : routes) {
+            totalDistance += route.getTotalDistance();
+            totalDuration += route.getTotalDuration();
             logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
                     + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight()
                     + " kg, łączna objętość paczek - " + route.getCurrentPackagesSize() + " m3.");
@@ -221,11 +224,15 @@ public class ClarkWrightAlgorithm extends Algorithm {
                 Customer c = route.getCustomersInRoute().get(i);
                 sb.append(c.getId());
                 if (i != route.getCustomersInRoute().size() - 1) {
-                    sb.append("--");
+                    sb.append("->");
                 }
             }
             logger.info(sb.toString());
         }
+        logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration + " min.");
+        super.getSolution().setTotalDistanceCost(totalDistance);
+        super.getSolution().setTotalDurationCost(totalDuration);
+        Database.getSolutionsList().add(super.getSolution());
         logger.info("Saving solution has been completed.");
     }
 }
