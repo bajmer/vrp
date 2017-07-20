@@ -11,11 +11,13 @@ import com.vrp.bajmer.core.Storage;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
 import com.vrp.bajmer.network.Geolocation;
-import com.vrp.bajmer.network.SolutionImage;
+import com.vrp.bajmer.network.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
@@ -45,6 +47,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private JFormattedTextField fSizeLimit;
     private JTable tCustomersData;
     private JTable tRouteSegments;
+    private JFrame mapWindow;
     private JLabel mapImage;
     private String mapWindowName;
 
@@ -185,6 +188,23 @@ public class MainWindow extends JFrame implements ActionListener {
         bExit.addActionListener(this);
         mainPanel.add(bExit, c1);
 
+        createCustomersWindow();
+        createRouteSegmentsWindow();
+        createMapWindow();
+
+        ListSelectionModel model = tCustomersData.getSelectionModel();
+        model.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int row = tCustomersData.getSelectedRow();
+                Map map = new Map();
+                mapImage = map.createMapForSingleCustomer(row);
+                mapWindow.remove(mapImage);
+                mapWindow.add(mapImage);
+                mapWindow.repaint();
+            }
+        });
+
         this.add(mainPanel);
         this.pack();
     }
@@ -208,8 +228,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
                     fileReader.readFile(customersInputFile);
-                    createCustomersWindow();
-                    createRouteSegmentsWindow();
                     bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
@@ -266,15 +284,15 @@ public class MainWindow extends JFrame implements ActionListener {
             }
 
             try {
-                SolutionImage solutionImage = new SolutionImage();
-                mapImage = solutionImage.createSolutionImages();
-                mapWindowName = solutionImage.getImageName();
+                Map map = new Map();
+                mapImage = map.createSolutionImages();
+                mapWindowName = map.getImageName();
             } catch (Exception ex) {
                 logger.error("Unexpected error while displaying solution on the screen!", ex);
             }
 
         } else if (source == bShowMap) {
-            createMapWindow();
+//            createMapWindow();
         } else if (source == bExit) {
             dispose();
             logger.info("Application stopped.");
@@ -284,11 +302,11 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     private void createMapWindow() {
-        JFrame mapWindow = new JFrame(mapWindowName);
+        mapWindow = new JFrame("Map");
         mapWindow.setSize(640, 640);
         mapWindow.setLocation(240, 0);
         mapWindow.setVisible(true);
-        mapWindow.add(mapImage);
+//        mapWindow.add(mapImage);
     }
 
     private void createCustomersWindow() {
@@ -333,18 +351,26 @@ public class MainWindow extends JFrame implements ActionListener {
 
         JFrame customersWindow = new JFrame("Customers");
         customersWindow.setSize(800, 135);
-        customersWindow.setLocation(200, 0);
+        customersWindow.setLocation(201, 0);
         customersWindow.setVisible(true);
         customersWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         customersWindow.add(spCustomersData);
     }
 
     private void updateCustomersWindow() {
-        int rowIndex = 0;
+        DefaultTableModel tableModel = (DefaultTableModel) tCustomersData.getModel();
         for (Customer c : Storage.getCustomerList()) {
-            tCustomersData.setValueAt(Double.toString(c.getLatitude()), rowIndex, 2);
-            tCustomersData.setValueAt(Double.toString(c.getLongitude()), rowIndex, 3);
-            rowIndex++;
+            Vector<String> row = new Vector<>();
+            row.add(Integer.toString(c.getId()));
+            row.add(c.getAddress());
+            row.add(Double.toString(c.getLatitude()));
+            row.add(Double.toString(c.getLongitude()));
+            row.add(Double.toString(c.getPackageWeight()));
+            row.add(Double.toString(c.getPackageSize()));
+            row.add(c.getMinDeliveryHour());
+            row.add(c.getMaxDeliveryHour());
+
+            tableModel.addRow(row);
         }
     }
 
@@ -378,7 +404,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         JFrame customersWindow = new JFrame("Route segments");
         customersWindow.setSize(800, 130);
-        customersWindow.setLocation(200, 185);
+        customersWindow.setLocation(201, 186);
         customersWindow.setVisible(true);
         customersWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         customersWindow.add(spCustomersData);
