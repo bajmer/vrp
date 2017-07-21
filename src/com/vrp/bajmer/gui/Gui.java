@@ -32,11 +32,17 @@ public class Gui extends JFrame implements ActionListener {
     private JButton bFindSolution;
     private JComboBox boxSolutions;
     private JTable tRouteDetails;
-    private JTextArea textArea1;
+    private JTextArea appLog;
+    private JPanel leftPanel;
+    private JPanel rightPanel;
+    private JPanel bottomPanel;
+    private JPanel mapPanel;
 
     public Gui() {
         bLoad.addActionListener(this);
         bGetDistance.addActionListener(this);
+
+        JTextAreaAppender.addTextArea(this.appLog);
 
         add(panel);
     }
