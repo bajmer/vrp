@@ -42,6 +42,7 @@ public class Map {
             "0x9ACD32FF", //yellow green
             "0x006400FF"); //dark green
     private String imageName;
+    //private JLabel images = new JLabel();
 
     public Map() {
     }
@@ -54,15 +55,20 @@ public class Map {
         this.imageName = imageName;
     }
 
-    public JLabel createMapForSingleCustomer(int id) {
+    public void createMapForSingleCustomer(JLabel label, int id) {
         imageName = "dupa";
         String url = parseURLForSingleCustomer(beginOfURLForSingleCustomer, endOfURL, id);
         sendRequestToGoogleMaps(url, imageName);
 
-        JLabel map = new JLabel(new ImageIcon((new ImageIcon(imageName)).getImage()));
+        ImageIcon map = new ImageIcon(imageName);
+        label.setIcon(map);
+
+        label.repaint();
+
+        /*JLabel map = new JLabel(new ImageIcon((new ImageIcon(imageName)).getImage()));
         map.setBounds(0, 0, 640, 640);
         map.setVisible(true);
-        return map;
+        return map;*/
     }
 
     public JLabel createSolutionImages() {

@@ -2,7 +2,7 @@ package com.vrp.bajmer.io;
 
 import com.vrp.bajmer.core.Customer;
 import com.vrp.bajmer.core.Storage;
-import com.vrp.bajmer.gui.MainWindow;
+import com.vrp.bajmer.gui.Gui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +16,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+//import com.vrp.bajmer.gui.Window;
 
 
 /**
@@ -37,11 +39,11 @@ public class FileReader {
 
     }
 
-    public File chooseFile(MainWindow parentWindow) {
+    public File chooseFile(Gui gui) {
         logger.info("Choosing file with customers data...");
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        int result = fileChooser.showOpenDialog(parentWindow);
+        int result = fileChooser.showOpenDialog(gui);
         File selectedFile = null;
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
