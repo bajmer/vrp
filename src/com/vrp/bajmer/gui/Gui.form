@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.vrp.bajmer.gui.Gui">
-  <grid id="27dc6" binding="panel" layout-manager="GridBagLayout">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridBagLayout">
     <constraints>
       <xy x="20" y="33" width="1263" height="759"/>
     </constraints>
@@ -97,7 +97,7 @@
               </grid>
             </constraints>
             <properties>
-              <enabled value="false"/>
+              <enabled value="true"/>
               <text value="Get distance matrix"/>
             </properties>
           </component>
@@ -259,7 +259,7 @@
               </grid>
             </constraints>
             <properties>
-              <enabled value="false"/>
+              <enabled value="true"/>
               <text value="Find solution"/>
             </properties>
           </component>
