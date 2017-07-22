@@ -6,6 +6,8 @@ import com.vrp.bajmer.algorithm.Second_Algorithm;
 import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.core.Customer;
 import com.vrp.bajmer.core.Problem;
+import com.vrp.bajmer.core.RouteSegment;
+import com.vrp.bajmer.core.Storage;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
 import com.vrp.bajmer.network.Geolocation;
@@ -15,10 +17,12 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.NumberFormat;
+import java.util.Vector;
 
 /**
  * Created by mbala on 21.07.17.
@@ -45,6 +49,8 @@ public class Gui extends JFrame implements ActionListener {
     private JComboBox boxAlgorithms;
     private JComboBox boxSolutions;
     private JTextArea appLog;
+    private JScrollPane jspCustomers;
+    private JScrollPane jspRouteSegments;
     private JFrame algorithmProperties;
 
     private String algorithmName;
@@ -90,6 +96,7 @@ public class Gui extends JFrame implements ActionListener {
                 if (customersInputFile != null) {
                     fileReader.readFile(customersInputFile);
                     bGetDistance.setEnabled(true);
+                    this.createAndShowCustomerTable();
                 }
             } catch (Exception ex) {
                 logger.error("Unexpected error while processing the file!", ex);
@@ -102,6 +109,7 @@ public class Gui extends JFrame implements ActionListener {
                 distanceMatrix.downloadDistanceMatrix();
                 bGetDistance.setEnabled(false);
                 boxAlgorithms.setEnabled(true);
+                this.createAndShowRouteSegmentsTable();
 
             } catch (Exception ex) {
                 logger.error("Unexpected error while addresses geolocating and downloading the distance matrix from server!", ex);
@@ -137,5 +145,75 @@ public class Gui extends JFrame implements ActionListener {
                 logger.error("Unexpected error while calculating a solution!", ex);
             }
         }
+    }
+
+    private void createAndShowCustomerTable() {
+        Vector<String> columns = new Vector<>();
+        columns.add("ID");
+        columns.add("Address");
+        columns.add("Latitude");
+        columns.add("Longitude");
+        columns.add("Pack. weight [kg]");
+        columns.add("Pack. size [m3]");
+        columns.add("Min. hour");
+        columns.add("Max. hour");
+
+        Vector<Vector<String>> data = new Vector<>();
+        for (Customer c : Storage.getCustomerList()) {
+            Vector<String> row = new Vector<>();
+            row.add(Integer.toString(c.getId()));
+            row.add(c.getAddress());
+            row.add(Double.toString(c.getLatitude()));
+            row.add(Double.toString(c.getLongitude()));
+            row.add(Double.toString(c.getPackageWeight()));
+            row.add(Double.toString(c.getPackageSize()));
+            row.add(c.getMinDeliveryHour());
+            row.add(c.getMaxDeliveryHour());
+
+            data.add(row);
+        }
+
+        tCustomers = new JTable(data, columns);
+        tCustomers.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        tCustomers.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tCustomers.getColumnModel().getColumn(0).setPreferredWidth(15);
+        tCustomers.getColumnModel().getColumn(1).setPreferredWidth(200);
+        tCustomers.getColumnModel().getColumn(2).setPreferredWidth(50);
+        tCustomers.getColumnModel().getColumn(3).setPreferredWidth(50);
+        tCustomers.getColumnModel().getColumn(4).setPreferredWidth(100);
+        tCustomers.getColumnModel().getColumn(5).setPreferredWidth(100);
+        tCustomers.getColumnModel().getColumn(6).setPreferredWidth(80);
+        tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);
+
+        jspCustomers.getViewport().add(tCustomers);
+    }
+
+    private void createAndShowRouteSegmentsTable() {
+        Vector<String> columns = new Vector<>();
+        columns.add("From");
+        columns.add("To");
+        columns.add("Distance [km]");
+        columns.add("Duration [min]");
+
+        Vector<Vector<String>> data = new Vector<>();
+        for (RouteSegment r : Storage.getRouteSegmentsList()) {
+            Vector<String> row = new Vector<>();
+            row.add(Integer.toString(r.getSrc().getId()));
+            row.add(Integer.toString(r.getDst().getId()));
+            row.add(Double.toString(r.getDistance()));
+            row.add(Double.toString(r.getDuration()));
+
+            data.add(row);
+        }
+
+        tRouteSegments = new JTable(data, columns);
+        tRouteSegments.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        tRouteSegments.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tRouteSegments.getColumnModel().getColumn(0).setPreferredWidth(35);
+        tRouteSegments.getColumnModel().getColumn(1).setPreferredWidth(35);
+        tRouteSegments.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tRouteSegments.getColumnModel().getColumn(3).setPreferredWidth(100);
+
+        jspRouteSegments.getViewport().add(tRouteSegments);
     }
 }
