@@ -33,7 +33,6 @@ public class FileReader {
     private final double defaultPackageCapacity = 0.0;
     private final String defaultMinDeliveryHour = "08:00";
     private final String defaultMaxDeliveryHour = "18:00";
-    private final String defaultServiceTime = "00:15";
 
     public FileReader() {
 

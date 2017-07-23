@@ -62,7 +62,7 @@
       <grid id="49944" binding="leftPanel" layout-manager="GridBagLayout">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0" ipadx="140"/>
+          <gridbag weightx="0.0" weighty="0.0" ipadx="130"/>
         </constraints>
         <properties/>
         <border type="etched"/>
@@ -95,7 +95,12 @@
             <border type="etched" title="Customers">
               <font name="DejaVu Sans Mono" size="11" style="0"/>
             </border>
-            <children/>
+            <children>
+              <component id="d9b32" class="javax.swing.JTable" binding="tCustomers">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
           </scrollpane>
           <scrollpane id="e518" binding="jspRouteSegments">
             <constraints>
@@ -109,7 +114,12 @@
             <border type="etched" title="Route segments">
               <font name="DejaVu Sans Mono" size="11" style="0"/>
             </border>
-            <children/>
+            <children>
+              <component id="3df97" class="javax.swing.JTable" binding="tRouteSegments">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
           </scrollpane>
           <grid id="e0cab" layout-manager="GridBagLayout">
             <constraints>
@@ -259,9 +269,11 @@
       <grid id="66b41" binding="rightPanel" layout-manager="GridBagLayout">
         <constraints>
           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0" ipadx="150"/>
+          <gridbag weightx="0.0" weighty="0.0" ipadx="130"/>
         </constraints>
-        <properties/>
+        <properties>
+          <maximumSize width="234" height="615"/>
+        </properties>
         <border type="etched"/>
         <children>
           <component id="4d29f" class="javax.swing.JButton" binding="bFindSolution">

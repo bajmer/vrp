@@ -18,6 +18,7 @@ public class Customer {
     private double packageSize;
     private String minDeliveryHour;
     private String maxDeliveryHour;
+    private String arrivalTime;
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Double> durations = new HashMap<>();
 
@@ -29,6 +30,7 @@ public class Customer {
         this.packageSize = packageSize;
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
+        this.arrivalTime = "08:00";
     }
 
     public static int getCustomerID() {
@@ -117,6 +119,14 @@ public class Customer {
 
     public void setMaxDeliveryHour(String maxDeliveryHour) {
         this.maxDeliveryHour = maxDeliveryHour;
+    }
+
+    public String getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(String arrivalTime) {
+        this.arrivalTime = arrivalTime;
     }
 
     public double getServiceTime() {
