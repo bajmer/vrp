@@ -4,10 +4,7 @@ import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.algorithm.ClarkWrightAlgorithm;
 import com.vrp.bajmer.algorithm.Second_Algorithm;
 import com.vrp.bajmer.algorithm.Third_Algorithm;
-import com.vrp.bajmer.core.Customer;
-import com.vrp.bajmer.core.Problem;
-import com.vrp.bajmer.core.RouteSegment;
-import com.vrp.bajmer.core.Storage;
+import com.vrp.bajmer.core.*;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
 import com.vrp.bajmer.network.Geolocation;
@@ -51,6 +48,9 @@ public class Gui extends JFrame implements ActionListener {
     private JTextArea appLog;
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteSegments;
+    private JScrollPane jspRouteDetails;
+    private JTextArea fTotalDistanceCost;
+    private JTextArea fTotalDurationCost;
     private JFrame algorithmProperties;
 
     private String algorithmName;
@@ -141,6 +141,7 @@ public class Gui extends JFrame implements ActionListener {
                         third_algorithm.runAlgorithm();
                         break;
                 }
+                this.showSolutionDetails();
             } catch (Exception ex) {
                 logger.error("Unexpected error while calculating a solution!", ex);
             }
@@ -215,5 +216,19 @@ public class Gui extends JFrame implements ActionListener {
         tRouteSegments.getColumnModel().getColumn(3).setPreferredWidth(100);
 
         jspRouteSegments.getViewport().add(tRouteSegments);
+    }
+
+    private void showSolutionDetails() {
+        Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+        fTotalDistanceCost.setText(Double.toString(newestSolution.getTotalDistanceCost()) + " km");
+        fTotalDurationCost.setText(Double.toString(newestSolution.getTotalDurationCost()) + " min");
+
+        for (Route r : newestSolution.getListOfRoutes()) {
+            boxSolutions.addItem("Route ID: " + r.getId()
+                    + ", " + r.getTotalDistance() + "km"
+                    + ", " + r.getTotalDuration() + "min"
+                    + ", " + r.getCurrentPackagesWeight() + "kg"
+                    + ", " + r.getCurrentPackagesSize() + "m3");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.vrp.bajmer.core;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -80,6 +81,8 @@ public class Route {
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
         totalDuration += duration + customer.getServiceTime();
+        totalDistance = round(totalDistance);
+        totalDuration = round(totalDuration);
     }
 
     public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
@@ -88,6 +91,8 @@ public class Route {
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
         totalDuration += duration + customer.getServiceTime();
+        totalDistance = round(totalDistance);
+        totalDuration = round(totalDuration);
     }
 
     public void mergeRoute(Route route) {
@@ -96,6 +101,8 @@ public class Route {
         currentPackagesSize += route.getCurrentPackagesSize();
         totalDistance += route.getTotalDistance();
         totalDuration += route.getTotalDuration();
+        totalDistance = round(totalDistance);
+        totalDuration = round(totalDuration);
     }
 
     //    funkcja sprawdzająca warunki dodania klienta do trasy
@@ -117,5 +124,9 @@ public class Route {
 
     public boolean isCustomerOnLastPosition(Customer customer) {
         return customersInRoute.get(customersInRoute.size() - 1).equals(customer);
+    }
+
+    private double round(double x) {
+        return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 }
