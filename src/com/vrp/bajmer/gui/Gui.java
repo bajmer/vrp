@@ -7,14 +7,23 @@ import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.core.*;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
-import com.vrp.bajmer.network.Geolocation;
+import com.vrp.bajmer.network.Geolocator;
+import com.vrp.bajmer.network.MapImage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,7 +34,7 @@ import java.util.Vector;
 /**
  * Created by mbala on 21.07.17.
  */
-public class Gui extends JFrame implements ActionListener {
+public class Gui extends JFrame implements ActionListener, TreeSelectionListener, ListSelectionListener {
 
     private static final Logger logger = LogManager.getLogger(Gui.class);
 
@@ -34,6 +43,7 @@ public class Gui extends JFrame implements ActionListener {
     private JPanel rightPanel;
     private JPanel bottomPanel;
     private JPanel mapPanel;
+    private JLabel mapLabel;
     private JButton bLoad;
     private JButton bGetDistance;
     private JButton bFindSolution;
@@ -45,19 +55,21 @@ public class Gui extends JFrame implements ActionListener {
     private JFormattedTextField fWeightLimit;
     private JFormattedTextField fSizeLimit;
     private JComboBox boxAlgorithms;
-    private JComboBox boxSolutions;
     private JTextArea appLog;
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteSegments;
     private JScrollPane jspRouteDetails;
+    private JScrollPane jspSolutions;
     private JTextArea fTotalDistanceCost;
     private JTextArea fTotalDurationCost;
+    private JTree treeSolutions;
     private JFrame algorithmProperties;
 
     private Vector<String> customersTableColumns;
     private Vector<String> routeSegmentsTableColumns;
     private Vector<String> routeDetailsTableColumns;
     private String algorithmName;
+    private MapImage mapImage;
 
 
     public Gui() {
@@ -65,7 +77,6 @@ public class Gui extends JFrame implements ActionListener {
         bGetDistance.addActionListener(this);
         bFindSolution.addActionListener(this);
         boxAlgorithms.addActionListener(this);
-        boxSolutions.addActionListener(this);
 
         JTextAreaAppender.addTextArea(this.appLog);
 
@@ -87,8 +98,11 @@ public class Gui extends JFrame implements ActionListener {
         this.createCustomerTable();
         this.createRouteSegmentsTable();
         this.createRouteDetailsTable();
+        this.createSolutionsTree();
 
         this.add(mainPanel);
+
+        mapImage = new MapImage();
     }
 
     @Override
@@ -104,18 +118,27 @@ public class Gui extends JFrame implements ActionListener {
                 File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
                     fileReader.readFile(customersInputFile);
-                    bGetDistance.setEnabled(true);
-                    this.fillCustomerTable();
+
                     this.setEmptyTable(tRouteSegments, routeSegmentsTableColumns);
                     this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+                } else {
+                    return;
                 }
             } catch (Exception ex) {
                 logger.error("Unexpected error while processing the file!", ex);
             }
+
+            try {
+                Geolocator geolocator = new Geolocator();
+                geolocator.downloadCustomersCoordinates();
+
+                this.fillCustomerTable();
+                bGetDistance.setEnabled(true);
+            } catch (Exception ex) {
+                logger.error("Unexpected error while addresses geolocating!", ex);
+            }
         } else if (source == bGetDistance) {
             try {
-                Geolocation geolocation = new Geolocation();
-                geolocation.downloadCustomersCoordinates();
                 DistanceMatrix distanceMatrix = new DistanceMatrix();
                 distanceMatrix.downloadDistanceMatrix();
                 bGetDistance.setEnabled(false);
@@ -123,7 +146,7 @@ public class Gui extends JFrame implements ActionListener {
                 this.fillCustomerTable();
                 this.fillRouteSegmentsTable();
             } catch (Exception ex) {
-                logger.error("Unexpected error while addresses geolocating and downloading the distance matrix from server!", ex);
+                logger.error("Unexpected error while downloading the distance matrix from server!", ex);
             }
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
@@ -151,10 +174,61 @@ public class Gui extends JFrame implements ActionListener {
                 }
                 this.showSolutionDetails();
             } catch (Exception ex) {
-                logger.error("Unexpected error while calculating a solution!", ex);
+                logger.error("Unexpected error while calculating the solution!", ex);
             }
-        } else if (source == boxSolutions) {
-            fillRouteDetailsTable(boxSolutions.getSelectedIndex());
+
+            try {
+                Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+                mapImage.createSolutionImages(newestSolution);
+            } catch (Exception ex) {
+                logger.error("Unexpected error while drawing the solution!", ex);
+            }
+        }
+    }
+
+    @Override
+    public void valueChanged(TreeSelectionEvent e) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
+
+        if (node == null)
+            return;
+
+        if (!node.isRoot()) {
+            if (!node.isLeaf()) {
+//                this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+//                mapLabel.setIcon(null);
+//                mapLabel.revalidate();
+//                wyświetlanie rozwiązania
+                Solution s = (Solution) node.getUserObject();
+                mapLabel.setIcon(s.getImageIcon());
+            } else {
+//                wyświetlanie trasy
+                Route r = (Route) node.getUserObject();
+                mapLabel.setIcon(r.getImageIcon());
+//                wypełnienie szczegółów trasy
+                this.fillRouteDetailsTable(r);
+            }
+        } else {
+            this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+        }
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        Object source = e.getSource();
+        if (source == tCustomers.getSelectionModel()) {
+            int index = (int) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
+            Customer c = Storage.getCustomerList().get(index);
+            ImageIcon imageIcon = c.getImageIcon();
+            if (imageIcon == null) {
+                mapImage.createCustomerImage(c);
+            } else {
+                mapLabel.setIcon(imageIcon);
+            }
+        } else if (source == tRouteSegments) {
+
+        } else if (source == tRouteDetails) {
+
         }
     }
 
@@ -170,6 +244,8 @@ public class Gui extends JFrame implements ActionListener {
         customersTableColumns.add("Max. hour");
 
         setEmptyTable(tCustomers, customersTableColumns);
+        tCustomers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tCustomers.getSelectionModel().addListSelectionListener(this);
 
         jspCustomers.setViewportView(tCustomers);
     }
@@ -221,6 +297,8 @@ public class Gui extends JFrame implements ActionListener {
         routeSegmentsTableColumns.add("Duration [min]");
 
         setEmptyTable(tRouteSegments, routeSegmentsTableColumns);
+        tRouteSegments.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tRouteSegments.getSelectionModel().addListSelectionListener(this);
 
         jspRouteSegments.setViewportView(tRouteSegments);
     }
@@ -255,14 +333,15 @@ public class Gui extends JFrame implements ActionListener {
         routeDetailsTableColumns.add("Arrival time");
 
         setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+        tRouteDetails.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tRouteDetails.getSelectionModel().addListSelectionListener(this);
 
         jspRouteDetails.setViewportView(tRouteDetails);
     }
 
-    private void fillRouteDetailsTable(int index) {
-        Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+    private void fillRouteDetailsTable(Route route) {
         Vector<Vector<String>> data = new Vector<>();
-        for (Customer c : newestSolution.getListOfRoutes().get(index).getCustomersInRoute()) {
+        for (Customer c : route.getCustomersInRoute()) {
             Vector<String> row = new Vector<>();
             row.add(Integer.toString(c.getId()));
             row.add(c.getAddress());
@@ -287,17 +366,38 @@ public class Gui extends JFrame implements ActionListener {
         table.setModel(tableModel);
     }
 
+    private void createSolutionsTree() {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Solutions");
+        treeSolutions = new JTree(root);
+        treeSolutions.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        treeSolutions.addTreeSelectionListener(this);
+
+        jspSolutions.setViewportView(treeSolutions);
+    }
+
     private void showSolutionDetails() {
         Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
-        fTotalDistanceCost.setText(Double.toString(newestSolution.getTotalDistanceCost()) + " km");
-        fTotalDurationCost.setText(Double.toString(newestSolution.getTotalDurationCost()) + " min");
+//        fTotalDistanceCost.setText(Double.toString(newestSolution.getTotalDistanceCost()) + " km");
+//        fTotalDurationCost.setText(Double.toString(newestSolution.getTotalDurationCost()) + " min");
 
-        for (Route r : newestSolution.getListOfRoutes()) {
-            boxSolutions.addItem("Route ID: " + r.getId()
-                    + ", " + r.getTotalDistance() + "km"
-                    + ", " + r.getTotalDuration() + "min"
-                    + ", " + r.getCurrentPackagesWeight() + "kg"
-                    + ", " + r.getCurrentPackagesSize() + "m3");
-        }
+        addNodeToSolutionsTree(newestSolution);
     }
+
+    private void addNodeToSolutionsTree(Solution solution) {
+        DefaultMutableTreeNode parent = new DefaultMutableTreeNode(solution);
+
+        for (Route r : solution.getListOfRoutes()) {
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(r);
+            parent.insert(child, parent.getChildCount());
+        }
+
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeSolutions.getModel().getRoot();
+        DefaultTreeModel model = (DefaultTreeModel) treeSolutions.getModel();
+        model.insertNodeInto(parent, root, root.getChildCount());
+
+        treeSolutions.expandPath(new TreePath(root.getPath()));
+        treeSolutions.scrollPathToVisible(new TreePath(parent.getPath()));
+    }
+
+
 }

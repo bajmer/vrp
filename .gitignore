@@ -34,7 +34,7 @@ cmake-build-debug/
 /out/
 /lib/
 /logs/
-/img/
+/solution_images/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

@@ -1,5 +1,6 @@
 package com.vrp.bajmer.core;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
@@ -15,15 +16,16 @@ public class Route {
     private double totalDuration;
     private double currentPackagesWeight;
     private double currentPackagesSize;
+    private ImageIcon imageIcon;
 
     public Route() {
         routeID++;
-        id = routeID;
-        customersInRoute = new ArrayList<>();
-        totalDistance = 0.0;
-        totalDuration = 0.0;
-        currentPackagesWeight = 0.0;
-        currentPackagesSize = 0.0;
+        this.id = routeID;
+        this.customersInRoute = new ArrayList<>();
+        this.totalDistance = 0.0;
+        this.totalDuration = 0.0;
+        this.currentPackagesWeight = 0.0;
+        this.currentPackagesSize = 0.0;
     }
 
     public int getId() {
@@ -72,6 +74,14 @@ public class Route {
 
     public void setCurrentPackagesSize(double currentPackagesSize) {
         this.currentPackagesSize = currentPackagesSize;
+    }
+
+    public ImageIcon getImageIcon() {
+        return imageIcon;
+    }
+
+    public void setImageIcon(ImageIcon imageIcon) {
+        this.imageIcon = imageIcon;
     }
 
     public void addCustomerToFirstPosition(Customer customer, double distance, double duration) {
@@ -128,5 +138,14 @@ public class Route {
 
     private double round(double x) {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    @Override
+    public String toString() {
+        return "Route " + id + ", "
+                + totalDistance + "km, "
+                + totalDuration + "min, "
+                + currentPackagesWeight + "kg, "
+                + currentPackagesSize + "m3";
     }
 }

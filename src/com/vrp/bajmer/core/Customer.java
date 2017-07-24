@@ -1,5 +1,6 @@
 package com.vrp.bajmer.core;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class Customer {
     private String arrivalTime;
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Double> durations = new HashMap<>();
+    private ImageIcon imageIcon;
 
     public Customer(String address, double packageWeight, double packageSize, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
@@ -31,6 +33,7 @@ public class Customer {
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
         this.arrivalTime = "08:00";
+        this.imageIcon = null;
     }
 
     public static int getCustomerID() {
@@ -131,5 +134,13 @@ public class Customer {
 
     public double getServiceTime() {
         return serviceTime;
+    }
+
+    public ImageIcon getImageIcon() {
+        return imageIcon;
+    }
+
+    public void setImageIcon(ImageIcon imageIcon) {
+        this.imageIcon = imageIcon;
     }
 }

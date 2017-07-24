@@ -10,8 +10,8 @@
 //import com.vrp.bajmer.core.Storage;
 //import com.vrp.bajmer.io.FileReader;
 //import com.vrp.bajmer.network.DistanceMatrix;
-//import com.vrp.bajmer.network.Geolocation;
-//import com.vrp.bajmer.network.Map;
+//import com.vrp.bajmer.network.Geolocator;
+//import com.vrp.bajmer.network.MapImage;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 //
@@ -197,7 +197,7 @@
 //            @Override
 //            public void valueChanged(ListSelectionEvent e) {
 //                int row = tCustomersData.getSelectedRow();
-//                Map map = new Map();
+//                MapImage map = new MapImage();
 //                map.createMapForSingleCustomer(mapImage, row);
 //                /*mapImage = map.createMapForSingleCustomer(row);
 //                mapWindow.remove(mapImage);
@@ -236,7 +236,7 @@
 //            }
 //        } else if (source == bGetDistance) {
 //            try {
-//                Geolocation geolocation = new Geolocation();
+//                Geolocator geolocation = new Geolocator();
 //                geolocation.downloadCustomersCoordinates();
 //                DistanceMatrix distanceMatrix = new DistanceMatrix();
 //                distanceMatrix.downloadDistanceMatrix();
@@ -285,7 +285,7 @@
 //            }
 //
 //            try {
-//                Map map = new Map();
+//                MapImage map = new MapImage();
 //                mapImage = map.createSolutionImages();
 //                mapWindowName = map.getImageName();
 //            } catch (Exception ex) {
@@ -303,7 +303,7 @@
 //    }
 //
 //    private void createMapWindow() {
-//        mapWindow = new JFrame("Map");
+//        mapWindow = new JFrame("MapImage");
 //        mapWindow.setSize(640, 640);
 //        mapWindow.setLocation(240, 0);
 //        mapWindow.setVisible(true);

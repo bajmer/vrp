@@ -15,7 +15,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     private static final Logger logger = LogManager.getLogger(ClarkWrightAlgorithm.class);
 
-    private final String name = "Clark-Wright Algorithm";
+    private final String name = "Clark-Wright";
     private List<Customer> customers;
     private List<RouteSegment> routeSegments;
     private List<Route> routes;

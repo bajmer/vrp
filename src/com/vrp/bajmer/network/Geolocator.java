@@ -13,16 +13,16 @@ import java.util.List;
 /**
  * Created by mbala on 10.07.17.
  */
-public class Geolocation extends JSON {
+public class Geolocator extends JSON {
 
-    private static final Logger logger = LogManager.getLogger(Geolocation.class);
+    private static final Logger logger = LogManager.getLogger(Geolocator.class);
 
     private static final String separator = ",";
     private static final String beginOfURL = "http://nominatim.openstreetmap.org/search?format=json";
     //    http://nominatim.openstreetmap.org/search?format=json&street=10%20Spokojna&postalcode=07-200&city=Wyszk%C3%B3w&country=Polska
 
 
-    public Geolocation() {
+    public Geolocator() {
     }
 
     public void downloadCustomersCoordinates() throws Exception {
