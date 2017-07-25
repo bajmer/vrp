@@ -165,6 +165,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                                     || (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnFirstPosition(src))) {
                                 if (routeA.getCurrentPackagesWeight() + routeB.getCurrentPackagesWeight() <= weightLimit
                                         && routeA.getCurrentPackagesSize() + routeB.getCurrentPackagesSize() <= sizeLimit) {
+                                    routeA.addRouteSegmentToEnd(segment);
                                     routeA.mergeRoute(routeB);
                                     tmpRoute = routeB;
                                     logger.debug("Route \"" + routeA.getId() + "\" was merged with route \"" + routeB.getId() + "\"");

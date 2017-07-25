@@ -85,6 +85,16 @@ public class MapImage {
         logger.debug("Creating an images of customer has been completed.");
     }
 
+    public void createRouteDetailsImage(Route route, Customer customer) {
+        logger.debug("Creating an images of route details...");
+        String routeImageName = "solution_images/R_" + route.getId();
+        String url = parseURLForSingleRoute(beginOfURL, endOfURL, route, customer);
+        sendRequestToGoogleMaps(url, routeImageName);
+        route.getCustomersIcons().put(customer, new ImageIcon(routeImageName));
+
+        logger.debug("Creating an images of route details has been completed.");
+    }
+
     private void sendRequestToGoogleMaps(String url, String imageName) {
         logger.debug("Sending request to Google Maps...");
         try {
@@ -187,6 +197,32 @@ public class MapImage {
         return beginOfURL + marker.toString() + path.toString() + endOfURL;
     }
 
+    private String parseURLForSingleRoute(String beginOfURL, String endOfURL, Route route, Customer customer) {
+        StringBuilder path = new StringBuilder();
+        StringBuilder marker = new StringBuilder();
+        String depotParam = "&markers=size:mid|color:green|";
+        String customersParam = "&markers=size:mid|color:blue";
+        String choosenCustomerParam = "&markers=size:mid|color:red|";
+        boolean isDepot = false;
+        for (Customer c : route.getCustomersInRoute()) {
+            if (!c.equals(customer)) {
+                if (c.getId() == 0 && !isDepot) {
+                    marker.append(depotParam).append(c.getLatitude()).append(",").append(c.getLongitude()).append(customersParam);
+                    isDepot = true;
+                } else {
+                    marker.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
+                }
+            }
+        }
+        marker.append(choosenCustomerParam).append(customer.getLatitude()).append(",").append(customer.getLongitude());
+
+        for (RouteSegment rs : route.getRouteSegments()) {
+            path.append("&path=color:").append(colours.get("blue")).append("|weight:2|enc:").append(rs.getGeometry());
+        }
+
+        return beginOfURL + marker.toString() + path.toString() + endOfURL;
+    }
+
     private String parseURLForSingleCustomer(String beginOfURL, String endOfURL, Customer customer) {
         StringBuilder marker = new StringBuilder();
         Storage.getCustomerList().get(0);
@@ -239,30 +275,6 @@ public class MapImage {
         String path = "&path=color:" + colours.get("blue") + "|weight:2|enc:" + routeSegment.getGeometry();
 
         return beginOfURL + srcMarker + dstMarker + path + endOfURL;
-    }
-
-    private String parseURLForCustomerInRoute(String beginOfURL, String endOfURL, Customer customer) {
-        StringBuilder marker = new StringBuilder();
-        Storage.getCustomerList().get(0);
-        marker.append("&markers=size:small|color:green");
-        marker.append("|").append(Storage.getCustomerList().get(0).getLatitude()).append(",").append(Storage.getCustomerList().get(0).getLongitude());
-        marker.append("&markers=size:small|color:blue");
-        for (Customer c : Storage.getCustomerList()) {
-            if (!c.equals(customer)) {
-                if (c.getId() == 0) {
-                    continue;
-                }
-                double lat = c.getLatitude();
-                double lon = c.getLongitude();
-                if (lat != 0 && lon != 0) {
-                    marker.append("|").append(lat).append(",").append(lon);
-                }
-            }
-        }
-        String customerMarker = "&markers=size:normal|color:red" +
-                "|" + customer.getLatitude() + "," + customer.getLongitude();
-
-        return beginOfURL + marker + customerMarker + endOfURL;
     }
 
     //    String imageUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=8&size=640x640&maptype=roadmap&region=pl" +

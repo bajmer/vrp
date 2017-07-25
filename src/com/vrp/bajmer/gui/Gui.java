@@ -241,7 +241,16 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 }
             }
         } else if (source == tRouteDetails.getSelectionModel()) {
-
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
+            Route r = (Route) node.getUserObject();
+            String id = (String) tRouteDetails.getValueAt(tRouteDetails.getSelectedRow(), 0);
+            int index = Integer.parseInt(id);
+            Customer c = Storage.getCustomerList().get(index);
+            if (!r.getCustomersIcons().containsKey(c)) {
+                mapImage.createRouteDetailsImage(r, c);
+            } else {
+                mapLabel.setIcon(r.getCustomersIcons().get(c));
+            }
         }
     }
 

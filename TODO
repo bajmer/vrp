@@ -2,3 +2,4 @@
 5) Implementacja algorytmu 2
 6) Implementacja algorytmu 3
 9) Wciśnięcie load powinno czyścić pamięć programu, tzn. klasę database.
+- Poprawić algorytm clarka-wrighta, węzły zewnętrzne.

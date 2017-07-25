@@ -3,6 +3,8 @@ package com.vrp.bajmer.core;
 import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mbala on 03.07.17.
@@ -13,11 +15,11 @@ public class Route {
     private int id;
     private ArrayList<Customer> customersInRoute;
     private ArrayList<RouteSegment> routeSegments;
+    private Map<Customer, ImageIcon> customersIcons;
     private double totalDistance;
     private double totalDuration;
     private double currentPackagesWeight;
     private double currentPackagesSize;
-    //    private String geometry;
     private ImageIcon imageIcon;
 
     public Route() {
@@ -25,11 +27,11 @@ public class Route {
         this.id = routeID;
         this.customersInRoute = new ArrayList<>();
         this.routeSegments = new ArrayList<>();
+        this.customersIcons = new HashMap<>();
         this.totalDistance = 0.0;
         this.totalDuration = 0.0;
         this.currentPackagesWeight = 0.0;
         this.currentPackagesSize = 0.0;
-//        this.geometry = "";
     }
 
     public int getId() {
@@ -54,6 +56,14 @@ public class Route {
 
     public void setRouteSegments(ArrayList<RouteSegment> routeSegments) {
         this.routeSegments = routeSegments;
+    }
+
+    public Map<Customer, ImageIcon> getCustomersIcons() {
+        return customersIcons;
+    }
+
+    public void setCustomersIcons(Map<Customer, ImageIcon> customersIcons) {
+        this.customersIcons = customersIcons;
     }
 
     public double getTotalDistance() {
@@ -88,14 +98,6 @@ public class Route {
         this.currentPackagesSize = currentPackagesSize;
     }
 
-//    public String getGeometry() {
-//        return geometry;
-//    }
-//
-//    public void setGeometry(String geometry) {
-//        this.geometry = geometry;
-//    }
-
     public ImageIcon getImageIcon() {
         return imageIcon;
     }
@@ -113,7 +115,6 @@ public class Route {
         totalDuration += duration + customer.getServiceTime();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
-//        geometry = segmentGeometry + geometry;
     }
 
     public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
@@ -124,7 +125,6 @@ public class Route {
         totalDuration += duration + customer.getServiceTime();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
-//        geometry = geometry + segmentGeometry;
     }
 
     public void mergeRoute(Route route) {
@@ -135,7 +135,7 @@ public class Route {
         totalDuration += route.getTotalDuration();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
-//        geometry = geometry + route.getGeometry();
+
         for (RouteSegment rs : route.getRouteSegments()) {
             routeSegments.add(rs);
         }
