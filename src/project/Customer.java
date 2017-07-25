@@ -8,26 +8,25 @@ import java.util.Map;
  */
 public class Customer {
 
+    private static final double serviceTime = 5; //czas obsługi klienta w minutach
     private static int customerID;
     private int id;
-    private String name;
-    private double latitude;
-    private double longitude;
+    private String address;
+    private double latitude = 0;
+    private double longitude = 0;
     private double packageWeight;
-    private double packageCapacity;
+    private double packageSize;
     private String minDeliveryHour;
     private String maxDeliveryHour;
-
     private Map<Integer, Double> distances = new HashMap<>();
+    private Map<Integer, Double> durations = new HashMap<>();
 
-    public Customer(String name, double latitude, double longitude, double packageWeight, double packageCapacity, String minDeliveryHour, String maxDeliveryHour) {
+    public Customer(String address, double packageWeight, double packageSize, String minDeliveryHour, String maxDeliveryHour) {
         this.id = customerID;
         customerID++;
-        this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.address = address;
         this.packageWeight = packageWeight;
-        this.packageCapacity = packageCapacity;
+        this.packageSize = packageSize;
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
     }
@@ -40,12 +39,12 @@ public class Customer {
         Customer.customerID = customerID;
     }
 
-    public String getName() {
-        return name;
+    public String getAddress() {
+        return address;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getId() {
@@ -80,6 +79,14 @@ public class Customer {
         this.distances = distances;
     }
 
+    public Map<Integer, Double> getDurations() {
+        return durations;
+    }
+
+    public void setDurations(Map<Integer, Double> durations) {
+        this.durations = durations;
+    }
+
     public double getPackageWeight() {
         return packageWeight;
     }
@@ -88,12 +95,12 @@ public class Customer {
         this.packageWeight = packageWeight;
     }
 
-    public double getPackageCapacity() {
-        return packageCapacity;
+    public double getPackageSize() {
+        return packageSize;
     }
 
-    public void setPackageCapacity(double packageCapacity) {
-        this.packageCapacity = packageCapacity;
+    public void setPackageSize(double packageSize) {
+        this.packageSize = packageSize;
     }
 
     public String getMinDeliveryHour() {
@@ -110,5 +117,9 @@ public class Customer {
 
     public void setMaxDeliveryHour(String maxDeliveryHour) {
         this.maxDeliveryHour = maxDeliveryHour;
+    }
+
+    public double getServiceTime() {
+        return serviceTime;
     }
 }

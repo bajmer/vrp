@@ -38,22 +38,22 @@ public class FileHandler {
     }
 
     public File chooseFile(MyWindow parentWindow) {
+        logger.info("Choosing file with customers data...");
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        //fileChooser.setFileFilter(new FileNameExtensionFilter(".csv", "csv"));
-        //fileChooser.setFileFilter(new FileNameExtensionFilter(".txt", "txt"));
         int result = fileChooser.showOpenDialog(parentWindow);
         File selectedFile = null;
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
-            logger.debug("Selected file: " + selectedFile.getAbsolutePath());
+            logger.info("Selected file: " + selectedFile.getAbsolutePath());
         } else {
-            logger.info("File is not selected.");
+            logger.warn("File is not selected.");
         }
         return selectedFile;
     }
 
-    public void readFile(File file) {
+    public void readFile(File file) throws IOException {
+        logger.info("Reading file...");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             Database.getCustomerList().clear();
             Database.getRouteSegmentsList().clear();
@@ -63,34 +63,35 @@ public class FileHandler {
                 lineNumber++;
                 String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, separator);
 
-                String name = fields[0];
+                String address = fields[0];
                 double lat;
                 double lon;
 
-                if (NumberUtils.isParsable(fields[1]) && NumberUtils.isParsable(fields[2])) {
-                    lat = Double.parseDouble(fields[1]);
-                    lon = Double.parseDouble(fields[2]);
-                    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-                        logger.warn("Coordinates are out of range in line " + lineNumber);
-                        continue;
-                    }
-                } else {
-                    logger.warn("Cannot parse coordinates in line " + lineNumber);
-                    continue;
-                }
+//                współrzędne do usunięcia, docelowo nie będą pobierane współrzędne z pliku
+//                if (NumberUtils.isParsable(fields[1]) && NumberUtils.isParsable(fields[2])) {
+//                    lat = Double.parseDouble(fields[1]);
+//                    lon = Double.parseDouble(fields[2]);
+//                    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+//                        logger.warn("Coordinates are out of range in line " + lineNumber);
+//                        continue;
+//                    }
+//                } else {
+//                    logger.warn("Cannot parse coordinates in line " + lineNumber);
+//                    continue;
+//                }
 
                 double weight = defaultPackageWeight;
-                if (NumberUtils.isParsable(fields[3])) {
-                    weight = Double.parseDouble(fields[3]);
+                if (NumberUtils.isParsable(fields[1])) {
+                    weight = Double.parseDouble(fields[1]);
                 }
 
                 double capacity = defaultPackageCapacity;
-                if (NumberUtils.isParsable(fields[4])) {
-                    capacity = Double.parseDouble(fields[4]);
+                if (NumberUtils.isParsable(fields[2])) {
+                    capacity = Double.parseDouble(fields[2]);
                 }
 
-                String minDeliveryHour = fields[5];
-                String maxDeliveryHour = fields[6];
+                String minDeliveryHour = fields[3];
+                String maxDeliveryHour = fields[4];
                 try {
                     DateFormat dateFormat = new SimpleDateFormat("HH:mm");
                     Date begin = dateFormat.parse(minDeliveryHour);
@@ -106,21 +107,21 @@ public class FileHandler {
                 } catch (ParseException e) {
                     minDeliveryHour = defaultMinDeliveryHour;
                     maxDeliveryHour = defaultMaxDeliveryHour;
-                    logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.", e);
+                    logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
                 }
 
-                Customer customer = new Customer(name, lat, lon, weight, capacity, minDeliveryHour, maxDeliveryHour);
+                Customer customer = new Customer(address, weight, capacity, minDeliveryHour, maxDeliveryHour);
                 Database.getCustomerList().add(customer);
-                logger.info("ID: " + customer.getId()
-                        + ", Nazwa: " + customer.getName()
-                        + ", Szer: " + customer.getLatitude()
-                        + ", Dl: " + customer.getLongitude()
+                logger.debug("ID: " + customer.getId()
+                        + ", Adres: " + customer.getAddress()
                         + ", Masa: " + customer.getPackageWeight()
-                        + ", Objetosc: " + customer.getPackageCapacity()
-                        + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
+                        + ", Objetosc: " + customer.getPackageSize()
+                        + ", Okno czasowe: " + customer.getMinDeliveryHour() + "-" + customer.getMaxDeliveryHour());
             }
         } catch (IOException e) {
-            logger.error("Unexpected error while reading the file!", e);
+            logger.error("Unexpected error while reading the file!");
+            throw e;
         }
+        logger.info("Reading file has been completed.");
     }
 }

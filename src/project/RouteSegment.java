@@ -7,18 +7,19 @@ public class RouteSegment {
 
     private static int routeSegmentID = 1;
     private int id;
-    private int srcCustomerID;
-    private int dstCustomerID;
+    private Customer src;
+    private Customer dst;
     private double distance;
-    private String timeOfTravel;
+    private double duration;
     private double clarkWrightSaving;
 
-    public RouteSegment(int srcCustomerID, int dstCustomerID, double distance) {
+    public RouteSegment(Customer src, Customer dst, double distance, double duration) {
         this.id = routeSegmentID;
         routeSegmentID++;
-        this.srcCustomerID = srcCustomerID;
-        this.dstCustomerID = dstCustomerID;
+        this.src = src;
+        this.dst = dst;
         this.distance = distance;
+        this.duration = duration;
     }
 
     public int getId() {
@@ -29,20 +30,20 @@ public class RouteSegment {
         this.id = id;
     }
 
-    public int getSrcCustomerID() {
-        return srcCustomerID;
+    public Customer getSrc() {
+        return src;
     }
 
-    public void setSrcCustomerID(int srcCustomerID) {
-        this.srcCustomerID = srcCustomerID;
+    public void setSrc(Customer src) {
+        this.src = src;
     }
 
-    public int getDstCustomerID() {
-        return dstCustomerID;
+    public Customer getDst() {
+        return dst;
     }
 
-    public void setDstCustomerID(int dstCustomerID) {
-        this.dstCustomerID = dstCustomerID;
+    public void setDst(Customer dst) {
+        this.dst = dst;
     }
 
     public double getDistance() {
@@ -53,19 +54,19 @@ public class RouteSegment {
         this.distance = distance;
     }
 
-    public String getTimeOfTravel() {
-        return timeOfTravel;
+    public double getDuration() {
+        return duration;
     }
 
-    public void setTimeOfTravel(String timeOfTravel) {
-        this.timeOfTravel = timeOfTravel;
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
-    public double getSaving() {
+    public double getClarkWrightSaving() {
         return clarkWrightSaving;
     }
 
-    public void setSaving(double saving) {
-        this.clarkWrightSaving = saving;
+    public void setClarkWrightSaving(double clarkWrightSaving) {
+        this.clarkWrightSaving = clarkWrightSaving;
     }
 }
