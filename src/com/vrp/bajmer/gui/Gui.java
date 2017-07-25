@@ -143,7 +143,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 distanceMatrix.downloadDistanceMatrix();
                 bGetDistance.setEnabled(false);
                 boxAlgorithms.setEnabled(true);
-                this.fillCustomerTable();
                 this.fillRouteSegmentsTable();
             } catch (Exception ex) {
                 logger.error("Unexpected error while downloading the distance matrix from server!", ex);
