@@ -1,5 +1,6 @@
-package algorithm;
+package com.vrp.bajmer.algorithm;
 
+import com.vrp.bajmer.core.Problem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +17,7 @@ public class Third_Algorithm extends Algorithm {
 
     @Override
     public void runAlgorithm() {
-        logger.info("Running the Third algorithm...");
+        logger.info("Running the Third com.vrp.bajmer.algorithm...");
 
     }
 

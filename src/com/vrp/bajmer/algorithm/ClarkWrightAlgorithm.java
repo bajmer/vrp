@@ -1,11 +1,8 @@
-package algorithm;
+package com.vrp.bajmer.algorithm;
 
+import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import project.Customer;
-import project.Database;
-import project.Route;
-import project.RouteSegment;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +15,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     private static final Logger logger = LogManager.getLogger(ClarkWrightAlgorithm.class);
 
-    private final String name = "Clark-Wright Algorithm";
+    private final String name = "Clark-Wright";
     private List<Customer> customers;
     private List<RouteSegment> routeSegments;
     private List<Route> routes;
@@ -27,14 +24,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
         super(problem);
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name));
-        customers = Database.getCustomerList();
-        routeSegments = Database.getRouteSegmentsList();
+        customers = Storage.getCustomerList();
+        routeSegments = Storage.getRouteSegmentsList();
         routes = super.getSolution().getListOfRoutes();
     }
 
     @Override
     public void runAlgorithm() {
-        logger.info("Running the Clark-Wright algorithm...");
+        logger.info("Running the Clark-Wright com.vrp.bajmer.algorithm...");
         createSavings();
         sortSavings();
         searchSolution();
@@ -85,6 +82,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             Customer dst = segment.getDst();
             Double distance = segment.getDistance();
             Double duration = segment.getDuration();
+//            String segmentGeometry = segment.getGeometry();
             if (src.getId() != 0 && dst.getId() != 0) {
                 logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
 //            żaden klient nie należy do trasy
@@ -94,6 +92,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                         Route route = new Route();
                         route.addCustomerToFirstPosition(src, 0, 0);
                         route.addCustomerToLastPosition(dst, distance, duration);
+                        route.addRouteSegmentToEnd(segment);
                         logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
                         logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                         route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -111,6 +110,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                         if (route.canAddCustomer(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(dst)) {
                                 route.addCustomerToFirstPosition(src, distance, duration);
+                                route.addRouteSegmentToBegin(segment);
                                 logger.debug("Customer with id " + src.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -118,6 +118,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                                 break;
                             } else if (route.isCustomerOnLastPosition(dst)) {
                                 route.addCustomerToLastPosition(src, distance, duration);
+                                route.addRouteSegmentToEnd(segment);
                                 logger.debug("Customer with id " + src.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -133,6 +134,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                         if (route.canAddCustomer(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(src)) {
                                 route.addCustomerToFirstPosition(dst, distance, duration);
+                                route.addRouteSegmentToBegin(segment);
                                 logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -140,6 +142,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                                 break;
                             } else if (route.isCustomerOnLastPosition(src)) {
                                 route.addCustomerToLastPosition(dst, distance, duration);
+                                route.addRouteSegmentToEnd(segment);
                                 logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -202,8 +205,20 @@ public class ClarkWrightAlgorithm extends Algorithm {
         for (Route route : routes) {
             int firstCustomerID = route.getCustomersInRoute().get(0).getId();
             int lastCustomerID = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1).getId();
-            route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID));
-            route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
+            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == firstCustomerID) {
+                    route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID));
+                    route.addRouteSegmentToBegin(rs);
+                    break;
+                }
+            }
+            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
+                    route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
+                    route.addRouteSegmentToEnd(rs);
+                    break;
+                }
+            }
         }
     }
 
@@ -232,7 +247,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration + " min.");
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
-        Database.getSolutionsList().add(super.getSolution());
+        Storage.getSolutionsList().add(super.getSolution());
         logger.info("Saving solution has been completed.");
     }
 }

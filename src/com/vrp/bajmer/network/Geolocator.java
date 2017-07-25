@@ -1,11 +1,11 @@
-package network;
+package com.vrp.bajmer.network;
 
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Storage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import project.Customer;
-import project.Database;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,22 +13,22 @@ import java.util.List;
 /**
  * Created by mbala on 10.07.17.
  */
-public class Geolocation extends JSON {
+public class Geolocator extends JSON {
 
-    private static final Logger logger = LogManager.getLogger(Geolocation.class);
+    private static final Logger logger = LogManager.getLogger(Geolocator.class);
 
     private static final String separator = ",";
     private static final String beginOfURL = "http://nominatim.openstreetmap.org/search?format=json";
     //    http://nominatim.openstreetmap.org/search?format=json&street=10%20Spokojna&postalcode=07-200&city=Wyszk%C3%B3w&country=Polska
 
 
-    public Geolocation() {
+    public Geolocator() {
     }
 
     public void downloadCustomersCoordinates() throws Exception {
         logger.info("Downloading customers coordinates...");
         try {
-            for (Customer customer : Database.getCustomerList()) {
+            for (Customer customer : Storage.getCustomerList()) {
                 String fullAddress = customer.getAddress();
                 String[] addressFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, separator);
                 String URL = parseURL(beginOfURL, addressFields);
@@ -54,7 +54,7 @@ public class Geolocation extends JSON {
     }
 
     private List<Double> getCoordinatesFromJSON(JSONObject jsonObject) {
-        List<Double> coordinates = new ArrayList<Double>();
+        List<Double> coordinates = new ArrayList<>();
         try {
             double lat = jsonObject.getDouble("lat");
             double lon = jsonObject.getDouble("lon");

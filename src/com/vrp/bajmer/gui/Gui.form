@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.vrp.bajmer.gui.Gui">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridBagLayout">
+    <constraints>
+      <xy x="20" y="33" width="1263" height="759"/>
+    </constraints>
+    <properties>
+      <maximumSize width="1100" height="800"/>
+      <minimumSize width="800" height="600"/>
+      <preferredSize width="1100" height="800"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <grid id="785f3" binding="mapPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <alignmentX value="0.0"/>
+          <alignmentY value="0.0"/>
+          <maximumSize width="640" height="640"/>
+          <minimumSize width="640" height="640"/>
+          <preferredSize width="640" height="640"/>
+        </properties>
+        <border type="etched">
+          <font name="DejaVu Sans Mono" size="11" style="0"/>
+        </border>
+        <children>
+          <component id="aa92f" class="javax.swing.JLabel" binding="mapLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="640" height="640"/>
+                <preferred-size width="640" height="640"/>
+                <maximum-size width="640" height="640"/>
+              </grid>
+            </constraints>
+            <properties>
+              <alignmentY value="0.0"/>
+              <horizontalAlignment value="10"/>
+              <horizontalTextPosition value="11"/>
+              <iconTextGap value="0"/>
+              <labelFor value="3d073"/>
+              <text value=""/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="49944" binding="leftPanel" layout-manager="GridBagLayout">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0" ipadx="130"/>
+        </constraints>
+        <properties/>
+        <border type="etched"/>
+        <children>
+          <component id="48935" class="javax.swing.JButton" binding="bLoad">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="29"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Load customers"/>
+            </properties>
+          </component>
+          <scrollpane id="3d073" binding="jspCustomers">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="-1" height="220"/>
+                <preferred-size width="-1" height="220"/>
+                <maximum-size width="-1" height="220"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <horizontalScrollBarPolicy value="30"/>
+            </properties>
+            <border type="etched" title="Customers">
+              <font name="DejaVu Sans Mono" size="11" style="0"/>
+            </border>
+            <children>
+              <component id="d9b32" class="javax.swing.JTable" binding="tCustomers">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
+          <scrollpane id="e518" binding="jspRouteSegments">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="-1" height="130"/>
+                <preferred-size width="-1" height="130"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties/>
+            <border type="etched" title="Route segments">
+              <font name="DejaVu Sans Mono" size="11" style="0"/>
+            </border>
+            <children>
+              <component id="3df97" class="javax.swing.JTable" binding="tRouteSegments">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
+          <grid id="e0cab" layout-manager="GridBagLayout">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="146"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <minimumSize width="220" height="143"/>
+            </properties>
+            <border type="etched" title="General parameters">
+              <font name="DejaVu Sans Mono" size="11" style="0"/>
+            </border>
+            <children>
+              <component id="bc409" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="19"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="1.0" ipadx="10"/>
+                </constraints>
+                <properties>
+                  <text value="Algorithm ID"/>
+                </properties>
+              </component>
+              <component id="a4968" class="javax.swing.JFormattedTextField" binding="fAlgorithmId">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="40" height="23"/>
+                    <maximum-size width="40" height="-1"/>
+                  </grid>
+                  <gridbag weightx="1.0" weighty="1.0" ipadx="40"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="6821c" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="19"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="1.0" ipadx="10"/>
+                </constraints>
+                <properties>
+                  <text value="Vehicle capacity [kg]"/>
+                </properties>
+              </component>
+              <component id="87820" class="javax.swing.JFormattedTextField" binding="fNumberOfVehicles">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="40" height="-1"/>
+                    <maximum-size width="40" height="-1"/>
+                  </grid>
+                  <gridbag weightx="1.0" weighty="1.0" ipadx="40"/>
+                </constraints>
+                <properties>
+                  <background color="-1"/>
+                </properties>
+              </component>
+              <component id="537e8" class="javax.swing.JFormattedTextField" binding="fWeightLimit">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="40" height="-1"/>
+                    <maximum-size width="40" height="-1"/>
+                  </grid>
+                  <gridbag weightx="1.0" weighty="1.0" ipadx="40"/>
+                </constraints>
+                <properties>
+                  <background color="-1"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="717e2" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="1.0" ipadx="10"/>
+                </constraints>
+                <properties>
+                  <background color="-16777216"/>
+                  <text value="Vehicle capacity [m3]"/>
+                </properties>
+              </component>
+              <component id="b52ac" class="javax.swing.JFormattedTextField" binding="fSizeLimit">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="40" height="-1"/>
+                    <maximum-size width="40" height="-1"/>
+                  </grid>
+                  <gridbag weightx="1.0" weighty="1.0" ipadx="40"/>
+                </constraints>
+                <properties>
+                  <background color="-1"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="80cd2" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="19"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="1.0" ipadx="10"/>
+                </constraints>
+                <properties>
+                  <text value="Number of vehicles"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <component id="85bde" class="javax.swing.JComboBox" binding="boxAlgorithms">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="29"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <model/>
+            </properties>
+          </component>
+          <component id="efd65" class="javax.swing.JButton" binding="bGetDistance">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="35"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <text value="Get distance matrix"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="66b41" binding="rightPanel" layout-manager="GridBagLayout">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0" ipadx="130"/>
+        </constraints>
+        <properties>
+          <maximumSize width="234" height="615"/>
+        </properties>
+        <border type="etched"/>
+        <children>
+          <component id="4d29f" class="javax.swing.JButton" binding="bFindSolution">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="35"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <text value="Find solution"/>
+            </properties>
+          </component>
+          <scrollpane id="cc58e" binding="jspRouteDetails">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="300" height="-1"/>
+                <preferred-size width="300" height="214"/>
+                <maximum-size width="300" height="-1"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <maximumSize width="220" height="32767"/>
+              <minimumSize width="220" height="43"/>
+              <preferredSize width="220" height="441"/>
+            </properties>
+            <border type="etched" title="Route details">
+              <font name="DejaVu Sans Mono" size="11" style="0"/>
+            </border>
+            <children>
+              <component id="52ecf" class="javax.swing.JTable" binding="tRouteDetails">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
+          <grid id="4aac5" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="-1" height="80"/>
+                <maximum-size width="-1" height="80"/>
+              </grid>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties/>
+            <border type="etched" title="Solution details">
+              <font name="Dialog" size="11" style="0"/>
+            </border>
+            <children>
+              <component id="40a3b" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Total distance cost:"/>
+                </properties>
+              </component>
+              <component id="76d70" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Total duration cost:"/>
+                </properties>
+              </component>
+              <component id="17eac" class="javax.swing.JTextArea" binding="fTotalDurationCost">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+              <component id="83dec" class="javax.swing.JTextArea" binding="fTotalDistanceCost">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <scrollpane id="e161d" binding="jspSolutions">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0" ipady="100"/>
+            </constraints>
+            <properties/>
+            <border type="etched" title="Solutions">
+              <font name="Dialog" size="11" style="0"/>
+            </border>
+            <children/>
+          </scrollpane>
+        </children>
+      </grid>
+      <grid id="ebb70" binding="bottomPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="5" left="5" bottom="5" right="5"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties/>
+        <border type="etched">
+          <font/>
+        </border>
+        <children>
+          <scrollpane id="2faf6">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="150" height="50"/>
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="1ca9f" class="javax.swing.JTextArea" binding="appLog">
+                <constraints/>
+                <properties>
+                  <editable value="false"/>
+                  <enabled value="true"/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

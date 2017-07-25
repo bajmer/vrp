@@ -1,4 +1,6 @@
-package project;
+package com.vrp.bajmer.core;
+
+import javax.swing.*;
 
 /**
  * Created by Marcin on 2017-06-25.
@@ -12,14 +14,17 @@ public class RouteSegment {
     private double distance;
     private double duration;
     private double clarkWrightSaving;
+    private String geometry;
+    private ImageIcon imageIcon;
 
-    public RouteSegment(Customer src, Customer dst, double distance, double duration) {
+    public RouteSegment(Customer src, Customer dst, double distance, double duration, String geometry) {
         this.id = routeSegmentID;
         routeSegmentID++;
         this.src = src;
         this.dst = dst;
         this.distance = distance;
         this.duration = duration;
+        this.geometry = geometry;
     }
 
     public int getId() {
@@ -68,5 +73,21 @@ public class RouteSegment {
 
     public void setClarkWrightSaving(double clarkWrightSaving) {
         this.clarkWrightSaving = clarkWrightSaving;
+    }
+
+    public String getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(String geometry) {
+        this.geometry = geometry;
+    }
+
+    public ImageIcon getImageIcon() {
+        return imageIcon;
+    }
+
+    public void setImageIcon(ImageIcon imageIcon) {
+        this.imageIcon = imageIcon;
     }
 }

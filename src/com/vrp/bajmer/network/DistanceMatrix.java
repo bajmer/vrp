@@ -1,11 +1,11 @@
-package network;
+package com.vrp.bajmer.network;
 
+import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.RouteSegment;
+import com.vrp.bajmer.core.Storage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import project.Customer;
-import project.Database;
-import project.RouteSegment;
 
 import java.math.BigDecimal;
 
@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
-    private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
-    private static final String endOfURL = "?generate_hints=false&overview=false";
-//    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+    //    private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
+    private static final String endOfURL = "?generate_hints=false";
+    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
 
     //private String fullURL = "http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219";
     //private String fullURL = "http://192.168.56.101:5000/table/v1/driving/20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626";
@@ -28,10 +28,10 @@ public class DistanceMatrix extends JSON {
     public void downloadDistanceMatrix() throws Exception {
         logger.info("Downloading distance matrix...");
         try {
-            for (int i = 0; i < Database.getCustomerList().size(); i++) {
-                for (int j = i; j < Database.getCustomerList().size(); j++) {
-                    Customer src = Database.getCustomerList().get(i);
-                    Customer dst = Database.getCustomerList().get(j);
+            for (int i = 0; i < Storage.getCustomerList().size(); i++) {
+                for (int j = i; j < Storage.getCustomerList().size(); j++) {
+                    Customer src = Storage.getCustomerList().get(i);
+                    Customer dst = Storage.getCustomerList().get(j);
                     logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
                     if (j != i) {
                         double srcLat = src.getLatitude();
@@ -45,9 +45,10 @@ public class DistanceMatrix extends JSON {
                                 if (jsonObject != null) {
                                     double distanceInKm = getDistanceFromJSON(jsonObject);
                                     double durationInMin = getDurationFromJSON(jsonObject);
+                                    String geometry = getGeometryFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
                                     if (distanceInKm > 0) {
-                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin));
+                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin, geometry));
                                         src.getDistances().put(dst.getId(), distanceInKm);
                                         src.getDurations().put(dst.getId(), durationInMin);
                                         dst.getDistances().put(src.getId(), distanceInKm);
@@ -103,5 +104,15 @@ public class DistanceMatrix extends JSON {
         } else {
             return duration;
         }
+    }
+
+    private String getGeometryFromJSON(JSONObject jsonObject) {
+        String geometry = "";
+        try {
+            geometry = jsonObject.getJSONArray("routes").getJSONObject(0).getString("geometry");
+        } catch (org.json.JSONException e) {
+            logger.info("Error while getting geometry from JSON object!");
+        }
+        return geometry;
     }
 }
