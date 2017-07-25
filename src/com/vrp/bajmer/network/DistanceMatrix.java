@@ -16,7 +16,7 @@ public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
     private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
-    private static final String endOfURL = "?generate_hints=false&overview=false";
+    private static final String endOfURL = "?generate_hints=false";
 //    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
 
     //private String fullURL = "http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219";
@@ -45,9 +45,10 @@ public class DistanceMatrix extends JSON {
                                 if (jsonObject != null) {
                                     double distanceInKm = getDistanceFromJSON(jsonObject);
                                     double durationInMin = getDurationFromJSON(jsonObject);
+                                    String geometry = getGeometryFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
                                     if (distanceInKm > 0) {
-                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin));
+                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin, geometry));
                                         src.getDistances().put(dst.getId(), distanceInKm);
                                         src.getDurations().put(dst.getId(), durationInMin);
                                         dst.getDistances().put(src.getId(), distanceInKm);
@@ -103,5 +104,15 @@ public class DistanceMatrix extends JSON {
         } else {
             return duration;
         }
+    }
+
+    private String getGeometryFromJSON(JSONObject jsonObject) {
+        String geometry = "";
+        try {
+            geometry = jsonObject.getJSONArray("routes").getJSONObject(0).getString("geometry");
+        } catch (org.json.JSONException e) {
+            logger.info("Error while getting geometry from JSON object!");
+        }
+        return geometry;
     }
 }

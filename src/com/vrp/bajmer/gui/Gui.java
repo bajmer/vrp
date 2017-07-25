@@ -217,7 +217,8 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     public void valueChanged(ListSelectionEvent e) {
         Object source = e.getSource();
         if (source == tCustomers.getSelectionModel()) {
-            int index = (int) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
+            String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
+            int index = Integer.parseInt(id);
             Customer c = Storage.getCustomerList().get(index);
             ImageIcon imageIcon = c.getImageIcon();
             if (imageIcon == null) {
@@ -225,9 +226,22 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             } else {
                 mapLabel.setIcon(imageIcon);
             }
-        } else if (source == tRouteSegments) {
-
-        } else if (source == tRouteDetails) {
+        } else if (source == tRouteSegments.getSelectionModel()) {
+            String sFrom = (String) tRouteSegments.getValueAt(tRouteSegments.getSelectedRow(), 0);
+            String sTo = (String) tRouteSegments.getValueAt(tRouteSegments.getSelectedRow(), 1);
+            int from = Integer.parseInt(sFrom);
+            int to = Integer.parseInt(sTo);
+            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+                if (rs.getSrc().getId() == from && rs.getDst().getId() == to) {
+                    ImageIcon imageIcon = rs.getImageIcon();
+                    if (imageIcon == null) {
+                        mapImage.createRouteSegmentImage(rs);
+                    } else {
+                        mapLabel.setIcon(imageIcon);
+                    }
+                }
+            }
+        } else if (source == tRouteDetails.getSelectionModel()) {
 
         }
     }

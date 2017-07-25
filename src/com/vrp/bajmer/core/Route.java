@@ -16,6 +16,7 @@ public class Route {
     private double totalDuration;
     private double currentPackagesWeight;
     private double currentPackagesSize;
+    private String geometry;
     private ImageIcon imageIcon;
 
     public Route() {
@@ -26,6 +27,7 @@ public class Route {
         this.totalDuration = 0.0;
         this.currentPackagesWeight = 0.0;
         this.currentPackagesSize = 0.0;
+        this.geometry = "";
     }
 
     public int getId() {
@@ -76,6 +78,14 @@ public class Route {
         this.currentPackagesSize = currentPackagesSize;
     }
 
+    public String getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(String geometry) {
+        this.geometry = geometry;
+    }
+
     public ImageIcon getImageIcon() {
         return imageIcon;
     }
@@ -84,7 +94,7 @@ public class Route {
         this.imageIcon = imageIcon;
     }
 
-    public void addCustomerToFirstPosition(Customer customer, double distance, double duration) {
+    public void addCustomerToFirstPosition(Customer customer, double distance, double duration, String segmentGeometry) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
@@ -93,9 +103,10 @@ public class Route {
         totalDuration += duration + customer.getServiceTime();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
+        geometry = segmentGeometry + geometry;
     }
 
-    public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
+    public void addCustomerToLastPosition(Customer customer, double distance, double duration, String segmentGeometry) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
@@ -103,6 +114,7 @@ public class Route {
         totalDuration += duration + customer.getServiceTime();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
+        geometry = geometry + segmentGeometry;
     }
 
     public void mergeRoute(Route route) {
@@ -113,6 +125,7 @@ public class Route {
         totalDuration += route.getTotalDuration();
         totalDistance = round(totalDistance);
         totalDuration = round(totalDuration);
+        geometry = geometry + route.getGeometry();
     }
 
     //    funkcja sprawdzająca warunki dodania klienta do trasy

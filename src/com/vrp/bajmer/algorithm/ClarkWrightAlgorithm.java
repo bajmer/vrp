@@ -82,6 +82,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             Customer dst = segment.getDst();
             Double distance = segment.getDistance();
             Double duration = segment.getDuration();
+            String segmentGeometry = segment.getGeometry();
             if (src.getId() != 0 && dst.getId() != 0) {
                 logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
 //            żaden klient nie należy do trasy
@@ -89,8 +90,8 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     if (src.getPackageWeight() + dst.getPackageWeight() <= weightLimit
                             && src.getPackageSize() + dst.getPackageSize() <= sizeLimit) {
                         Route route = new Route();
-                        route.addCustomerToFirstPosition(src, 0, 0);
-                        route.addCustomerToLastPosition(dst, distance, duration);
+                        route.addCustomerToFirstPosition(src, 0, 0, segmentGeometry);
+                        route.addCustomerToLastPosition(dst, distance, duration, segmentGeometry);
                         logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
                         logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                         route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -107,14 +108,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     for (Route route : routes) {
                         if (route.canAddCustomer(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(dst)) {
-                                route.addCustomerToFirstPosition(src, distance, duration);
+                                route.addCustomerToFirstPosition(src, distance, duration, segmentGeometry);
                                 logger.debug("Customer with id " + src.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                                 logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
                                 break;
                             } else if (route.isCustomerOnLastPosition(dst)) {
-                                route.addCustomerToLastPosition(src, distance, duration);
+                                route.addCustomerToLastPosition(src, distance, duration, segmentGeometry);
                                 logger.debug("Customer with id " + src.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -129,14 +130,14 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     for (Route route : routes) {
                         if (route.canAddCustomer(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
                             if (route.isCustomerOnFirstPosition(src)) {
-                                route.addCustomerToFirstPosition(dst, distance, duration);
+                                route.addCustomerToFirstPosition(dst, distance, duration, segmentGeometry);
                                 logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                                 logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
                                 break;
                             } else if (route.isCustomerOnLastPosition(src)) {
-                                route.addCustomerToLastPosition(dst, distance, duration);
+                                route.addCustomerToLastPosition(dst, distance, duration, segmentGeometry);
                                 logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
                                 route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
@@ -199,8 +200,18 @@ public class ClarkWrightAlgorithm extends Algorithm {
         for (Route route : routes) {
             int firstCustomerID = route.getCustomersInRoute().get(0).getId();
             int lastCustomerID = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1).getId();
-            route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID));
-            route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
+            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == firstCustomerID) {
+                    route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID), rs.getGeometry());
+                    break;
+                }
+            }
+            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
+                    route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID), rs.getGeometry());
+                    break;
+                }
+            }
         }
     }
 
