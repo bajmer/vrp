@@ -35,6 +35,7 @@ cmake-build-debug/
 /lib/
 /logs/
 /solution_images/
+/input/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -58,3 +59,4 @@ fabric.properties
 *.ipr
 
 # End of https://www.gitignore.io/api/intellij+iml
+

@@ -10,13 +10,15 @@ public class Solution {
     private int solutionID;
     private String usedAlgorithm;
     private ArrayList<Route> listOfRoutes;
+    private Customer depot;
     private double totalDistanceCost;
     private double totalDurationCost;
     private ImageIcon imageIcon;
 
-    public Solution(int problemID, String usedAlgorithm) {
+    public Solution(int problemID, String usedAlgorithm, Customer depot) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
+        this.depot = depot;
         this.listOfRoutes = new ArrayList<>();
         this.totalDistanceCost = 0.0;
         this.totalDurationCost = 0.0;
@@ -36,6 +38,14 @@ public class Solution {
 
     public void setListOfRoutes(ArrayList<Route> listOfRoutes) {
         this.listOfRoutes = listOfRoutes;
+    }
+
+    public Customer getDepot() {
+        return depot;
+    }
+
+    public void setDepot(Customer depot) {
+        this.depot = depot;
     }
 
     public String getUsedAlgorithm() {

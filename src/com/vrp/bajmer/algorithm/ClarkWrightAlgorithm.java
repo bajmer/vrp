@@ -23,7 +23,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
     public ClarkWrightAlgorithm(Problem problem) {
         super(problem);
         super.setAlgorithmName(name);
-        super.setSolution(new Solution(problem.getProblemID(), name));
+        super.setSolution(new Solution(problem.getProblemID(), name, problem.getDepot()));
         customers = Storage.getCustomerList();
         routeSegments = Storage.getRouteSegmentsList();
         routes = super.getSolution().getListOfRoutes();
@@ -118,6 +118,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                                 break;
                             } else if (route.isCustomerOnLastPosition(dst)) {
                                 route.addCustomerToLastPosition(src, distance, duration);
+                                segment.swapSrcDst();
                                 route.addRouteSegmentToEnd(segment);
                                 logger.debug("Customer with id " + src.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
@@ -142,6 +143,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                                 break;
                             } else if (route.isCustomerOnLastPosition(src)) {
                                 route.addCustomerToLastPosition(dst, distance, duration);
+                                segment.swapSrcDst();
                                 route.addRouteSegmentToEnd(segment);
                                 logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
                                 logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
@@ -216,6 +218,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             for (RouteSegment rs : Storage.getRouteSegmentsList()) {
                 if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
                     route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
+                    rs.swapSrcDst();
                     route.addRouteSegmentToEnd(rs);
                     break;
                 }

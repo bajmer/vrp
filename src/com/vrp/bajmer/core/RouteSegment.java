@@ -11,6 +11,8 @@ public class RouteSegment {
     private int id;
     private Customer src;
     private Customer dst;
+    private String departure;
+    private String arrival;
     private double distance;
     private double duration;
     private double clarkWrightSaving;
@@ -22,6 +24,8 @@ public class RouteSegment {
         routeSegmentID++;
         this.src = src;
         this.dst = dst;
+        this.departure = "";
+        this.arrival = "";
         this.distance = distance;
         this.duration = duration;
         this.geometry = geometry;
@@ -59,6 +63,22 @@ public class RouteSegment {
         this.distance = distance;
     }
 
+    public String getDeparture() {
+        return departure;
+    }
+
+    public void setDeparture(String departure) {
+        this.departure = departure;
+    }
+
+    public String getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(String arrival) {
+        this.arrival = arrival;
+    }
+
     public double getDuration() {
         return duration;
     }
@@ -89,5 +109,19 @@ public class RouteSegment {
 
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
+    }
+
+    public void swapSrcDst() {
+        Customer tmp = this.src;
+        this.src = this.dst;
+        this.dst = tmp;
+    }
+
+    @Override
+    public String toString() {
+        return "From: " + src.getId()
+                + ", To: " + dst.getId()
+                + ", Distance: " + this.distance
+                + "km, Duration: " + this.duration + "min";
     }
 }

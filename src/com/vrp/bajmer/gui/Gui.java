@@ -48,7 +48,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JButton bGetDistance;
     private JButton bFindSolution;
     private JTable tCustomers;
-    private JTable tRouteSegments;
     private JTable tRouteDetails;
     private JFormattedTextField fAlgorithmId;
     private JFormattedTextField fNumberOfVehicles;
@@ -57,16 +56,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JComboBox boxAlgorithms;
     private JTextArea appLog;
     private JScrollPane jspCustomers;
-    private JScrollPane jspRouteSegments;
     private JScrollPane jspRouteDetails;
     private JScrollPane jspSolutions;
-    private JTextArea fTotalDistanceCost;
-    private JTextArea fTotalDurationCost;
     private JTree treeSolutions;
     private JFrame algorithmProperties;
 
     private Vector<String> customersTableColumns;
-    private Vector<String> routeSegmentsTableColumns;
     private Vector<String> routeDetailsTableColumns;
     private String algorithmName;
     private MapImage mapImage;
@@ -96,7 +91,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         boxAlgorithms.setSelectedIndex(0);
 
         this.createCustomerTable();
-        this.createRouteSegmentsTable();
         this.createRouteDetailsTable();
         this.createSolutionsTree();
 
@@ -119,7 +113,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 if (customersInputFile != null) {
                     fileReader.readFile(customersInputFile);
 
-                    this.setEmptyTable(tRouteSegments, routeSegmentsTableColumns);
                     this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
                 } else {
                     return;
@@ -143,7 +136,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 distanceMatrix.downloadDistanceMatrix();
                 bGetDistance.setEnabled(false);
                 boxAlgorithms.setEnabled(true);
-                this.fillRouteSegmentsTable();
             } catch (Exception ex) {
                 logger.error("Unexpected error while downloading the distance matrix from server!", ex);
             }
@@ -171,44 +163,62 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         third_algorithm.runAlgorithm();
                         break;
                 }
-                this.showSolutionDetails();
+                this.addNodeToSolutionsTree();
             } catch (Exception ex) {
                 logger.error("Unexpected error while calculating the solution!", ex);
             }
 
-            try {
-                Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
-                mapImage.createSolutionImages(newestSolution);
-            } catch (Exception ex) {
-                logger.error("Unexpected error while drawing the solution!", ex);
-            }
+//            try {
+//                Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+//                mapImage.createSolutionImage(newestSolution);
+//            } catch (Exception ex) {
+//                logger.error("Unexpected error while drawing the solution!", ex);
+//            }
         }
     }
 
     @Override
     public void valueChanged(TreeSelectionEvent e) {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
-
-        if (node == null)
+        DefaultMutableTreeNode choosedNode = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
+        if (choosedNode == null)
             return;
 
-        if (!node.isRoot()) {
-            if (!node.isLeaf()) {
-//                this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-//                mapLabel.setIcon(null);
-//                mapLabel.revalidate();
-//                wyświetlanie rozwiązania
-                Solution s = (Solution) node.getUserObject();
-                mapLabel.setIcon(s.getImageIcon());
-            } else {
-//                wyświetlanie trasy
-                Route r = (Route) node.getUserObject();
-                mapLabel.setIcon(r.getImageIcon());
-//                wypełnienie szczegółów trasy
-                this.fillRouteDetailsTable(r);
+        if (choosedNode.getLevel() == 0) {
+//            root
+            setEmptyTable(this.tRouteDetails, this.routeDetailsTableColumns);
+        } else if (choosedNode.getLevel() == 1) {
+//            solution
+            Solution s = (Solution) choosedNode.getUserObject();
+            ImageIcon imageIcon = s.getImageIcon();
+            if (imageIcon == null) {
+                mapImage.createSolutionImage(s);
             }
-        } else {
-            this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+            mapLabel.setIcon(s.getImageIcon());
+        } else if (choosedNode.getLevel() == 2) {
+//            route
+            DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
+            Solution s = (Solution) solutionNode.getUserObject();
+            Route r = (Route) choosedNode.getUserObject();
+
+            ImageIcon imageIcon = r.getImageIcon();
+            if (imageIcon == null) {
+                mapImage.createRouteImage(s, r);
+            }
+            mapLabel.setIcon(r.getImageIcon());
+            fillRouteDetailsTable(r);
+        } else if (choosedNode.getLevel() == 3) {
+//            route segment
+            DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
+            DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
+            Solution s = (Solution) solutionNode.getUserObject();
+            Route r = (Route) routeNode.getUserObject();
+            RouteSegment rs = (RouteSegment) choosedNode.getUserObject();
+
+            ImageIcon imageIcon = rs.getImageIcon();
+            if (imageIcon == null) {
+                mapImage.createSegmentImage(s, r, rs);
+            }
+            mapLabel.setIcon(rs.getImageIcon());
         }
     }
 
@@ -225,32 +235,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             } else {
                 mapLabel.setIcon(imageIcon);
             }
-        } else if (source == tRouteSegments.getSelectionModel()) {
-            String sFrom = (String) tRouteSegments.getValueAt(tRouteSegments.getSelectedRow(), 0);
-            String sTo = (String) tRouteSegments.getValueAt(tRouteSegments.getSelectedRow(), 1);
-            int from = Integer.parseInt(sFrom);
-            int to = Integer.parseInt(sTo);
-            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
-                if (rs.getSrc().getId() == from && rs.getDst().getId() == to) {
-                    ImageIcon imageIcon = rs.getImageIcon();
-                    if (imageIcon == null) {
-                        mapImage.createRouteSegmentImage(rs);
-                    } else {
-                        mapLabel.setIcon(imageIcon);
-                    }
-                }
-            }
-        } else if (source == tRouteDetails.getSelectionModel()) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
-            Route r = (Route) node.getUserObject();
-            String id = (String) tRouteDetails.getValueAt(tRouteDetails.getSelectedRow(), 0);
-            int index = Integer.parseInt(id);
-            Customer c = Storage.getCustomerList().get(index);
-            if (!r.getCustomersIcons().containsKey(c)) {
-                mapImage.createRouteDetailsImage(r, c);
-            } else {
-                mapLabel.setIcon(r.getCustomersIcons().get(c));
-            }
+
         }
     }
 
@@ -311,63 +296,30 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);
     }
 
-    private void createRouteSegmentsTable() {
-        routeSegmentsTableColumns = new Vector<>();
-        routeSegmentsTableColumns.add("From");
-        routeSegmentsTableColumns.add("To");
-        routeSegmentsTableColumns.add("Distance [km]");
-        routeSegmentsTableColumns.add("Duration [min]");
-
-        setEmptyTable(tRouteSegments, routeSegmentsTableColumns);
-        tRouteSegments.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tRouteSegments.getSelectionModel().addListSelectionListener(this);
-
-        jspRouteSegments.setViewportView(tRouteSegments);
-    }
-
-    private void fillRouteSegmentsTable() {
-        Vector<Vector<String>> data = new Vector<>();
-        for (RouteSegment r : Storage.getRouteSegmentsList()) {
-            Vector<String> row = new Vector<>();
-            row.add(Integer.toString(r.getSrc().getId()));
-            row.add(Integer.toString(r.getDst().getId()));
-            row.add(Double.toString(r.getDistance()));
-            row.add(Double.toString(r.getDuration()));
-
-            data.add(row);
-        }
-
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setDataVector(data, routeSegmentsTableColumns);
-        tRouteSegments.setModel(tableModel);
-        tRouteSegments.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
-        tRouteSegments.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tRouteSegments.getColumnModel().getColumn(0).setPreferredWidth(60);
-        tRouteSegments.getColumnModel().getColumn(1).setPreferredWidth(60);
-        tRouteSegments.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tRouteSegments.getColumnModel().getColumn(3).setPreferredWidth(100);
-    }
-
     private void createRouteDetailsTable() {
         routeDetailsTableColumns = new Vector<>();
-        routeDetailsTableColumns.add("Customer ID");
-        routeDetailsTableColumns.add("Address");
-        routeDetailsTableColumns.add("Arrival time");
+        routeDetailsTableColumns.add("From");
+        routeDetailsTableColumns.add("Departure");
+        routeDetailsTableColumns.add("To");
+        routeDetailsTableColumns.add("Arrival");
+        routeDetailsTableColumns.add("Distance [km]");
+        routeDetailsTableColumns.add("Duration [min]");
 
         setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-        tRouteDetails.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tRouteDetails.getSelectionModel().addListSelectionListener(this);
 
         jspRouteDetails.setViewportView(tRouteDetails);
     }
 
     private void fillRouteDetailsTable(Route route) {
         Vector<Vector<String>> data = new Vector<>();
-        for (Customer c : route.getCustomersInRoute()) {
+        for (RouteSegment rs : route.getRouteSegments()) {
             Vector<String> row = new Vector<>();
-            row.add(Integer.toString(c.getId()));
-            row.add(c.getAddress());
-            row.add(c.getArrivalTime());
+            row.add(rs.getSrc().getAddress());
+            row.add(rs.getDeparture());
+            row.add(rs.getDst().getAddress());
+            row.add(rs.getArrival());
+            row.add(Double.toString(rs.getDistance()));
+            row.add(Double.toString(rs.getDuration()));
 
             data.add(row);
         }
@@ -377,9 +329,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tRouteDetails.setModel(tableModel);
         tRouteDetails.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(35);
-        tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(200);
-        tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(80);
+        tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(230);
+        tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(80);
+        tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(230);
+        tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(80);
+        tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(100);
+        tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(100);
     }
 
     private void setEmptyTable(JTable table, Vector<String> columns) {
@@ -397,29 +352,25 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         jspSolutions.setViewportView(treeSolutions);
     }
 
-    private void showSolutionDetails() {
+    private void addNodeToSolutionsTree() {
         Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
-//        fTotalDistanceCost.setText(Double.toString(newestSolution.getTotalDistanceCost()) + " km");
-//        fTotalDurationCost.setText(Double.toString(newestSolution.getTotalDurationCost()) + " min");
 
-        addNodeToSolutionsTree(newestSolution);
-    }
+        DefaultMutableTreeNode solutionNode = new DefaultMutableTreeNode(newestSolution);
 
-    private void addNodeToSolutionsTree(Solution solution) {
-        DefaultMutableTreeNode parent = new DefaultMutableTreeNode(solution);
-
-        for (Route r : solution.getListOfRoutes()) {
-            DefaultMutableTreeNode child = new DefaultMutableTreeNode(r);
-            parent.insert(child, parent.getChildCount());
+        for (Route r : newestSolution.getListOfRoutes()) {
+            DefaultMutableTreeNode routeNode = new DefaultMutableTreeNode(r);
+            for (RouteSegment rs : r.getRouteSegments()) {
+                DefaultMutableTreeNode routeSegmentNode = new DefaultMutableTreeNode(rs);
+                routeNode.insert(routeSegmentNode, routeNode.getChildCount());
+            }
+            solutionNode.insert(routeNode, solutionNode.getChildCount());
         }
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeSolutions.getModel().getRoot();
         DefaultTreeModel model = (DefaultTreeModel) treeSolutions.getModel();
-        model.insertNodeInto(parent, root, root.getChildCount());
+        model.insertNodeInto(solutionNode, root, root.getChildCount());
 
         treeSolutions.expandPath(new TreePath(root.getPath()));
-        treeSolutions.scrollPathToVisible(new TreePath(parent.getPath()));
+        treeSolutions.scrollPathToVisible(new TreePath(solutionNode.getPath()));
     }
-
-
 }
