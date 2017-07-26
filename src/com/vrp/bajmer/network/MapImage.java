@@ -57,7 +57,7 @@ public class MapImage {
         return colours;
     }
 
-    public void createSolutionImage(Solution s) {
+    public void createSolutionImage(Solution s) throws IOException {
         String solutionImageName = imagePath + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
         logger.debug("Creating an images of solution " + solutionImageName + "...");
 
@@ -68,7 +68,7 @@ public class MapImage {
         logger.debug("Creating an images of solution " + solutionImageName + " has been completed.");
     }
 
-    public void createRouteImage(Solution s, Route r) {
+    public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = imagePath + "S" + s.getSolutionID() + "_R" + r.getId();
         logger.debug("Creating an images of route" + routeImageName + "...");
 
@@ -79,7 +79,7 @@ public class MapImage {
         logger.debug("Creating an images of route" + routeImageName + " has been completed.");
     }
 
-    public void createSegmentImage(Solution s, Route r, RouteSegment rs) {
+    public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = imagePath + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
         logger.debug("Creating an images of route segment" + routeSegmentImageName + "...");
 
@@ -90,7 +90,7 @@ public class MapImage {
         logger.debug("Creating an images of route segment " + routeSegmentImageName + " has been completed.");
     }
 
-    public void createCustomerImage(Customer c) {
+    public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = imagePath + "C" + c.getId();
         logger.debug("Creating an images of customer" + customerImageName + "...");
         String url = parseURL(c);
@@ -198,7 +198,7 @@ public class MapImage {
         return defaultBeginOfURL + markers + endOfURL;
     }
 
-    private void sendRequestToGoogleMaps(String url, String imageName) {
+    private void sendRequestToGoogleMaps(String url, String imageName) throws IOException {
         logger.debug("Sending request to Google Maps...");
         try {
             InputStream inputStream = new URL(url).openStream();
@@ -216,8 +216,10 @@ public class MapImage {
 
         } catch (MalformedURLException e) {
             logger.error("Bad URL address!");
+            throw e;
         } catch (IOException e) {
-            logger.error("Unexpected error while connecting to server!", e);
+            logger.error("Unexpected error while connecting to server!");
+            throw e;
         }
         logger.debug("Sending request to Google Maps has been completed.");
     }

@@ -167,13 +167,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             } catch (Exception ex) {
                 logger.error("Unexpected error while calculating the solution!", ex);
             }
-
-//            try {
-//                Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
-//                mapImage.createSolutionImage(newestSolution);
-//            } catch (Exception ex) {
-//                logger.error("Unexpected error while drawing the solution!", ex);
-//            }
         }
     }
 
@@ -185,27 +178,36 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         if (choosedNode.getLevel() == 0) {
 //            root
-            setEmptyTable(this.tRouteDetails, this.routeDetailsTableColumns);
+            setEmptyTable(tRouteDetails, routeDetailsTableColumns);
         } else if (choosedNode.getLevel() == 1) {
 //            solution
             Solution s = (Solution) choosedNode.getUserObject();
-            ImageIcon imageIcon = s.getImageIcon();
-            if (imageIcon == null) {
-                mapImage.createSolutionImage(s);
+            try {
+                ImageIcon imageIcon = s.getImageIcon();
+                if (imageIcon == null) {
+                    mapImage.createSolutionImage(s);
+                }
+                mapLabel.setIcon(s.getImageIcon());
+            } catch (Exception ex) {
+                logger.warn("Cannot create an image of the solution!");
+                logger.debug(ex);
             }
-            mapLabel.setIcon(s.getImageIcon());
         } else if (choosedNode.getLevel() == 2) {
 //            route
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) choosedNode.getUserObject();
-
-            ImageIcon imageIcon = r.getImageIcon();
-            if (imageIcon == null) {
-                mapImage.createRouteImage(s, r);
-            }
-            mapLabel.setIcon(r.getImageIcon());
             fillRouteDetailsTable(r);
+            try {
+                ImageIcon imageIcon = r.getImageIcon();
+                if (imageIcon == null) {
+                    mapImage.createRouteImage(s, r);
+                }
+                mapLabel.setIcon(r.getImageIcon());
+            } catch (Exception ex) {
+                logger.warn("Cannot create an image of the route!");
+                logger.debug(ex);
+            }
         } else if (choosedNode.getLevel() == 3) {
 //            route segment
             DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
@@ -213,12 +215,16 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) routeNode.getUserObject();
             RouteSegment rs = (RouteSegment) choosedNode.getUserObject();
-
-            ImageIcon imageIcon = rs.getImageIcon();
-            if (imageIcon == null) {
-                mapImage.createSegmentImage(s, r, rs);
+            try {
+                ImageIcon imageIcon = rs.getImageIcon();
+                if (imageIcon == null) {
+                    mapImage.createSegmentImage(s, r, rs);
+                }
+                mapLabel.setIcon(rs.getImageIcon());
+            } catch (Exception ex) {
+                logger.warn("Cannot create an image of the route segment!");
+                logger.debug(ex);
             }
-            mapLabel.setIcon(rs.getImageIcon());
         }
     }
 
@@ -229,13 +235,17 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
             int index = Integer.parseInt(id);
             Customer c = Storage.getCustomerList().get(index);
-            ImageIcon imageIcon = c.getImageIcon();
-            if (imageIcon == null) {
-                mapImage.createCustomerImage(c);
-            } else {
-                mapLabel.setIcon(imageIcon);
+            try {
+                ImageIcon imageIcon = c.getImageIcon();
+                if (imageIcon == null) {
+                    mapImage.createCustomerImage(c);
+                } else {
+                    mapLabel.setIcon(imageIcon);
+                }
+            } catch (Exception ex) {
+                logger.warn("Cannot create an image of customers!");
+                logger.debug(ex);
             }
-
         }
     }
 
