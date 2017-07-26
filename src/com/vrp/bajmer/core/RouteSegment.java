@@ -1,6 +1,7 @@
 package com.vrp.bajmer.core;
 
 import javax.swing.*;
+import java.time.Duration;
 
 /**
  * Created by Marcin on 2017-06-25.
@@ -14,12 +15,12 @@ public class RouteSegment {
     private String departure;
     private String arrival;
     private double distance;
-    private double duration;
+    private Duration duration;
     private double clarkWrightSaving;
     private String geometry;
     private ImageIcon imageIcon;
 
-    public RouteSegment(Customer src, Customer dst, double distance, double duration, String geometry) {
+    public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;
         routeSegmentID++;
         this.src = src;
@@ -79,11 +80,11 @@ public class RouteSegment {
         this.arrival = arrival;
     }
 
-    public double getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 

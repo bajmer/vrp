@@ -1,6 +1,7 @@
 package com.vrp.bajmer.core;
 
 import javax.swing.*;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,14 +18,14 @@ public class Customer {
     private double longitude = 0;
     private double packageWeight;
     private double packageSize;
-    private String minDeliveryHour;
-    private String maxDeliveryHour;
+    private LocalTime minDeliveryHour;
+    private LocalTime maxDeliveryHour;
     private String arrivalTime;
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Double> durations = new HashMap<>();
     private ImageIcon imageIcon;
 
-    public Customer(String address, double packageWeight, double packageSize, String minDeliveryHour, String maxDeliveryHour) {
+    public Customer(String address, double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
         this.id = customerID;
         customerID++;
         this.address = address;
@@ -108,19 +109,19 @@ public class Customer {
         this.packageSize = packageSize;
     }
 
-    public String getMinDeliveryHour() {
+    public LocalTime getMinDeliveryHour() {
         return minDeliveryHour;
     }
 
-    public void setMinDeliveryHour(String minDeliveryHour) {
+    public void setMinDeliveryHour(LocalTime minDeliveryHour) {
         this.minDeliveryHour = minDeliveryHour;
     }
 
-    public String getMaxDeliveryHour() {
+    public LocalTime getMaxDeliveryHour() {
         return maxDeliveryHour;
     }
 
-    public void setMaxDeliveryHour(String maxDeliveryHour) {
+    public void setMaxDeliveryHour(LocalTime maxDeliveryHour) {
         this.maxDeliveryHour = maxDeliveryHour;
     }
 

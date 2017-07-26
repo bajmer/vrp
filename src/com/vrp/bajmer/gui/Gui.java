@@ -285,8 +285,8 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             }
             row.add(Double.toString(c.getPackageWeight()));
             row.add(Double.toString(c.getPackageSize()));
-            row.add(c.getMinDeliveryHour());
-            row.add(c.getMaxDeliveryHour());
+            row.add(c.getMinDeliveryHour().toString());
+            row.add(c.getMaxDeliveryHour().toString());
 
             data.add(row);
         }
