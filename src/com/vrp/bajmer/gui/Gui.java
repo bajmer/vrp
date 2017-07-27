@@ -329,7 +329,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             row.add(rs.getDst().getAddress());
             row.add(rs.getArrival());
             row.add(Double.toString(rs.getDistance()));
-            row.add(Double.toString(rs.getDuration()));
+            row.add(Long.toString(rs.getDuration().toMinutes()));
 
             data.add(row);
         }

@@ -16,9 +16,9 @@ import java.time.Duration;
 public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
-    //    private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
+    private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
     private static final String endOfURL = "?generate_hints=false";
-    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+//    private final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
 
     //private String fullURL = "http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219";
     //private String fullURL = "http://192.168.56.101:5000/table/v1/driving/20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626;20.994873046875,52.50953477032727;22.313232421875,52.14697334064471;22.30224609375,52.696361078274485;21.346435546875,52.82932091031374;20.93994140625,52.74959372674114;20.159912109375,52.82932091031374;21.346435546875,52.5897007687178;21.785888671875,52.44261787120724;21.4013671875,52.0862573323384;21.07177734375,51.984880139916626";
@@ -45,16 +45,16 @@ public class DistanceMatrix extends JSON {
                                 JSONObject jsonObject = sendRequest(routeURL);
                                 if (jsonObject != null) {
                                     double distanceInKm = getDistanceFromJSON(jsonObject);
-                                    double durationInMin = getDurationFromJSON(jsonObject);
+                                    Duration duration = getDurationFromJSON(jsonObject);
                                     String geometry = getGeometryFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
                                     if (distanceInKm > 0) {
-                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, durationInMin, geometry));
+                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
                                         src.getDistances().put(dst.getId(), distanceInKm);
-                                        src.getDurations().put(dst.getId(), durationInMin);
+                                        src.getDurations().put(dst.getId(), duration);
                                         dst.getDistances().put(src.getId(), distanceInKm);
-                                        dst.getDurations().put(src.getId(), durationInMin);
-                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km, " + durationInMin + " min.");
+                                        dst.getDurations().put(src.getId(), duration);
+                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km, " + duration.toMinutes() + " min.");
                                     } else {
                                         logger.warn("There is incorrect distance for customers " + src.getId() + " and " + dst.getId() + ". New route segment is not created!");
                                     }
@@ -93,20 +93,15 @@ public class DistanceMatrix extends JSON {
     }
 
     private Duration getDurationFromJSON(JSONObject jsonObject) {
-        Duration duration;
+        Duration duration = Duration.ZERO;
         try {
             Double durationDouble = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("duration");
-            Duration.ofMinutes()
+            duration = Duration.parse(Integer.toString(durationDouble.intValue()));
         } catch (org.json.JSONException e) {
             logger.error("Error while getting duration from JSON object!");
-            return Duration.ofMinutes(0);
         }
-        if (duration > 0) {
-            double durationInMinutes = duration / 60;
-            return new BigDecimal(durationInMinutes).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-        } else {
-            return duration;
-        }
+        return duration;
+
     }
 
     private String getGeometryFromJSON(JSONObject jsonObject) {

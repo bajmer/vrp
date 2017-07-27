@@ -4,6 +4,7 @@ import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -81,7 +82,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             Customer src = segment.getSrc();
             Customer dst = segment.getDst();
             Double distance = segment.getDistance();
-            Double duration = segment.getDuration();
+            Duration duration = segment.getDuration();
 //            String segmentGeometry = segment.getGeometry();
             if (src.getId() != 0 && dst.getId() != 0) {
                 logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
@@ -90,7 +91,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                     if (src.getPackageWeight() + dst.getPackageWeight() <= weightLimit
                             && src.getPackageSize() + dst.getPackageSize() <= sizeLimit) {
                         Route route = new Route();
-                        route.addCustomerToFirstPosition(src, 0, 0);
+                        route.addCustomerToFirstPosition(src, 0, Duration.ZERO);
                         route.addCustomerToLastPosition(dst, distance, duration);
                         route.addRouteSegmentToEnd(segment);
                         logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
@@ -231,10 +232,10 @@ public class ClarkWrightAlgorithm extends Algorithm {
         logger.info("Saving solution...");
         logger.info("Wyznaczono " + routes.size() + " tras.");
         double totalDistance = 0;
-        double totalDuration = 0;
+        Duration totalDuration = Duration.ZERO;
         for (Route route : routes) {
             totalDistance += route.getTotalDistance();
-            totalDuration += route.getTotalDuration();
+            totalDuration.plus(route.getTotalDuration());
             logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
                     + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight()
                     + " kg, łączna objętość paczek - " + route.getCurrentPackagesSize() + " m3.");
@@ -248,7 +249,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             }
             logger.info(sb.toString());
         }
-        logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration + " min.");
+        logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration.toHours() + " godz. " + totalDuration);
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
         Storage.getSolutionsList().add(super.getSolution());

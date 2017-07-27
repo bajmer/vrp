@@ -1,6 +1,7 @@
 package com.vrp.bajmer.core;
 
 import javax.swing.*;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class Customer {
 
-    private static final double serviceTime = 5; //czas obsługi klienta w minutach
+    private static final Duration serviceTime = Duration.ofMinutes(5); //czas obsługi klienta w minutach
     private static int customerID;
     private int id;
     private String address;
@@ -22,7 +23,7 @@ public class Customer {
     private LocalTime maxDeliveryHour;
     private String arrivalTime;
     private Map<Integer, Double> distances = new HashMap<>();
-    private Map<Integer, Double> durations = new HashMap<>();
+    private Map<Integer, Duration> durations = new HashMap<>();
     private ImageIcon imageIcon;
 
     public Customer(String address, double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
@@ -43,6 +44,10 @@ public class Customer {
 
     public static void setCustomerID(int customerID) {
         Customer.customerID = customerID;
+    }
+
+    public static Duration getServiceTime() {
+        return serviceTime;
     }
 
     public String getAddress() {
@@ -85,11 +90,11 @@ public class Customer {
         this.distances = distances;
     }
 
-    public Map<Integer, Double> getDurations() {
+    public Map<Integer, Duration> getDurations() {
         return durations;
     }
 
-    public void setDurations(Map<Integer, Double> durations) {
+    public void setDurations(Map<Integer, Duration> durations) {
         this.durations = durations;
     }
 
@@ -131,10 +136,6 @@ public class Customer {
 
     public void setArrivalTime(String arrivalTime) {
         this.arrivalTime = arrivalTime;
-    }
-
-    public double getServiceTime() {
-        return serviceTime;
     }
 
     public ImageIcon getImageIcon() {

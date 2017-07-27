@@ -2,6 +2,7 @@ package com.vrp.bajmer.core;
 
 import javax.swing.*;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Route {
     private ArrayList<RouteSegment> routeSegments;
     private Map<Customer, ImageIcon> customersIcons;
     private double totalDistance;
-    private double totalDuration;
+    private Duration totalDuration;
     private double currentPackagesWeight;
     private double currentPackagesSize;
     private ImageIcon imageIcon;
@@ -29,7 +30,7 @@ public class Route {
         this.routeSegments = new ArrayList<>();
         this.customersIcons = new HashMap<>();
         this.totalDistance = 0.0;
-        this.totalDuration = 0.0;
+        this.totalDuration = Duration.ZERO;
         this.currentPackagesWeight = 0.0;
         this.currentPackagesSize = 0.0;
     }
@@ -74,11 +75,11 @@ public class Route {
         this.totalDistance = totalDistance;
     }
 
-    public double getTotalDuration() {
+    public Duration getTotalDuration() {
         return totalDuration;
     }
 
-    public void setTotalDuration(double totalDuration) {
+    public void setTotalDuration(Duration totalDuration) {
         this.totalDuration = totalDuration;
     }
 
@@ -106,25 +107,23 @@ public class Route {
         this.imageIcon = imageIcon;
     }
 
-    public void addCustomerToFirstPosition(Customer customer, double distance, double duration) {
+    public void addCustomerToFirstPosition(Customer customer, double distance, Duration duration) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration += duration + customer.getServiceTime();
+        totalDuration.plus(duration).plus(Customer.getServiceTime());
         totalDistance = round(totalDistance);
-        totalDuration = round(totalDuration);
     }
 
-    public void addCustomerToLastPosition(Customer customer, double distance, double duration) {
+    public void addCustomerToLastPosition(Customer customer, double distance, Duration duration) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration += duration + customer.getServiceTime();
+        totalDuration.plus(duration).plus(Customer.getServiceTime());
         totalDistance = round(totalDistance);
-        totalDuration = round(totalDuration);
     }
 
     public void mergeRoute(Route route) {
@@ -132,9 +131,8 @@ public class Route {
         currentPackagesWeight += route.getCurrentPackagesWeight();
         currentPackagesSize += route.getCurrentPackagesSize();
         totalDistance += route.getTotalDistance();
-        totalDuration += route.getTotalDuration();
+        totalDuration.plus(route.getTotalDuration());
         totalDistance = round(totalDistance);
-        totalDuration = round(totalDuration);
 
         for (RouteSegment rs : route.getRouteSegments()) {
             routeSegments.add(rs);

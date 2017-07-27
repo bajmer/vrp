@@ -1,6 +1,7 @@
 package com.vrp.bajmer.core;
 
 import javax.swing.*;
+import java.time.Duration;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,7 @@ public class Solution {
     private ArrayList<Route> listOfRoutes;
     private Customer depot;
     private double totalDistanceCost;
-    private double totalDurationCost;
+    private Duration totalDurationCost;
     private ImageIcon imageIcon;
 
     public Solution(int problemID, String usedAlgorithm, Customer depot) {
@@ -21,7 +22,7 @@ public class Solution {
         this.depot = depot;
         this.listOfRoutes = new ArrayList<>();
         this.totalDistanceCost = 0.0;
-        this.totalDurationCost = 0.0;
+        this.totalDurationCost = Duration.ZERO;
     }
 
     public int getSolutionID() {
@@ -64,11 +65,11 @@ public class Solution {
         this.totalDistanceCost = totalDistanceCost;
     }
 
-    public double getTotalDurationCost() {
+    public Duration getTotalDurationCost() {
         return totalDurationCost;
     }
 
-    public void setTotalDurationCost(double totalDurationCost) {
+    public void setTotalDurationCost(Duration totalDurationCost) {
         this.totalDurationCost = totalDurationCost;
     }
 
