@@ -150,17 +150,17 @@ public class Route {
         }
     }
 
-    public void addRouteSegmentToBegin(RouteSegment routeSegment) {
-
-        routeSegments.add(0, routeSegment);
+    public void addSegmentToFirstPosition(RouteSegment routeSegment) {
+        int firstPosition = 0;
+        routeSegments.add(firstPosition, routeSegment);
     }
 
-    public void addRouteSegmentToEnd(RouteSegment routeSegment) {
-        LocalTime arrival = startTime.plusMinutes(totalDuration.toMinutes());
-        LocalTime departure = startTime.plusMinutes(totalDuration.toMinutes()).minusMinutes(Customer.getServiceTime().toMinutes());
-
-        routeSegment.setArrival(arrival);
-        routeSegment.setDeparture(departure);
+    public void addSegmentToLastPosition(RouteSegment routeSegment) {
+//        LocalTime arrival = startTime.plusMinutes(totalDuration.toMinutes());
+//        LocalTime departure = startTime.plusMinutes(totalDuration.toMinutes()).minusMinutes(Customer.getServiceTime().toMinutes());
+//
+//        routeSegment.setArrival(arrival);
+//        routeSegment.setDeparture(departure);
         routeSegments.add(routeSegment);
     }
 

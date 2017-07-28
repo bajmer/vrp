@@ -32,7 +32,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
 
     @Override
     public void runAlgorithm() {
-        logger.info("Running the Clark-Wright com.vrp.bajmer.algorithm...");
+        logger.info("Running the Clark-Wright algorithm...");
         createSavings();
         sortSavings();
         searchSolution();
@@ -79,116 +79,143 @@ public class ClarkWrightAlgorithm extends Algorithm {
         double weightLimit = getProblem().getWeightLimitPerVehicle();
         double sizeLimit = getProblem().getSizeLimitPerVehicle();
         for (RouteSegment segment : routeSegments) {
+            logger.debug("Processing route segment: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
+
             Customer src = segment.getSrc();
             Customer dst = segment.getDst();
             Double distance = segment.getDistance();
             Duration duration = segment.getDuration();
-//            String segmentGeometry = segment.getGeometry();
-            if (src.getId() != 0 && dst.getId() != 0) {
-                logger.debug("Savings for loop: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
-//            żaden klient nie należy do trasy
-                if (!isCustomerInRoute(src) && !isCustomerInRoute(dst)) {
-                    if (src.getPackageWeight() + dst.getPackageWeight() <= weightLimit
-                            && src.getPackageSize() + dst.getPackageSize() <= sizeLimit) {
-                        Route route = new Route();
-                        route.addCustomerToFirstPosition(src, 0, Duration.ZERO);
-                        route.addCustomerToLastPosition(dst, distance, duration);
-                        route.addRouteSegmentToEnd(segment);
-                        logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
-                        logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                        route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                        logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
 
-                        if (!routes.contains(route)) {
-                            logger.debug("Adding route \"" + route.getId() + "\" to solution.");
-                            routes.add(route);
-                        }
+            if (!isCustomerInRoute(src) && !isCustomerInRoute(dst)) { //żaden klient nie należy do trasy
+                if (src.getPackageWeight() + dst.getPackageWeight() <= weightLimit //suma paczek nie przekracza limitów (masy i objętości)
+                        && src.getPackageSize() + dst.getPackageSize() <= sizeLimit) {
+                    Route route = new Route();
+                    route.addCustomerToFirstPosition(src, 0, Duration.ZERO);
+                    route.addCustomerToLastPosition(dst, distance, duration);
+                    route.addSegmentToLastPosition(segment);
+
+                    logger.debug("Creating new route with ID " + route.getId() + " for customers: " + src.getId() + "-" + dst.getId());
+                    logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                    route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                    logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+
+                    if (!routes.contains(route)) {
+                        logger.debug("Adding route \"" + route.getId() + "\" to solution.");
+                        routes.add(route);
+                        break;
                     }
                 }
+            }
 //            pierwszy klient nie należy do trasy, a drugi jest brzegowym węzłem trasy
-                else if (!isCustomerInRoute(src)) {
-                    for (Route route : routes) {
-                        if (route.canAddCustomer(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
-                            if (route.isCustomerOnFirstPosition(dst)) {
-                                route.addCustomerToFirstPosition(src, distance, duration);
-                                route.addRouteSegmentToBegin(segment);
-                                logger.debug("Customer with id " + src.getId() + " added as FIRST node to route " + route.getId());
-                                logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                                route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                                logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-                                break;
-                            } else if (route.isCustomerOnLastPosition(dst)) {
-                                route.addCustomerToLastPosition(src, distance, duration);
-                                segment.swapSrcDst();
-                                route.addRouteSegmentToEnd(segment);
-                                logger.debug("Customer with id " + src.getId() + " added as LAST node to route " + route.getId());
-                                logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                                route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                                logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-                                break;
-                            }
+            else if (!isCustomerInRoute(src)) {
+                for (Route route : routes) {
+                    if (route.canAddCustomer(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
+                        if (route.isCustomerOnFirstPosition(dst)) {
+//                            route.addCustomerToFirstPosition(src, distance, duration);
+                            route.addCustomerToFirstPosition(src);
+                            route.addSegmentToFirstPosition(segment);
+
+                            logger.debug("Customer with id " + src.getId() + " added on the FIRST position in route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+                            break;
+
+                        } else if (route.isCustomerOnLastPosition(dst)) {
+//                            route.addCustomerToLastPosition(src, distance, duration);
+                            route.addCustomerToLastPosition(src);
+                            segment.swapSrcDst();
+                            route.addSegmentToLastPosition(segment);
+
+                            logger.debug("Customer with id " + src.getId() + " added on the LAST position in route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+                            break;
                         }
                     }
                 }
+            }
 //            drugi klient nie należy do trasy, a pierwszy jest brzegowym węzłem trasy
-                else if (!isCustomerInRoute(dst)) {
-                    for (Route route : routes) {
-                        if (route.canAddCustomer(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
-                            if (route.isCustomerOnFirstPosition(src)) {
-                                route.addCustomerToFirstPosition(dst, distance, duration);
-                                route.addRouteSegmentToBegin(segment);
-                                logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
-                                logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                                route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                                logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-                                break;
-                            } else if (route.isCustomerOnLastPosition(src)) {
-                                route.addCustomerToLastPosition(dst, distance, duration);
-                                segment.swapSrcDst();
-                                route.addRouteSegmentToEnd(segment);
-                                logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
-                                logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                                route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                                logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+            else if (!isCustomerInRoute(dst)) {
+                for (Route route : routes) {
+                    if (route.canAddCustomer(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
+                        if (route.isCustomerOnFirstPosition(src)) {
+//                            route.addCustomerToFirstPosition(dst, distance, duration);
+                            route.addCustomerToFirstPosition(dst);
+                            segment.swapSrcDst();
+                            route.addSegmentToFirstPosition(segment);
+
+                            logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+                            break;
+
+                        } else if (route.isCustomerOnLastPosition(src)) {
+//                            route.addCustomerToLastPosition(dst, distance, duration);
+                            route.addCustomerToLastPosition(dst);
+                            route.addSegmentToLastPosition(segment);
+
+                            logger.debug("Customer with id " + dst.getId() + " added as LAST node to route " + route.getId());
+                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+                            break;
+                        }
+                    }
+                }
+            }
+
+//            obaj klienci należą do różnych tras, łączenie 2 tras w jedną
+            Route tmpRoute = null;
+            for (Route routeA : routes) {
+                for (Route routeB : routes) {
+                    if (routeA != routeB) {
+//                        węzły [s1,...,d1] oraz [s2,...,d2] mogą się połączyć w 4 sposoby
+                        if (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnFirstPosition(src)) { // s1,...,d1 <---> s2,...,d2
+                            //routeA jest 1 trasą, do niej doklejamy routeB
+                        } else if (routeA.isCustomerOnFirstPosition(src) && routeB.isCustomerOnLastPosition(dst)) { // s2,...,d2 <---> s1,...,d1
+                            //routeB jest 1 trasą, do niej doklejamy routeA
+                        } else if (routeA.isCustomerOnFirstPosition(src) && routeB.isCustomerOnFirstPosition(dst)) { // d1,...,s1 <---> s2,...,d2
+                            //routeA jest 1 trasą (obróconą), do niej doklejamy routeB
+                        } else if (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnLastPosition(src)) { // s2,...,d2 <---> d1,...,d1
+                            //routeB jest 1 trasą, do niej doklejamy route A (obróconą)
+                        }
+                        if ((routeA.isCustomerOnLastPosition(src) && routeB.isCustomerOnFirstPosition(dst))
+                                || (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnFirstPosition(src))) {
+                            if (routeA.getCurrentPackagesWeight() + routeB.getCurrentPackagesWeight() <= weightLimit
+                                    && routeA.getCurrentPackagesSize() + routeB.getCurrentPackagesSize() <= sizeLimit) {
+                                routeA.addSegmentToLastPosition(segment);
+                                routeA.mergeRoute(routeB);
+                                tmpRoute = routeB;
+                                logger.debug("Route \"" + routeA.getId() + "\" was merged with route \"" + routeB.getId() + "\"");
+                                logger.debug("Route \"" + routeA.getId() + "\" includes the following customers: ");
+                                routeA.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+                                logger.debug("and current packages weight for this route is " + routeA.getCurrentPackagesWeight());
                                 break;
                             }
                         }
                     }
                 }
+            }
 
-//            sprawdzanie możliwości połączenia dwóch tras
-                Route tmpRoute = null;
-                for (Route routeA : routes) {
-//                if (tmpRoute != null) {
-//                    break;
-//                }
-                    for (Route routeB : routes) {
-                        if (routeA != routeB) {
-                            if ((routeA.isCustomerOnLastPosition(src) && routeB.isCustomerOnFirstPosition(dst))
-                                    || (routeA.isCustomerOnLastPosition(dst) && routeB.isCustomerOnFirstPosition(src))) {
-                                if (routeA.getCurrentPackagesWeight() + routeB.getCurrentPackagesWeight() <= weightLimit
-                                        && routeA.getCurrentPackagesSize() + routeB.getCurrentPackagesSize() <= sizeLimit) {
-                                    routeA.addRouteSegmentToEnd(segment);
-                                    routeA.mergeRoute(routeB);
-                                    tmpRoute = routeB;
-                                    logger.debug("Route \"" + routeA.getId() + "\" was merged with route \"" + routeB.getId() + "\"");
-                                    logger.debug("Route \"" + routeA.getId() + "\" includes the following customers: ");
-                                    routeA.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                                    logger.debug("and current packages weight for this route is " + routeA.getCurrentPackagesWeight());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (tmpRoute != null) {
-                    logger.debug("Removing route \"" + tmpRoute.getId() + "\" from solution because of merge.");
-                    routes.remove(tmpRoute);
-                }
+            if (tmpRoute != null) {
+                logger.debug("Removing route \"" + tmpRoute.getId() + "\" from solution because of merge.");
+                routes.remove(tmpRoute);
             }
         }
 //        dodanie do tras odcinków od magazynu i do magazynu
+        for (Route route : routes) {
+            int first = 0;
+            int last = route.getCustomersInRoute().size() - 1;
+            Customer firstCustomer = route.getCustomersInRoute().get(first);
+            Customer lastCustomer = route.getCustomersInRoute().get(last);
+            if (firstCustomer.getId() == 0) {
+
+            }
+        }
+
         addDepotNodeAsFirstAndLast();
         logger.info("Calculating the solution has been completed.");
     }
@@ -212,7 +239,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             for (RouteSegment rs : Storage.getRouteSegmentsList()) {
                 if (rs.getSrc().getId() == 0 && rs.getDst().getId() == firstCustomerID) {
                     route.addCustomerToFirstPosition(depot, depot.getDistances().get(firstCustomerID), depot.getDurations().get(firstCustomerID));
-                    route.addRouteSegmentToBegin(rs);
+                    route.addSegmentToFirstPosition(rs);
                     break;
                 }
             }
@@ -220,7 +247,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
                 if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
                     route.addCustomerToLastPosition(depot, depot.getDistances().get(lastCustomerID), depot.getDurations().get(lastCustomerID));
                     rs.swapSrcDst();
-                    route.addRouteSegmentToEnd(rs);
+                    route.addSegmentToLastPosition(rs);
                     break;
                 }
             }
