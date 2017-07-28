@@ -325,9 +325,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         for (RouteSegment rs : route.getRouteSegments()) {
             Vector<String> row = new Vector<>();
             row.add(rs.getSrc().getAddress());
-            row.add(rs.getDeparture());
+            row.add(Integer.toString(rs.getDeparture().getHour()) + ":" + Integer.toString(rs.getDeparture().getMinute()));
             row.add(rs.getDst().getAddress());
-            row.add(rs.getArrival());
+            row.add(Integer.toString(rs.getArrival().getHour()) + ":" + Integer.toString(rs.getArrival().getMinute()));
             row.add(Double.toString(rs.getDistance()));
             row.add(Long.toString(rs.getDuration().toMinutes()));
 

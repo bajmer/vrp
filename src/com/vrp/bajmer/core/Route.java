@@ -3,6 +3,7 @@ package com.vrp.bajmer.core;
 import javax.swing.*;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class Route {
     private Map<Customer, ImageIcon> customersIcons;
     private double totalDistance;
     private Duration totalDuration;
+    private LocalTime startTime;
     private double currentPackagesWeight;
     private double currentPackagesSize;
     private ImageIcon imageIcon;
@@ -31,6 +33,7 @@ public class Route {
         this.customersIcons = new HashMap<>();
         this.totalDistance = 0.0;
         this.totalDuration = Duration.ZERO;
+        this.startTime = LocalTime.of(8, 0);
         this.currentPackagesWeight = 0.0;
         this.currentPackagesSize = 0.0;
     }
@@ -113,7 +116,11 @@ public class Route {
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration.plus(duration).plus(Customer.getServiceTime());
+        if (customer.getId() == 0) {
+            totalDuration = totalDuration.plus(duration);
+        } else {
+            totalDuration = totalDuration.plus(duration).plus(Customer.getServiceTime());
+        }
         totalDistance = round(totalDistance);
     }
 
@@ -122,7 +129,11 @@ public class Route {
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
         totalDistance += distance;
-        totalDuration.plus(duration).plus(Customer.getServiceTime());
+        if (customer.getId() == 0) {
+            totalDuration = totalDuration.plus(duration);
+        } else {
+            totalDuration = totalDuration.plus(duration).plus(Customer.getServiceTime());
+        }
         totalDistance = round(totalDistance);
     }
 
@@ -131,7 +142,7 @@ public class Route {
         currentPackagesWeight += route.getCurrentPackagesWeight();
         currentPackagesSize += route.getCurrentPackagesSize();
         totalDistance += route.getTotalDistance();
-        totalDuration.plus(route.getTotalDuration());
+        totalDuration = totalDuration.plus(route.getTotalDuration());
         totalDistance = round(totalDistance);
 
         for (RouteSegment rs : route.getRouteSegments()) {
@@ -140,10 +151,16 @@ public class Route {
     }
 
     public void addRouteSegmentToBegin(RouteSegment routeSegment) {
+
         routeSegments.add(0, routeSegment);
     }
 
     public void addRouteSegmentToEnd(RouteSegment routeSegment) {
+        LocalTime arrival = startTime.plusMinutes(totalDuration.toMinutes());
+        LocalTime departure = startTime.plusMinutes(totalDuration.toMinutes()).minusMinutes(Customer.getServiceTime().toMinutes());
+
+        routeSegment.setArrival(arrival);
+        routeSegment.setDeparture(departure);
         routeSegments.add(routeSegment);
     }
 
@@ -174,9 +191,16 @@ public class Route {
 
     @Override
     public String toString() {
+        long minutes = totalDuration.toMinutes() % 60;
+        String sMinutes;
+        if (minutes < 10) {
+            sMinutes = "0" + Long.toString(minutes);
+        } else {
+            sMinutes = Long.toString(minutes);
+        }
         return "Route " + id + ", "
                 + totalDistance + "km, "
-                + totalDuration + "min, "
+                + totalDuration.toHours() + ":" + sMinutes + "h, "
                 + currentPackagesWeight + "kg, "
                 + currentPackagesSize + "m3";
     }

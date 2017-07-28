@@ -96,7 +96,7 @@ public class DistanceMatrix extends JSON {
         Duration duration = Duration.ZERO;
         try {
             Double durationDouble = jsonObject.getJSONArray("routes").getJSONObject(0).getDouble("duration");
-            duration = Duration.parse(Integer.toString(durationDouble.intValue()));
+            duration = Duration.ofSeconds(durationDouble.longValue());
         } catch (org.json.JSONException e) {
             logger.error("Error while getting duration from JSON object!");
         }

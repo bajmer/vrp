@@ -230,15 +230,15 @@ public class ClarkWrightAlgorithm extends Algorithm {
     @Override
     public void saveSolution() {
         logger.info("Saving solution...");
-        logger.info("Wyznaczono " + routes.size() + " tras.");
+        logger.info(routes.size() + " routes have been found");
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
         for (Route route : routes) {
             totalDistance += route.getTotalDistance();
-            totalDuration.plus(route.getTotalDuration());
-            logger.info("-----> Trasa nr " + route.getId() + ": łączna długość - " + route.getTotalDistance()
-                    + " km, łączny czas przejazdu - " + route.getTotalDuration() + " min, łączna masa paczek - " + route.getCurrentPackagesWeight()
-                    + " kg, łączna objętość paczek - " + route.getCurrentPackagesSize() + " m3.");
+            totalDuration = totalDuration.plus(route.getTotalDuration());
+            logger.info("-----> Route " + route.getId() + ": distance - " + route.getTotalDistance()
+                    + " km, duration - " + route.getTotalDuration() + " min, packages weight - " + route.getCurrentPackagesWeight()
+                    + " kg, packages size - " + route.getCurrentPackagesSize() + " m3.");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);
@@ -249,7 +249,7 @@ public class ClarkWrightAlgorithm extends Algorithm {
             }
             logger.info(sb.toString());
         }
-        logger.info("Całkowity koszt długości: " + totalDistance + " km. Całkowity koszt czasu: " + totalDuration.toHours() + " godz. " + totalDuration);
+        logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
         Storage.getSolutionsList().add(super.getSolution());

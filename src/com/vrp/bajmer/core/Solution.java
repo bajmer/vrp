@@ -83,9 +83,16 @@ public class Solution {
 
     @Override
     public String toString() {
+        long minutes = totalDurationCost.toMinutes() % 60;
+        String sMinutes;
+        if (minutes < 10) {
+            sMinutes = "0" + Long.toString(minutes);
+        } else {
+            sMinutes = Long.toString(minutes);
+        }
         return "S" + solutionID + ", "
                 + usedAlgorithm + ", "
                 + totalDistanceCost + "km, "
-                + totalDurationCost + "min";
+                + totalDurationCost.toHours() + ":" + sMinutes + "h";
     }
 }

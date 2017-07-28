@@ -2,6 +2,7 @@ package com.vrp.bajmer.core;
 
 import javax.swing.*;
 import java.time.Duration;
+import java.time.LocalTime;
 
 /**
  * Created by Marcin on 2017-06-25.
@@ -12,8 +13,8 @@ public class RouteSegment {
     private int id;
     private Customer src;
     private Customer dst;
-    private String departure;
-    private String arrival;
+    private LocalTime departure = LocalTime.MIDNIGHT;
+    private LocalTime arrival = LocalTime.MIDNIGHT;
     private double distance;
     private Duration duration;
     private double clarkWrightSaving;
@@ -25,8 +26,6 @@ public class RouteSegment {
         routeSegmentID++;
         this.src = src;
         this.dst = dst;
-        this.departure = "";
-        this.arrival = "";
         this.distance = distance;
         this.duration = duration;
         this.geometry = geometry;
@@ -64,19 +63,19 @@ public class RouteSegment {
         this.distance = distance;
     }
 
-    public String getDeparture() {
+    public LocalTime getDeparture() {
         return departure;
     }
 
-    public void setDeparture(String departure) {
+    public void setDeparture(LocalTime departure) {
         this.departure = departure;
     }
 
-    public String getArrival() {
+    public LocalTime getArrival() {
         return arrival;
     }
 
-    public void setArrival(String arrival) {
+    public void setArrival(LocalTime arrival) {
         this.arrival = arrival;
     }
 
@@ -120,9 +119,16 @@ public class RouteSegment {
 
     @Override
     public String toString() {
+        long minutes = duration.toMinutes() % 60;
+        String sMinutes;
+        if (minutes < 10) {
+            sMinutes = "0" + Long.toString(minutes);
+        } else {
+            sMinutes = Long.toString(minutes);
+        }
         return "From: " + src.getId()
                 + ", To: " + dst.getId()
-                + ", Distance: " + this.distance
-                + "km, Duration: " + this.duration + "min";
+                + ", Distance: " + distance
+                + "km, Duration: " + duration.toHours() + ":" + sMinutes + "h";
     }
 }
