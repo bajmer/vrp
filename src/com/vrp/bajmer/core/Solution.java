@@ -85,11 +85,7 @@ public class Solution {
     public String toString() {
         long minutes = totalDurationCost.toMinutes() % 60;
         String sMinutes;
-        if (minutes < 10) {
-            sMinutes = "0" + Long.toString(minutes);
-        } else {
-            sMinutes = Long.toString(minutes);
-        }
+        sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
         return "S" + solutionID + ", "
                 + usedAlgorithm + ", "
                 + totalDistanceCost + "km, "

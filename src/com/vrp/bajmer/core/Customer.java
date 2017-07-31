@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class Customer {
 
-    private static final Duration serviceTime = Duration.ofMinutes(5); //czas obsługi klienta w minutach
+    private static final Duration serviceTime = Duration.ofMinutes(10); //czas obsługi klienta w minutach
     private static int customerID;
     private int id;
     private String address;
@@ -21,7 +21,6 @@ public class Customer {
     private double packageSize;
     private LocalTime minDeliveryHour;
     private LocalTime maxDeliveryHour;
-    private String arrivalTime;
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Duration> durations = new HashMap<>();
     private ImageIcon imageIcon;
@@ -34,7 +33,6 @@ public class Customer {
         this.packageSize = packageSize;
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
-        this.arrivalTime = "08:00";
         this.imageIcon = null;
     }
 
@@ -128,14 +126,6 @@ public class Customer {
 
     public void setMaxDeliveryHour(LocalTime maxDeliveryHour) {
         this.maxDeliveryHour = maxDeliveryHour;
-    }
-
-    public String getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public void setArrivalTime(String arrivalTime) {
-        this.arrivalTime = arrivalTime;
     }
 
     public ImageIcon getImageIcon() {

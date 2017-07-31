@@ -48,17 +48,14 @@ public class JTextAreaAppender extends AbstractAppender {
         return new JTextAreaAppender(name, layout, filter, maxLines, ignoreExceptions);
     }
 
-    // Add the target JTextArea to be populated and updated by the logging information.
     public static void addTextArea(final JTextArea textArea) {
         JTextAreaAppender.jTextAreaList.add(textArea);
     }
 
     @Override
     public void append(LogEvent event) {
-        // TODO Auto-generated method stub
         final String message = new String(this.getLayout().toByteArray(event));
 
-        // Append formatted message to text area using the Thread.
         try {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override

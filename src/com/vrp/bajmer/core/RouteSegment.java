@@ -121,11 +121,7 @@ public class RouteSegment {
     public String toString() {
         long minutes = duration.toMinutes() % 60;
         String sMinutes;
-        if (minutes < 10) {
-            sMinutes = "0" + Long.toString(minutes);
-        } else {
-            sMinutes = Long.toString(minutes);
-        }
+        sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
         return "From: " + src.getId()
                 + ", To: " + dst.getId()
                 + ", Distance: " + distance

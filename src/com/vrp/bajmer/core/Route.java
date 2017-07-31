@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,31 +111,17 @@ public class Route {
         this.imageIcon = imageIcon;
     }
 
-    public void addCustomerToFirstPosition(Customer customer, double distance, Duration duration) {
+    public void addCustomerAsFirst(Customer customer) {
         int firstPosition = 0;
         customersInRoute.add(firstPosition, customer);
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
-        totalDistance += distance;
-        if (customer.getId() == 0) {
-            totalDuration = totalDuration.plus(duration);
-        } else {
-            totalDuration = totalDuration.plus(duration).plus(Customer.getServiceTime());
-        }
-        totalDistance = round(totalDistance);
     }
 
-    public void addCustomerToLastPosition(Customer customer, double distance, Duration duration) {
+    public void addCustomerAsLast(Customer customer) {
         customersInRoute.add(customer);
         currentPackagesWeight += customer.getPackageWeight();
         currentPackagesSize += customer.getPackageSize();
-        totalDistance += distance;
-        if (customer.getId() == 0) {
-            totalDuration = totalDuration.plus(duration);
-        } else {
-            totalDuration = totalDuration.plus(duration).plus(Customer.getServiceTime());
-        }
-        totalDistance = round(totalDistance);
     }
 
     public void mergeRoute(Route route) {
@@ -150,22 +137,20 @@ public class Route {
         }
     }
 
-    public void addSegmentToFirstPosition(RouteSegment routeSegment) {
+    public void addSegmentAsFirst(RouteSegment routeSegment) {
         int firstPosition = 0;
         routeSegments.add(firstPosition, routeSegment);
+        totalDistance += routeSegment.getDistance();
+        totalDuration = totalDuration.plus(routeSegment.getDuration());
     }
 
-    public void addSegmentToLastPosition(RouteSegment routeSegment) {
-//        LocalTime arrival = startTime.plusMinutes(totalDuration.toMinutes());
-//        LocalTime departure = startTime.plusMinutes(totalDuration.toMinutes()).minusMinutes(Customer.getServiceTime().toMinutes());
-//
-//        routeSegment.setArrival(arrival);
-//        routeSegment.setDeparture(departure);
+    public void addSegmentAsLast(RouteSegment routeSegment) {
         routeSegments.add(routeSegment);
+        totalDistance += routeSegment.getDistance();
+        totalDuration = totalDuration.plus(routeSegment.getDuration());
     }
 
-    //    funkcja sprawdzająca warunki dodania klienta do trasy
-    public boolean canAddCustomer(double packageWeight, double weightLimit, double packageSize, double sizeLimit) {
+    public boolean canAdd(double packageWeight, double weightLimit, double packageSize, double sizeLimit) {
         return canAddWeight(packageWeight, weightLimit) && canAddSize(packageSize, sizeLimit);
     }
 
@@ -177,11 +162,11 @@ public class Route {
         return currentPackagesSize + packageSize <= sizeLimit;
     }
 
-    public boolean isCustomerOnFirstPosition(Customer customer) {
+    public boolean isCustomerFirst(Customer customer) {
         return customersInRoute.get(0).equals(customer);
     }
 
-    public boolean isCustomerOnLastPosition(Customer customer) {
+    public boolean isCustomerLast(Customer customer) {
         return customersInRoute.get(customersInRoute.size() - 1).equals(customer);
     }
 
@@ -189,15 +174,37 @@ public class Route {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    public void rotate() {
+        Collections.reverse(customersInRoute);
+        Collections.reverse(routeSegments);
+        for (RouteSegment rs : routeSegments) {
+            rs.swapSrcDst();
+        }
+    }
+
+    public void setArrivalAndDepartureTimeForCustomers() {
+        LocalTime departute = startTime;
+        LocalTime arrival = startTime;
+        for (RouteSegment rs : routeSegments) {
+            Duration duration = rs.getDuration();
+            if (rs.getSrc().getId() == 0) {
+                rs.setDeparture(departute);
+                arrival = arrival.plus(duration);
+                rs.setArrival(arrival);
+            } else {
+                departute = arrival.plus(Customer.getServiceTime());
+                rs.setDeparture(departute);
+                arrival = departute.plus(duration);
+                rs.setArrival(arrival);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         long minutes = totalDuration.toMinutes() % 60;
         String sMinutes;
-        if (minutes < 10) {
-            sMinutes = "0" + Long.toString(minutes);
-        } else {
-            sMinutes = Long.toString(minutes);
-        }
+        sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
         return "Route " + id + ", "
                 + totalDistance + "km, "
                 + totalDuration.toHours() + ":" + sMinutes + "h, "

@@ -313,7 +313,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         routeDetailsTableColumns.add("To");
         routeDetailsTableColumns.add("Arrival");
         routeDetailsTableColumns.add("Distance [km]");
-        routeDetailsTableColumns.add("Duration [min]");
+        routeDetailsTableColumns.add("Duration [hh:mm]");
 
         setEmptyTable(tRouteDetails, routeDetailsTableColumns);
 
@@ -325,11 +325,32 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         for (RouteSegment rs : route.getRouteSegments()) {
             Vector<String> row = new Vector<>();
             row.add(rs.getSrc().getAddress());
-            row.add(Integer.toString(rs.getDeparture().getHour()) + ":" + Integer.toString(rs.getDeparture().getMinute()));
+
+            int hourDep = rs.getDeparture().getHour();
+            String sHourDep;
+            sHourDep = hourDep < 10 ? "0" + Long.toString(hourDep) : Long.toString(hourDep);
+            int minDep = rs.getDeparture().getMinute();
+            String sMinDep;
+            sMinDep = minDep < 10 ? "0" + Long.toString(minDep) : Long.toString(minDep);
+            row.add(sHourDep + ":" + sMinDep);
+
             row.add(rs.getDst().getAddress());
-            row.add(Integer.toString(rs.getArrival().getHour()) + ":" + Integer.toString(rs.getArrival().getMinute()));
+
+            int hourArr = rs.getArrival().getHour();
+            String sHourArr;
+            sHourArr = hourArr < 10 ? "0" + Long.toString(hourArr) : Long.toString(hourArr);
+            int minArr = rs.getArrival().getMinute();
+            String sMinArr;
+            sMinArr = minArr < 10 ? "0" + Long.toString(minArr) : Long.toString(minArr);
+            row.add(sHourArr + ":" + sMinArr);
+
             row.add(Double.toString(rs.getDistance()));
-            row.add(Long.toString(rs.getDuration().toMinutes()));
+
+            long minutes = rs.getDuration().toMinutes() % 60;
+            String sMinutes;
+            sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
+            String duration = rs.getDuration().toHours() + ":" + sMinutes;
+            row.add(duration);
 
             data.add(row);
         }

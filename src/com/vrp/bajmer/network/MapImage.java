@@ -34,12 +34,12 @@ public class MapImage {
     private static final String choosenMarker = "&markers=size:normal|color:red|";
     private static final String fromMarker = "&markers=size:normal|color:green|";
     private static final String toMarker = "&markers=size:normal|color:red|";
-    private static final Map<String, String> colours = createMap();
+    private static final Map<String, String> colours = fillColours();
 
     public MapImage() {
     }
 
-    private static Map<String, String> createMap() {
+    private static Map<String, String> fillColours() {
         Map<String, String> colours = new LinkedHashMap<String, String>();
         colours.put("black", "0x000000FF");
         colours.put("red", "0xFF0000FF");
