@@ -2,7 +2,6 @@ package com.vrp.bajmer.network;
 
 import com.vrp.bajmer.core.Customer;
 import com.vrp.bajmer.core.Storage;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -29,18 +28,16 @@ public class Geolocator extends JSON {
         logger.info("Downloading customers coordinates...");
         try {
             for (Customer customer : Storage.getCustomerList()) {
-                String fullAddress = customer.getAddress();
-                String[] addressFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, separator);
-                String URL = parseURL(beginOfURL, addressFields);
+                String URL = parseURL(beginOfURL, customer.getStreetAndNumber(), customer.getPostalCode(), customer.getCity());
                 JSONObject jsonObject = sendRequest(URL);
                 if (jsonObject != null) {
                     List<Double> coordinates = getCoordinatesFromJSON(jsonObject);
                     if (coordinates.size() == 2) {
                         customer.setLatitude(coordinates.get(0));
                         customer.setLongitude(coordinates.get(1));
-                        logger.debug("Customer " + customer.getId() + "--" + customer.getAddress() + " has new coordinates: (latitude,longitude): " + customer.getLatitude() + "," + customer.getLongitude());
+                        logger.debug("Customer " + customer.getId() + "--" + customer.getFullAddress() + " has new coordinates: (latitude,longitude): " + customer.getLatitude() + "," + customer.getLongitude());
                     } else {
-                        logger.warn("Failed to fetch coordinates for customer " + customer.getId() + "--" + customer.getAddress());
+                        logger.warn("Failed to fetch coordinates for customer " + customer.getId() + "--" + customer.getFullAddress());
                     }
                 } else {
                     logger.warn("Response from server for customer " + customer.getId() + " contain NULL JSON object!");

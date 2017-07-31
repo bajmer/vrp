@@ -272,7 +272,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         for (Customer c : Storage.getCustomerList()) {
             Vector<String> row = new Vector<>();
             row.add(Integer.toString(c.getId()));
-            row.add(c.getAddress());
+            row.add(c.getFullAddress());
             if (c.getLatitude() == 0.0) {
                 row.add("null");
             } else {
@@ -309,11 +309,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private void createRouteDetailsTable() {
         routeDetailsTableColumns = new Vector<>();
         routeDetailsTableColumns.add("From");
-        routeDetailsTableColumns.add("Departure");
+        routeDetailsTableColumns.add("Depar.");
         routeDetailsTableColumns.add("To");
-        routeDetailsTableColumns.add("Arrival");
-        routeDetailsTableColumns.add("Distance [km]");
-        routeDetailsTableColumns.add("Duration [hh:mm]");
+        routeDetailsTableColumns.add("Arriv.");
+        routeDetailsTableColumns.add("Dist.[km]");
+        routeDetailsTableColumns.add("Dur.[hh:mm]");
 
         setEmptyTable(tRouteDetails, routeDetailsTableColumns);
 
@@ -324,7 +324,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         Vector<Vector<String>> data = new Vector<>();
         for (RouteSegment rs : route.getRouteSegments()) {
             Vector<String> row = new Vector<>();
-            row.add(rs.getSrc().getAddress());
+            row.add(rs.getSrc().getCity());
 
             int hourDep = rs.getDeparture().getHour();
             String sHourDep;
@@ -334,7 +334,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             sMinDep = minDep < 10 ? "0" + Long.toString(minDep) : Long.toString(minDep);
             row.add(sHourDep + ":" + sMinDep);
 
-            row.add(rs.getDst().getAddress());
+            row.add(rs.getDst().getCity());
 
             int hourArr = rs.getArrival().getHour();
             String sHourArr;
@@ -360,12 +360,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tRouteDetails.setModel(tableModel);
         tRouteDetails.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(230);
+        tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(80);
         tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(80);
-        tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(230);
-        tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(80);
-        tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(100);
-        tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(100);
+        tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(70);
+        tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(70);
+        tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(70);
+        tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(80);
     }
 
     private void setEmptyTable(JTable table, Vector<String> columns) {

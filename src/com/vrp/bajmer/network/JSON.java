@@ -11,8 +11,6 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Marcin on 2017-07-10.
@@ -28,18 +26,8 @@ public class JSON {
         return beginOfURL + srcLong + "," + srcLat + ";" + dstLong + "," + dstLat + endOfURL;
     }
 
-    public String parseURL(String beginOfURL, String[] addressFields) {
-        String streetAndNumber = addressFields[0];
-        streetAndNumber = streetAndNumber.replace("ul.", "");
+    public String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city) {
         streetAndNumber = streetAndNumber.replace(" ", "%20");
-        String postalCodeAndCity = addressFields[1];
-        Pattern patternCode = Pattern.compile("[0-9]{2}-[0-9]{3}");
-        Matcher matcher = patternCode.matcher(postalCodeAndCity);
-        String postalCode = null;
-        if (matcher.find()) {
-            postalCode = matcher.group();
-        }
-        String city = postalCodeAndCity.substring(8);
         city = city.replace(" ", "%20");
 
         return beginOfURL + "&street=" + streetAndNumber + "&postalcode=" + postalCode

@@ -122,8 +122,8 @@ public class RouteSegment {
         long minutes = duration.toMinutes() % 60;
         String sMinutes;
         sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
-        return "From: " + src.getId()
-                + ", To: " + dst.getId()
+        return "From: " + src.getId() + "-" + src.getCity()
+                + ", To: " + dst.getId() + "-" + dst.getCity()
                 + ", Distance: " + distance
                 + "km, Duration: " + duration.toHours() + ":" + sMinutes + "h";
     }

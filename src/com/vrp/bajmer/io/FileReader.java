@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
-//import com.vrp.bajmer.gui.Window;
-
-
 /**
  * Created by mbala on 24.05.17.
  */
@@ -63,8 +60,6 @@ public class FileReader {
                 String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, separator);
 
                 String address = fields[0];
-                double lat;
-                double lon;
 
                 double weight = defaultPackageWeight;
                 if (NumberUtils.isParsable(fields[1])) {
@@ -101,7 +96,7 @@ public class FileReader {
                 Customer customer = new Customer(address, weight, capacity, begin, end);
                 Storage.getCustomerList().add(customer);
                 logger.debug("ID: " + customer.getId()
-                        + ", Adres: " + customer.getAddress()
+                        + ", Adres: " + customer.getFullAddress()
                         + ", Masa: " + customer.getPackageWeight()
                         + ", Objetosc: " + customer.getPackageSize()
                         + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
