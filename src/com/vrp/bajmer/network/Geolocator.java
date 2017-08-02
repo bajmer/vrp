@@ -1,7 +1,5 @@
 package com.vrp.bajmer.network;
 
-import com.vrp.bajmer.core.Customer;
-import com.vrp.bajmer.core.Storage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -24,30 +22,29 @@ public class Geolocator extends JSON {
     public Geolocator() {
     }
 
-    public void downloadCustomersCoordinates() throws Exception {
-        logger.info("Downloading customers coordinates...");
+    public List<Double> downloadCoordinates(String streetAndNumber, String postalCode, String city, int lineNumber) throws Exception {
+        logger.debug("Downloading coordinates for customer in line " + lineNumber + "...");
         try {
-            for (Customer customer : Storage.getCustomerList()) {
-                String URL = parseURL(beginOfURL, customer.getStreetAndNumber(), customer.getPostalCode(), customer.getCity());
-                JSONObject jsonObject = sendRequest(URL);
-                if (jsonObject != null) {
-                    List<Double> coordinates = getCoordinatesFromJSON(jsonObject);
-                    if (coordinates.size() == 2) {
-                        customer.setLatitude(coordinates.get(0));
-                        customer.setLongitude(coordinates.get(1));
-                        logger.debug("Customer " + customer.getId() + "--" + customer.getFullAddress() + " has new coordinates: (latitude,longitude): " + customer.getLatitude() + "," + customer.getLongitude());
-                    } else {
-                        logger.warn("Failed to fetch coordinates for customer " + customer.getId() + "--" + customer.getFullAddress());
-                    }
+            String URL = parseURL(beginOfURL, streetAndNumber, postalCode, city);
+            JSONObject jsonObject = sendRequest(URL);
+            if (jsonObject != null) {
+                List<Double> coordinates = getCoordinatesFromJSON(jsonObject);
+                if (coordinates.size() == 2) {
+                    logger.debug("Downloading coordinates for customer in line " + lineNumber + " has been completed.");
+                    logger.debug("New coordinates have been downloaded (latitude,longitude): " + coordinates.get(0) + "," + coordinates.get(1));
+                    return coordinates;
                 } else {
-                    logger.warn("Response from server for customer " + customer.getId() + " contain NULL JSON object!");
+                    logger.warn("Failed to fetch coordinates");
                 }
+            } else {
+                logger.warn("Response from server for customer contain NULL JSON object!");
             }
         } catch (Exception e) {
             logger.error("Error while addresses geolocating!");
             throw e;
         }
-        logger.info("Downloading customers coordinates has been completed.");
+
+        return null;
     }
 
     private List<Double> getCoordinatesFromJSON(JSONObject jsonObject) {

@@ -1,14 +1,10 @@
 package com.vrp.bajmer.core;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.swing.*;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by mbala on 22.05.17.
@@ -16,15 +12,14 @@ import java.util.regex.Pattern;
 public class Customer {
 
     private static final Duration serviceTime = Duration.ofMinutes(10); //czas obsługi klienta w minutach
-    private static final String separator = ",";
     private static int customerID;
     private int id;
     private String fullAddress;
     private String streetAndNumber;
     private String postalCode;
     private String city;
-    private double latitude = 0;
-    private double longitude = 0;
+    private double latitude;
+    private double longitude;
     private double packageWeight;
     private double packageSize;
     private LocalTime minDeliveryHour;
@@ -33,16 +28,21 @@ public class Customer {
     private Map<Integer, Duration> durations = new HashMap<>();
     private ImageIcon imageIcon;
 
-    public Customer(String fullAddress, double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
+    public Customer(String fullAddress, String streetAndNumber, String postalCode, String city, double latitude, double longitude,
+                    double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
         this.id = customerID;
         customerID++;
         this.fullAddress = fullAddress;
+        this.streetAndNumber = streetAndNumber;
+        this.postalCode = postalCode;
+        this.city = city;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.packageWeight = packageWeight;
         this.packageSize = packageSize;
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
         this.imageIcon = null;
-        splitFullAddress();
     }
 
     public static int getCustomerID() {
@@ -168,18 +168,4 @@ public class Customer {
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
     }
-
-    private void splitFullAddress() {
-        String[] addressFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, separator);
-        String streetAndNum = addressFields[0];
-        streetAndNumber = streetAndNum.replace("ul.", "");
-        String postalCodeAndCity = addressFields[1];
-        Pattern patternCode = Pattern.compile("[0-9]{2}-[0-9]{3}");
-        Matcher matcher = patternCode.matcher(postalCodeAndCity);
-        if (matcher.find()) {
-            postalCode = matcher.group();
-        }
-        city = postalCodeAndCity.substring(8);
     }
-
-}

@@ -90,6 +90,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         boxAlgorithms.addItem("Third");
         boxAlgorithms.setSelectedIndex(0);
 
+        bGetDistance.setEnabled(false);
+        boxAlgorithms.setEnabled(false);
+        bFindSolution.setEnabled(false);
+
         this.createCustomerTable();
         this.createRouteDetailsTable();
         this.createSolutionsTree();
@@ -108,27 +112,17 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             bFindSolution.setEnabled(false);
             Customer.setCustomerID(0);
             try {
-                FileReader fileReader = new FileReader();
+                Geolocator geolocator = new Geolocator();
+                FileReader fileReader = new FileReader(geolocator);
                 File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
                     fileReader.readFile(customersInputFile);
 
-                    this.setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-                } else {
-                    return;
+                    this.fillCustomerTable();
+                    bGetDistance.setEnabled(true);
                 }
             } catch (Exception ex) {
                 logger.error("Unexpected error while processing the file!", ex);
-            }
-
-            try {
-                Geolocator geolocator = new Geolocator();
-                geolocator.downloadCustomersCoordinates();
-
-                this.fillCustomerTable();
-                bGetDistance.setEnabled(true);
-            } catch (Exception ex) {
-                logger.error("Unexpected error while addresses geolocating!", ex);
             }
         } else if (source == bGetDistance) {
             try {
@@ -177,10 +171,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             return;
 
         if (choosedNode.getLevel() == 0) {
-//            root
+            //root
             setEmptyTable(tRouteDetails, routeDetailsTableColumns);
         } else if (choosedNode.getLevel() == 1) {
-//            solution
+            //solution
             Solution s = (Solution) choosedNode.getUserObject();
             try {
                 ImageIcon imageIcon = s.getImageIcon();
@@ -193,7 +187,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.debug(ex);
             }
         } else if (choosedNode.getLevel() == 2) {
-//            route
+            //route
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) choosedNode.getUserObject();
@@ -209,7 +203,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.debug(ex);
             }
         } else if (choosedNode.getLevel() == 3) {
-//            route segment
+            //route segment
             DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
