@@ -208,6 +208,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) routeNode.getUserObject();
+            fillRouteDetailsTable(r);
+            int position = choosedNode.getParent().getIndex(choosedNode);
+            tRouteDetails.getSelectionModel().setSelectionInterval(position, position);
             RouteSegment rs = (RouteSegment) choosedNode.getUserObject();
             try {
                 ImageIcon imageIcon = rs.getImageIcon();
