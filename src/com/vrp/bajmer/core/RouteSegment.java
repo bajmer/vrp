@@ -1,5 +1,8 @@
 package com.vrp.bajmer.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.*;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -7,7 +10,9 @@ import java.time.LocalTime;
 /**
  * Created by Marcin on 2017-06-25.
  */
-public class RouteSegment {
+public class RouteSegment implements Cloneable {
+
+    private static final Logger logger = LogManager.getLogger(RouteSegment.class);
 
     private static int routeSegmentID = 1;
     private int id;
@@ -126,5 +131,17 @@ public class RouteSegment {
                 + ", To: " + dst.getId() + "-" + dst.getCity()
                 + ", Distance: " + distance
                 + "km, Duration: " + duration.toHours() + ":" + sMinutes + "h";
+    }
+
+    @Override
+    public RouteSegment clone() {
+        RouteSegment clone = null;
+        try {
+            clone = (RouteSegment) super.clone();
+        } catch (CloneNotSupportedException e) {
+            logger.error("Error while cloning route segment!", e);
+        }
+        return clone;
+
     }
 }

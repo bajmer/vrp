@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +27,11 @@ public class ClarkWrightAlgorithm extends Algorithm {
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name, problem.getDepot()));
         customers = Storage.getCustomerList();
-        routeSegments = Storage.getRouteSegmentsList();
+        routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
+        for (RouteSegment routeSegment : Storage.getRouteSegmentsList()) {
+            routeSegments.add(routeSegment.clone());
+        }
+
         routes = super.getSolution().getListOfRoutes();
     }
 
@@ -257,6 +262,9 @@ public class ClarkWrightAlgorithm extends Algorithm {
     }
 
     private boolean isCustomerInRoute(Customer customer) {
+        if (customer.equals(getProblem().getDepot())) {
+            return false;
+        }
         for (Route route : routes) {
             for (Customer c : route.getCustomersInRoute()) {
                 if (customer == c) {
@@ -272,18 +280,22 @@ public class ClarkWrightAlgorithm extends Algorithm {
         for (Route route : routes) {
             int firstCustomerID = route.getCustomersInRoute().get(0).getId();
             int lastCustomerID = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1).getId();
-            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+            for (RouteSegment rs : routeSegments) {
                 if (rs.getSrc().getId() == 0 && rs.getDst().getId() == firstCustomerID) {
                     route.addCustomerAsFirst(depot);
                     route.addSegmentAsFirst(rs);
                     break;
                 }
             }
-            for (RouteSegment rs : Storage.getRouteSegmentsList()) {
+            for (RouteSegment rs : routeSegments) {
                 if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
                     route.addCustomerAsLast(depot);
-                    rs.swapSrcDst();
-                    route.addSegmentAsLast(rs);
+                    if (route.getRouteSegments().size() > 1) {
+                        rs.swapSrcDst();
+                        route.addSegmentAsLast(rs);
+                    } else {
+                        route.addSegmentAsLast(new RouteSegment(rs.getDst(), rs.getSrc(), rs.getDistance(), rs.getDuration(), rs.getGeometry()));
+                    }
                     break;
                 }
             }
