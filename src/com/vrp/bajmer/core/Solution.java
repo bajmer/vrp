@@ -15,6 +15,7 @@ public class Solution {
     private double totalDistanceCost;
     private Duration totalDurationCost;
     private ImageIcon imageIcon;
+    private boolean feasible;
 
     public Solution(int problemID, String usedAlgorithm, Customer depot) {
         this.solutionID = problemID;
@@ -79,6 +80,14 @@ public class Solution {
 
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
+    }
+
+    public boolean isFeasible() {
+        return feasible;
+    }
+
+    public void setFeasible(boolean feasible) {
+        this.feasible = feasible;
     }
 
     @Override

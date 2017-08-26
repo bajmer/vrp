@@ -2,7 +2,7 @@ package com.vrp.bajmer.gui;
 
 import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.algorithm.ClarkWrightAlgorithm;
-import com.vrp.bajmer.algorithm.Second_Algorithm;
+import com.vrp.bajmer.algorithm.MACS;
 import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.core.*;
 import com.vrp.bajmer.io.FileReader;
@@ -149,8 +149,8 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         clark_wright_algorithm.runAlgorithm();
                         break;
                     case "Second com.vrp.bajmer.algorithm":
-                        Algorithm second_algorithm = new Second_Algorithm(problem);
-                        second_algorithm.runAlgorithm();
+                        Algorithm macs_algorithm = new MACS(problem);
+                        macs_algorithm.runAlgorithm();
                         break;
                     case "Third com.vrp.bajmer.algorithm":
                         Algorithm third_algorithm = new Third_Algorithm(problem);
