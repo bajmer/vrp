@@ -1,5 +1,6 @@
-package com.vrp.bajmer.algorithm;
+package com.vrp.bajmer.algorithm.clarke_wright;
 
+import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,16 +14,16 @@ import java.util.List;
 /**
  * Created by Marcin on 2017-06-21.
  */
-public class ClarkWrightAlgorithm extends Algorithm {
+public class ClarkeWrightAlgorithm extends Algorithm {
 
-    private static final Logger logger = LogManager.getLogger(ClarkWrightAlgorithm.class);
+    private static final Logger logger = LogManager.getLogger(ClarkeWrightAlgorithm.class);
 
     private final String name = "Clark-Wright";
     private List<Customer> customers;
     private List<RouteSegment> routeSegments;
     private List<Route> routes;
 
-    public ClarkWrightAlgorithm(Problem problem) {
+    public ClarkeWrightAlgorithm(Problem problem) {
         super(problem);
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name, problem.getDepot()));

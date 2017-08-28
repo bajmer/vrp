@@ -1,5 +1,6 @@
-package com.vrp.bajmer.algorithm;
+package com.vrp.bajmer.algorithm.macs;
 
+import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,8 @@ public class MACS extends Algorithm {
     private static final Logger logger = LogManager.getLogger(MACS.class);
 
     private final String name = "Multiple Ant Colony System";
+    private List<Customer> extendedCustomerList = new ArrayList<>();
+    private List<RouteSegment> extendedRouteSegmentsList = new ArrayList<>();
     private List<Customer> customers;
     private List<RouteSegment> routeSegments;
     private List<Route> routes;
@@ -45,6 +48,8 @@ public class MACS extends Algorithm {
         this.a = a;
         this.b = b;
         this.c = c;
+
+//        utworzenie danej liczby mrówek
         for (int i = 0; i < numberOfAnts; i++) {
             ants.add(new Ant());
         }
@@ -68,7 +73,7 @@ public class MACS extends Algorithm {
 //            set active_vehicles
             v = 100;
 //            start ACS_TIME and ACS_VEI
-            ACS_VEI_Procedure(v - 1);
+//            ACS_VEI_Procedure(v - 1);
             ACS_TIME_Procedure(v);
             while (/*ACS_Procedures are running*/) {
 //                wait an improved solution s_imp from ACS_VEI or ACS_TIME
@@ -107,34 +112,62 @@ public class MACS extends Algorithm {
                 }
             }
 //        perform global updating according to Equation 2
+            globalPheromoneUpdate();
         }
     }
 
-    private void ACS_VEI_Procedure(int v) {
-//        initialize pheromone and data structure using v-1
-        acsVeiSolutions.clear();
-
-//        main loop
-        while (/*warunek stopu*/) {
-//            construct solution for each ant
-            for (Ant ant : ants) {
-                newActiveAnt(ant);
-            }
-
-//        update the best solution if it is improved
-            for (Solution s : acsTimeSolutions) {
-//            if solution is feasible and duration cost is less than the tmp best solution cost
-                if (s.isFeasible() &&
-                        s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
-//              send s to MACS
-//              generate event???
-                }
-            }
-//        perform global updating according to Equation 2
-        }
-    }
+//    private void ACS_VEI_Procedure(int v) {
+////        initialize pheromone and data structure using v-1
+//        acsVeiSolutions.clear();
+//
+////        main loop
+//        while (/*warunek stopu*/) {
+////            construct solution for each ant
+//            for (Ant ant : ants) {
+//                newActiveAnt(ant);
+//            }
+//
+////        update the best solution if it is improved
+//            for (Solution s : acsTimeSolutions) {
+////            if solution is feasible and duration cost is less than the tmp best solution cost
+//                if (s.isFeasible() &&
+//                        s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
+////              send s to MACS
+////              generate event???
+//                }
+//            }
+////        perform global updating according to Equation 2
+//        }
+//    }
 
     private void newActiveAnt(Ant ant) {
+//        put ant in randomly selected duplicated depot
+        Route route = new Route();
+        route.addCustomerAsFirst(/*depot*/);
+//        set current time = 0, load = 0
+
+//        when feasible nodes are avaible
+        while (ant.getFeasibleNodes().size() != 0) {
+//            when ant is in node i compute the set of feasible nodes
+
+//            Choose probabilistically the next node j
+
+//            Update load and time
+
+//            LOCAL pheromone updating (Equation 3)
+            localPheromoneUpdate();
+//            Add j to path, i <- j
+        }
+
+    }
+
+    private Node
+
+    private void localPheromoneUpdate() {
+
+    }
+
+    private void globalPheromoneUpdate() {
 
     }
 
