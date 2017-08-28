@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * Created by Marcin on 2017-06-26.
  */
-public class MACS extends Algorithm {
+public class MACSAlgorithm extends Algorithm {
 
-    private static final Logger logger = LogManager.getLogger(MACS.class);
+    private static final Logger logger = LogManager.getLogger(MACSAlgorithm.class);
 
     private final String name = "Multiple Ant Colony System";
     private List<Customer> extendedCustomerList = new ArrayList<>();
@@ -29,17 +29,22 @@ public class MACS extends Algorithm {
     private List<Solution> acsTimeSolutions;
     private List<Solution> acsVeiSolutions;
     private Solution bestMACSSolution;
+    private int v; //temporary number of vehicles
+    private Customer depot;
 
-    public MACS(Problem problem, int numberOfAnts, double a, double b, double c) {
+    public MACSAlgorithm(Problem problem, int numberOfAnts, double a, double b, double c) {
         super(problem);
         super.setAlgorithmName(name);
         super.setSolution(new Solution(problem.getProblemID(), name, problem.getDepot()));
+
         customers = Storage.getCustomerList();
         routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
         for (RouteSegment routeSegment : Storage.getRouteSegmentsList()) {
             routeSegments.add(routeSegment.clone());
         }
         routes = super.getSolution().getListOfRoutes();
+
+        depot = super.getProblem().getDepot();
 
         ants = new ArrayList<>(numberOfAnts);
         acsTimeSolutions = new ArrayList<>();
@@ -107,7 +112,7 @@ public class MACS extends Algorithm {
 //            if solution is feasible and duration cost is less than the tmp best solution cost
                 if (s.isFeasible() &&
                         s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
-//              send s to MACS
+//              send s to MACSAlgorithm
 //              generate event???
                 }
             }
@@ -132,7 +137,7 @@ public class MACS extends Algorithm {
 ////            if solution is feasible and duration cost is less than the tmp best solution cost
 //                if (s.isFeasible() &&
 //                        s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
-////              send s to MACS
+////              send s to MACSAlgorithm
 ////              generate event???
 //                }
 //            }
@@ -143,26 +148,27 @@ public class MACS extends Algorithm {
     private void newActiveAnt(Ant ant) {
 //        put ant in randomly selected duplicated depot
         Route route = new Route();
-        route.addCustomerAsFirst(/*depot*/);
-//        set current time = 0, load = 0
+        route.addCustomerAsFirst(depot);
+
+        ant.updateFeasibleNodes();
 
 //        when feasible nodes are avaible
         while (ant.getFeasibleNodes().size() != 0) {
 //            when ant is in node i compute the set of feasible nodes
-
+            ant.updateFeasibleNodes();
 //            Choose probabilistically the next node j
-
+            ant.chooseNextNode();
 //            Update load and time
 
 //            LOCAL pheromone updating (Equation 3)
             localPheromoneUpdate();
 //            Add j to path, i <- j
+            route.addCustomerAsLast(/*odwiedzony klient*/);
+            ant.updateFeasibleNodes(/*id odwiedzonego węzła*/);
         }
 
         
     }
-
-    private Node
 
     private void localPheromoneUpdate() {
 

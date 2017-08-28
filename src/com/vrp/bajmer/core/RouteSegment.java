@@ -25,6 +25,7 @@ public class RouteSegment implements Cloneable {
     private double clarkWrightSaving;
     private String geometry;
     private ImageIcon imageIcon;
+    private double macsPheromoneLevel;
 
     public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;

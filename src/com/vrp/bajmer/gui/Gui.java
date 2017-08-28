@@ -3,7 +3,7 @@ package com.vrp.bajmer.gui;
 import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.algorithm.clarke_wright.ClarkeWrightAlgorithm;
-import com.vrp.bajmer.algorithm.macs.MACS;
+import com.vrp.bajmer.algorithm.macs.MACSAlgorithm;
 import com.vrp.bajmer.core.*;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
@@ -149,7 +149,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         clark_wright_algorithm.runAlgorithm();
                         break;
                     case "Second com.vrp.bajmer.algorithm":
-                        Algorithm macs_algorithm = new MACS(problem);
+                        Algorithm macs_algorithm = new MACSAlgorithm(problem);
                         macs_algorithm.runAlgorithm();
                         break;
                     case "Third com.vrp.bajmer.algorithm":
