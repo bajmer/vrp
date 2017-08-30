@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.NumberFormat;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -58,6 +59,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteDetails;
     private JScrollPane jspSolutions;
+    private JFormattedTextField fNumberOfAnts;
+    private JFormattedTextField fAlfa;
+    private JFormattedTextField fBeta;
+    private JFormattedTextField fGamma;
     private JTree treeSolutions;
     private JFrame algorithmProperties;
 
@@ -77,22 +82,36 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         NumberFormat integerFormat = NumberFormat.getIntegerInstance();
         integerFormat.setGroupingUsed(false);
-        NumberFormatter numberFormatter = new NumberFormatter(integerFormat);
-        numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setAllowsInvalid(false);
-        fAlgorithmId.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fNumberOfVehicles.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        NumberFormatter intFormatter = new NumberFormatter(integerFormat);
+        intFormatter.setValueClass(Integer.class);
+        intFormatter.setAllowsInvalid(false);
+        fAlgorithmId.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fNumberOfVehicles.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fNumberOfAnts.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+
+        NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+        integerFormat.setGroupingUsed(false);
+        NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
+        doubleFormatter.setValueClass(Integer.class);
+        doubleFormatter.setAllowsInvalid(false);
+        fAlfa.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fBeta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fGamma.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
         boxAlgorithms.addItem("Clark-Wright");
-        boxAlgorithms.addItem("Second");
+        boxAlgorithms.addItem("MACS");
         boxAlgorithms.addItem("Third");
         boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
         boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
+        fNumberOfAnts.setEnabled(false);
+        fAlfa.setEnabled(false);
+        fBeta.setEnabled(false);
+        fGamma.setEnabled(false);
 
         this.createCustomerTable();
         this.createRouteDetailsTable();
@@ -136,6 +155,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
+            if (Objects.equals(algorithmName, "MACS")) {
+                fNumberOfAnts.setEnabled(false);
+                fAlfa.setEnabled(false);
+                fBeta.setEnabled(false);
+                fGamma.setEnabled(false);
+            }
         } else if (source == bFindSolution) {
             try {
                 int algorithmIDInt = Integer.parseInt(fAlgorithmId.getText());
@@ -148,8 +173,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
-                    case "Second com.vrp.bajmer.algorithm":
-                        Algorithm macs_algorithm = new MACSAlgorithm(problem);
+                    case "MACS":
+                        int numberOfAnts = Integer.parseInt(fNumberOfAnts.getText());
+                        double alfa = Double.parseDouble(fAlfa.getText());
+                        double beta = Double.parseDouble(fBeta.getText());
+                        double gamma = Double.parseDouble(fGamma.getText());
+                        Algorithm macs_algorithm = new MACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
                         macs_algorithm.runAlgorithm();
                         break;
                     case "Third com.vrp.bajmer.algorithm":

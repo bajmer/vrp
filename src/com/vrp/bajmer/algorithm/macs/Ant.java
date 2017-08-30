@@ -42,7 +42,7 @@ public class Ant {
         return unvisitedCustomers;
     }
 
-    public void setUnvisitedCustomers(List<Customer> unvisitedCustomers) {
+    public void setUnvisitedCustomers(List<Integer> unvisitedCustomers) {
         this.unvisitedCustomers = unvisitedCustomers;
     }
 
@@ -70,7 +70,11 @@ public class Ant {
         }
     }
 
-    public Customer chooseNextNode() {
+//    public Customer chooseNextNode() {
+//
+//    }
+
+    public void calculateProbability() {
 
     }
 }
