@@ -22,6 +22,8 @@ public class MACSAlgorithm extends Algorithm {
     private List<RouteSegment> routeSegments;
     private List<Route> routes;
 
+    private double weightLimit;
+    private double sizeLimit;
     private double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
     private double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
     private double gamma; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
@@ -45,6 +47,8 @@ public class MACSAlgorithm extends Algorithm {
         }
         routes = super.getSolution().getListOfRoutes();
 
+        this.weightLimit = getProblem().getWeightLimitPerVehicle();
+        this.sizeLimit = getProblem().getSizeLimitPerVehicle();
         this.alfa = alfa;
         this.beta = beta;
         this.gamma = gamma;
@@ -92,7 +96,7 @@ public class MACSAlgorithm extends Algorithm {
 //            }
 //        }
 //    }
-//
+
 //    private void initializeMACS() {
 //
 //    }
@@ -121,63 +125,77 @@ public class MACSAlgorithm extends Algorithm {
 //            globalPheromoneUpdate();
 //        }
 //    }
+
+//    private void ACS_VEI_Procedure(int v) {
+////        initialize pheromone and data structure using v-1
+//        acsVeiSolutions.clear();
 //
-////    private void ACS_VEI_Procedure(int v) {
-//////        initialize pheromone and data structure using v-1
-////        acsVeiSolutions.clear();
-////
-//////        main loop
-////        while (/*warunek stopu*/) {
-//////            construct solution for each ant
-////            for (Ant ant : ants) {
-////                newActiveAnt(ant);
-////            }
-////
-//////        update the best solution if it is improved
-////            for (Solution s : acsTimeSolutions) {
-//////            if solution is feasible and duration cost is less than the tmp best solution cost
-////                if (s.isFeasible() &&
-////                        s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
-//////              send s to MACSAlgorithm
-//////              generate event???
-////                }
-////            }
-//////        perform global updating according to Equation 2
-////        }
-////    }
+////        main loop
+//        while (/*warunek stopu*/) {
+////            construct solution for each ant
+//            for (Ant ant : ants) {
+//                newActiveAnt(ant);
+//            }
 //
-//    private void newActiveAnt(Ant ant) {
-////        put ant in randomly selected duplicated depot
-//        Route route = new Route();
-//        route.addCustomerAsFirst(depot);
-//
-//        ant.updateFeasibleNodes();
-//
-////        when feasible nodes are avaible
-//        while (ant.getFeasibleNodes().size() != 0) {
-////            when ant is in node i compute the set of feasible nodes
-//            ant.updateFeasibleNodes();
-////            Choose probabilistically the next node j
-//            ant.chooseNextNode();
-////            Update load and time
-//
-////            LOCAL pheromone updating (Equation 3)
-//            localPheromoneUpdate();
-////            Add j to path, i <- j
-//            route.addCustomerAsLast(/*odwiedzony klient*/);
-//            ant.updateFeasibleNodes(/*id odwiedzonego węzła*/);
+////        update the best solution if it is improved
+//            for (Solution s : acsTimeSolutions) {
+////            if solution is feasible and duration cost is less than the tmp best solution cost
+//                if (s.isFeasible() &&
+//                        s.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()) < 0) {
+////              send s to MACSAlgorithm
+////              generate event???
+//                }
+//            }
+////        perform global updating according to Equation 2
 //        }
-//
-//
 //    }
-//
-//    private void localPheromoneUpdate() {
-//
-//    }
-//
-//    private void globalPheromoneUpdate() {
-//
-//    }
+
+    private void newActiveAnt(Ant ant) {
+//        put ant in randomly selected duplicated depot
+        Route route = new Route();
+        route.addCustomerAsLast(depot);
+        int tmpNodeId = route.getLastCustomerId();
+
+//            when ant is in node i compute the set of feasible nodes
+//            when feasible nodes are avaible
+        while (ant.updateFeasibleNodes(tmpNodeId, routeSegments, route, weightLimit, sizeLimit)) {
+//            Choose probabilistically the next node j
+            int nextNodeId = ant.chooseNextNode(routeSegments);
+//            Add j to path, i <- j and update parameters
+            for (Customer c : customers) {
+                if (c.getId() == nextNodeId) {
+                    route.addCustomerAsLast(c);
+                    ant.removeFromUnvisitedCustomers(nextNodeId);
+                }
+            }
+            for (RouteSegment rs : routeSegments) {
+                if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
+                    route.addSegmentAsLast(rs);
+//                    LOCAL pheromone updating (Equation 3) on added segment
+                    localPheromoneUpdate(rs);
+                }
+            }
+            tmpNodeId = nextNodeId;
+        }
+
+
+    }
+
+    private void localPheromoneUpdate(RouteSegment routeSegment) {
+        for (RouteSegment rs : routeSegments) {
+            if (rs.equals(routeSegment)) {
+//                update pheromone on segment
+                double tau = rs.getMacsPheromoneLevel(); //pheromone level
+                /*.....*/
+                rs.setMacsPheromoneLevel(tau);
+                return;
+            }
+        }
+    }
+
+    private void globalPheromoneUpdate() {
+
+    }
 
     @Override
     public void saveSolution() {

@@ -40,10 +40,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private static final Logger logger = LogManager.getLogger(Gui.class);
 
     private JPanel mainPanel;
-    private JPanel leftPanel;
-    private JPanel rightPanel;
-    private JPanel bottomPanel;
-    private JPanel mapPanel;
     private JLabel mapLabel;
     private JButton bLoad;
     private JButton bGetDistance;
@@ -64,13 +60,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JFormattedTextField fBeta;
     private JFormattedTextField fGamma;
     private JTree treeSolutions;
-    private JFrame algorithmProperties;
 
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
     private String algorithmName;
     private MapImage mapImage;
-
 
     public Gui() {
         bLoad.addActionListener(this);
@@ -156,11 +150,17 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
             if (Objects.equals(algorithmName, "MACS")) {
+                fNumberOfAnts.setEnabled(true);
+                fAlfa.setEnabled(true);
+                fBeta.setEnabled(true);
+                fGamma.setEnabled(true);
+            } else {
                 fNumberOfAnts.setEnabled(false);
                 fAlfa.setEnabled(false);
                 fBeta.setEnabled(false);
                 fGamma.setEnabled(false);
             }
+
         } else if (source == bFindSolution) {
             try {
                 int algorithmIDInt = Integer.parseInt(fAlgorithmId.getText());

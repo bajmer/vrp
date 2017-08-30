@@ -170,6 +170,10 @@ public class Route {
         return customersInRoute.get(customersInRoute.size() - 1).equals(customer);
     }
 
+    public int getLastCustomerId() {
+        return customersInRoute.get(customersInRoute.size() - 1).getId();
+    }
+
     private double round(double x) {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }

@@ -117,10 +117,22 @@ public class RouteSegment implements Cloneable {
         this.imageIcon = imageIcon;
     }
 
+    public double getMacsPheromoneLevel() {
+        return macsPheromoneLevel;
+    }
+
+    public void setMacsPheromoneLevel(double macsPheromoneLevel) {
+        this.macsPheromoneLevel = macsPheromoneLevel;
+    }
+
     public void swapSrcDst() {
         Customer tmp = this.src;
         this.src = this.dst;
         this.dst = tmp;
+    }
+
+    public boolean isSegmentExist(int a, int b) {
+        return (a == src.getId() && b == dst.getId()) || (b == src.getId() && a == dst.getId());
     }
 
     @Override
