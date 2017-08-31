@@ -12,7 +12,7 @@ public class Third_Algorithm extends Algorithm {
     private static final Logger logger = LogManager.getLogger(Third_Algorithm.class);
 
     public Third_Algorithm(Problem problem) {
-        super(problem);
+        super(problem, "aaa");
     }
 
     @Override

@@ -1,46 +1,85 @@
 package com.vrp.bajmer.algorithm;
 
-import com.vrp.bajmer.core.Problem;
-import com.vrp.bajmer.core.Solution;
+import com.vrp.bajmer.core.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marcin on 2017-06-26.
  */
 public abstract class Algorithm {
 
-    private Problem problem;
     private String algorithmName;
+    private Problem problem;
     private Solution solution;
 
-    public Algorithm(Problem problem) {
+    private List<Customer> customers;
+    private List<RouteSegment> routeSegments;
+    private List<Route> routes;
+
+    public Algorithm(Problem problem, String name) {
         this.problem = problem;
+        this.algorithmName = name;
+        this.solution = new Solution(problem.getProblemID(), name, problem.getDepot());
+
+        this.customers = Storage.getCustomerList();
+        this.routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
+        this.routeSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+
+        this.routes = this.solution.getListOfRoutes();
     }
 
-    public Problem getProblem() {
-        return problem;
-    }
-
-    public void setProblem(Problem problem) {
-        this.problem = problem;
-    }
-
-    public String getAlgorithmName() {
+    protected String getAlgorithmName() {
         return algorithmName;
     }
 
-    public void setAlgorithmName(String algorithmName) {
+    protected void setAlgorithmName(String algorithmName) {
         this.algorithmName = algorithmName;
     }
 
-    public Solution getSolution() {
+    protected Problem getProblem() {
+        return problem;
+    }
+
+    protected void setProblem(Problem problem) {
+        this.problem = problem;
+    }
+
+    protected Solution getSolution() {
         return solution;
     }
 
-    public void setSolution(Solution solution) {
+    protected void setSolution(Solution solution) {
         this.solution = solution;
+    }
+
+    protected List<Customer> getCustomers() {
+        return customers;
+    }
+
+    protected void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
+
+    protected List<RouteSegment> getRouteSegments() {
+        return routeSegments;
+    }
+
+    protected void setRouteSegments(List<RouteSegment> routeSegments) {
+        this.routeSegments = routeSegments;
+    }
+
+    protected List<Route> getRoutes() {
+        return routes;
+    }
+
+    protected void setRoutes(List<Route> routes) {
+        this.routes = routes;
     }
 
     public abstract void runAlgorithm();
 
-    public abstract void saveSolution();
+    protected abstract void saveSolution();
 }

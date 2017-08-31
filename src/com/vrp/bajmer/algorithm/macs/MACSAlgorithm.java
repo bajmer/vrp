@@ -15,15 +15,6 @@ public class MACSAlgorithm extends Algorithm {
 
     private static final Logger logger = LogManager.getLogger(MACSAlgorithm.class);
 
-    private final String name = "Multiple Ant Colony System";
-    private List<Customer> extendedCustomerList = new ArrayList<>();
-    private List<RouteSegment> extendedRouteSegmentsList = new ArrayList<>();
-    private List<Customer> customers;
-    private List<RouteSegment> routeSegments;
-    private List<Route> routes;
-
-    private double weightLimit;
-    private double sizeLimit;
     private double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
     private double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
     private double gamma; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
@@ -33,27 +24,14 @@ public class MACSAlgorithm extends Algorithm {
     private List<Solution> acsVeiSolutions;
     private Solution bestMACSSolution;
     private int v; //liczba pojazdów użytych w najlepszym rozwiązaniu
-    private Customer depot;
 
     public MACSAlgorithm(Problem problem, int numberOfAnts, double alfa, double beta, double gamma) {
-        super(problem);
-        super.setAlgorithmName(name);
-        super.setSolution(new Solution(problem.getProblemID(), name, problem.getDepot()));
+        super(problem, "Multiple Ant Colony System");
 
-        customers = Storage.getCustomerList();
-        routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
-        for (RouteSegment routeSegment : Storage.getRouteSegmentsList()) {
-            routeSegments.add(routeSegment.clone());
-        }
-        routes = super.getSolution().getListOfRoutes();
-
-        this.weightLimit = getProblem().getWeightLimitPerVehicle();
-        this.sizeLimit = getProblem().getSizeLimitPerVehicle();
         this.alfa = alfa;
         this.beta = beta;
         this.gamma = gamma;
         this.numberOfAnts = numberOfAnts;
-        depot = super.getProblem().getDepot();
 
         ants = new ArrayList<>(numberOfAnts);
         acsTimeSolutions = new ArrayList<>();
@@ -67,7 +45,7 @@ public class MACSAlgorithm extends Algorithm {
 
     @Override
     public void runAlgorithm() {
-        logger.info("Running the Second com.vrp.bajmer.algorithm...");
+        logger.info("Running the Multiple Ant Colony System algorithm...");
 //        MACS_Procedure();
         saveSolution();
     }
@@ -151,24 +129,27 @@ public class MACSAlgorithm extends Algorithm {
 //    }
 
     private void newActiveAnt(Ant ant) {
+        double weightLimit = super.getProblem().getWeightLimitPerVehicle();
+        double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
+
 //        put ant in randomly selected duplicated depot
         Route route = new Route();
-        route.addCustomerAsLast(depot);
+        route.addCustomerAsLast(super.getProblem().getDepot());
         int tmpNodeId = route.getLastCustomerId();
 
 //            when ant is in node i compute the set of feasible nodes
 //            when feasible nodes are avaible
-        while (ant.updateFeasibleNodes(tmpNodeId, routeSegments, route, weightLimit, sizeLimit)) {
+        while (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
 //            Choose probabilistically the next node j
-            int nextNodeId = ant.chooseNextNode(routeSegments);
+            int nextNodeId = ant.chooseNextNode(super.getRouteSegments());
 //            Add j to path, i <- j and update parameters
-            for (Customer c : customers) {
+            for (Customer c : super.getCustomers()) {
                 if (c.getId() == nextNodeId) {
                     route.addCustomerAsLast(c);
                     ant.removeFromUnvisitedCustomers(nextNodeId);
                 }
             }
-            for (RouteSegment rs : routeSegments) {
+            for (RouteSegment rs : super.getRouteSegments()) {
                 if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
                     route.addSegmentAsLast(rs);
 //                    LOCAL pheromone updating (Equation 3) on added segment
@@ -182,7 +163,7 @@ public class MACSAlgorithm extends Algorithm {
     }
 
     private void localPheromoneUpdate(RouteSegment routeSegment) {
-        for (RouteSegment rs : routeSegments) {
+        for (RouteSegment rs : super.getRouteSegments()) {
             if (rs.equals(routeSegment)) {
 //                update pheromone on segment
                 double tau = rs.getMacsPheromoneLevel(); //pheromone level

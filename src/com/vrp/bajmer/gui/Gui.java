@@ -40,6 +40,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private static final Logger logger = LogManager.getLogger(Gui.class);
 
     private JPanel mainPanel;
+    private JPanel mapPanel;
+    private JPanel leftPanel;
+    private JPanel rightPanel;
+    private JPanel bottomPanel;
     private JLabel mapLabel;
     private JButton bLoad;
     private JButton bGetDistance;
