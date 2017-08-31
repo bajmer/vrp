@@ -137,17 +137,16 @@ public class MACSAlgorithm extends Algorithm {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
 
-
-        for (int j = 0; j < 5; j++) {
-            //        put ant in randomly selected duplicated depot
-            Route route = new Route();
-            route.addCustomerAsLast(super.getProblem().getDepot());
-            int tmpNodeId = route.getLastCustomerId();
+        //        put ant in randomly selected duplicated depot
+        Route route = new Route();
+        route.addCustomerAsLast(super.getProblem().getDepot());
+        int tmpNodeId = route.getLastCustomerId();
 
 //            when ant is in node i compute the set of feasible nodes
 //            when feasible nodes are avaible
-            while (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
-//            Choose probabilistically the next node j
+        while (true) {
+            if (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
+//                Choose probabilistically the next node j
                 int nextNodeId = ant.chooseNextNode(tmpNodeId, super.getRouteSegments());
 //            Add j to path, i <- j and update parameters
                 for (Customer c : super.getCustomers()) {
@@ -166,23 +165,40 @@ public class MACSAlgorithm extends Algorithm {
                     }
                 }
                 tmpNodeId = nextNodeId;
-            }
-            ant.removeFromUnvisitedCustomers(tmpNodeId);
-            super.getRoutes().add(route);
+            } else {
+                route.addCustomerAsLast(super.getProblem().getDepot());
+                for (RouteSegment rs : super.getRouteSegments()) {
+                    if (rs.isSegmentExist(tmpNodeId, super.getProblem().getDepot().getId())) {
+                        route.addSegmentAsLast(rs);
+//                    LOCAL pheromone updating (Equation 3) on added segment
+//                    localPheromoneUpdate(rs);
+                        break;
+                    }
+                }
+                logger.info("Znaleziona trasa: " + route.toString());
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
+                    Customer c = route.getCustomersInRoute().get(i);
+                    sb.append(c.getId());
+                    if (i != route.getCustomersInRoute().size() - 1) {
+                        sb.append("->");
+                    }
+                }
+                logger.info(sb.toString());
 
-            logger.info("Znaleziona trasa: " + route.toString());
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
-                Customer c = route.getCustomersInRoute().get(i);
-                sb.append(c.getId());
-                if (i != route.getCustomersInRoute().size() - 1) {
-                    sb.append("->");
+                ant.removeFromUnvisitedCustomers(tmpNodeId);
+                super.getRoutes().add(route);
+
+                if (ant.getUnvisitedCustomers().size() == 0) {
+                    break;
+                } else {
+//                    put ant in randomly selected duplicated depot
+                    route = new Route();
+                    route.addCustomerAsLast(super.getProblem().getDepot());
+                    tmpNodeId = route.getLastCustomerId();
                 }
             }
-            logger.info(sb.toString());
-
         }
-
     }
 
     private void localPheromoneUpdate(RouteSegment routeSegment) {
