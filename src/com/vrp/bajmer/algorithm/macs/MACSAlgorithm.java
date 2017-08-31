@@ -5,6 +5,7 @@ import com.vrp.bajmer.core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +16,8 @@ public class MACSAlgorithm extends Algorithm {
 
     private static final Logger logger = LogManager.getLogger(MACSAlgorithm.class);
 
-    private double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
-    private double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
+    //    private double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
+//    private double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
     private double gamma; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
     private int numberOfAnts; //ilość mrówek, preferowana wartość = n (ilość miast)
     private List<Ant> ants;
@@ -28,8 +29,8 @@ public class MACSAlgorithm extends Algorithm {
     public MACSAlgorithm(Problem problem, int numberOfAnts, double alfa, double beta, double gamma) {
         super(problem, "Multiple Ant Colony System");
 
-        this.alfa = alfa;
-        this.beta = beta;
+//        this.alfa = alfa;
+//        this.beta = beta;
         this.gamma = gamma;
         this.numberOfAnts = numberOfAnts;
 
@@ -37,9 +38,12 @@ public class MACSAlgorithm extends Algorithm {
         acsTimeSolutions = new ArrayList<>();
         acsVeiSolutions = new ArrayList<>();
 
+        Ant.setAlfa(alfa);
+        Ant.setBeta(beta);
+
 //        utworzenie danej liczby mrówek
         for (int i = 0; i < numberOfAnts; i++) {
-            ants.add(new Ant());
+            ants.add(new Ant(super.getCustomers()));
         }
     }
 
@@ -47,6 +51,7 @@ public class MACSAlgorithm extends Algorithm {
     public void runAlgorithm() {
         logger.info("Running the Multiple Ant Colony System algorithm...");
 //        MACS_Procedure();
+        newActiveAnt(new Ant(super.getCustomers()));
         saveSolution();
     }
 
@@ -132,33 +137,51 @@ public class MACSAlgorithm extends Algorithm {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
 
-//        put ant in randomly selected duplicated depot
-        Route route = new Route();
-        route.addCustomerAsLast(super.getProblem().getDepot());
-        int tmpNodeId = route.getLastCustomerId();
+
+        for (int j = 0; j < 5; j++) {
+            //        put ant in randomly selected duplicated depot
+            Route route = new Route();
+            route.addCustomerAsLast(super.getProblem().getDepot());
+            int tmpNodeId = route.getLastCustomerId();
 
 //            when ant is in node i compute the set of feasible nodes
 //            when feasible nodes are avaible
-        while (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
+            while (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
 //            Choose probabilistically the next node j
-            int nextNodeId = ant.chooseNextNode(super.getRouteSegments());
+                int nextNodeId = ant.chooseNextNode(tmpNodeId, super.getRouteSegments());
 //            Add j to path, i <- j and update parameters
-            for (Customer c : super.getCustomers()) {
-                if (c.getId() == nextNodeId) {
-                    route.addCustomerAsLast(c);
-                    ant.removeFromUnvisitedCustomers(nextNodeId);
+                for (Customer c : super.getCustomers()) {
+                    if (c.getId() == nextNodeId) {
+                        route.addCustomerAsLast(c);
+                        ant.removeFromUnvisitedCustomers(tmpNodeId);
+                        break;
+                    }
                 }
-            }
-            for (RouteSegment rs : super.getRouteSegments()) {
-                if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
-                    route.addSegmentAsLast(rs);
+                for (RouteSegment rs : super.getRouteSegments()) {
+                    if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
+                        route.addSegmentAsLast(rs);
 //                    LOCAL pheromone updating (Equation 3) on added segment
-                    localPheromoneUpdate(rs);
+//                    localPheromoneUpdate(rs);
+                        break;
+                    }
+                }
+                tmpNodeId = nextNodeId;
+            }
+            ant.removeFromUnvisitedCustomers(tmpNodeId);
+            super.getRoutes().add(route);
+
+            logger.info("Znaleziona trasa: " + route.toString());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
+                Customer c = route.getCustomersInRoute().get(i);
+                sb.append(c.getId());
+                if (i != route.getCustomersInRoute().size() - 1) {
+                    sb.append("->");
                 }
             }
-            tmpNodeId = nextNodeId;
-        }
+            logger.info(sb.toString());
 
+        }
 
     }
 
@@ -180,6 +203,29 @@ public class MACSAlgorithm extends Algorithm {
 
     @Override
     public void saveSolution() {
-
+        logger.info("Saving solution...");
+        logger.info(super.getRoutes().size() + " routes have been found");
+        double totalDistance = 0;
+        Duration totalDuration = Duration.ZERO;
+        for (Route route : super.getRoutes()) {
+            route.setArrivalAndDepartureTimeForCustomers();
+            totalDistance += route.getTotalDistance();
+            totalDuration = totalDuration.plus(route.getTotalDuration());
+            logger.info(route.toString());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
+                Customer c = route.getCustomersInRoute().get(i);
+                sb.append(c.getId());
+                if (i != route.getCustomersInRoute().size() - 1) {
+                    sb.append("->");
+                }
+            }
+            logger.info(sb.toString());
+        }
+        logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
+        super.getSolution().setTotalDistanceCost(totalDistance);
+        super.getSolution().setTotalDurationCost(totalDuration);
+        Storage.getSolutionsList().add(super.getSolution());
+        logger.info("Saving solution has been completed.");
     }
 }

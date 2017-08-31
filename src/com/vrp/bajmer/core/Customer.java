@@ -27,7 +27,7 @@ public class Customer {
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Duration> durations = new HashMap<>();
     private ImageIcon imageIcon;
-    private double macsRating;
+    private double macsChoiceProbability;
 
     public Customer(String fullAddress, String streetAndNumber, String postalCode, String city, double latitude, double longitude,
                     double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
@@ -169,4 +169,12 @@ public class Customer {
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
     }
+
+    public double getMacsChoiceProbability() {
+        return macsChoiceProbability;
     }
+
+    public void setMacsChoiceProbability(double macsChoiceProbability) {
+        this.macsChoiceProbability = macsChoiceProbability;
+    }
+}

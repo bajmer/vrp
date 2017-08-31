@@ -38,7 +38,9 @@ import java.util.Vector;
 public class Gui extends JFrame implements ActionListener, TreeSelectionListener, ListSelectionListener {
 
     private static final Logger logger = LogManager.getLogger(Gui.class);
-
+    private static final String CW_ALG = "Clarke-Wright";
+    private static final String MACS_ALG = "Multiple Ant Colony System";
+    private static final String TH_ALG = "Third";
     private JPanel mainPanel;
     private JPanel mapPanel;
     private JPanel leftPanel;
@@ -54,7 +56,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JFormattedTextField fNumberOfVehicles;
     private JFormattedTextField fWeightLimit;
     private JFormattedTextField fSizeLimit;
-    private JComboBox boxAlgorithms;
+    private JComboBox<String> boxAlgorithms;
     private JTextArea appLog;
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteDetails;
@@ -64,7 +66,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JFormattedTextField fBeta;
     private JFormattedTextField fGamma;
     private JTree treeSolutions;
-
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
     private String algorithmName;
@@ -98,9 +99,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fBeta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fGamma.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
-        boxAlgorithms.addItem("Clark-Wright");
-        boxAlgorithms.addItem("MACS");
-        boxAlgorithms.addItem("Third");
+        boxAlgorithms.addItem(CW_ALG);
+        boxAlgorithms.addItem(MACS_ALG);
+        boxAlgorithms.addItem(TH_ALG);
         boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
@@ -153,7 +154,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
-            if (Objects.equals(algorithmName, "MACS")) {
+            if (Objects.equals(algorithmName, MACS_ALG)) {
                 fNumberOfAnts.setEnabled(true);
                 fAlfa.setEnabled(true);
                 fBeta.setEnabled(true);
@@ -173,11 +174,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
                 Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, weightLimitDouble, sizeLimitDouble);
                 switch (algorithmName) {
-                    case "Clark-Wright":
+                    case CW_ALG:
                         Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
-                    case "MACS":
+                    case MACS_ALG:
                         int numberOfAnts = Integer.parseInt(fNumberOfAnts.getText());
                         double alfa = Double.parseDouble(fAlfa.getText());
                         double beta = Double.parseDouble(fBeta.getText());
@@ -185,7 +186,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         Algorithm macs_algorithm = new MACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
                         macs_algorithm.runAlgorithm();
                         break;
-                    case "Third com.vrp.bajmer.algorithm":
+                    case TH_ALG:
                         Algorithm third_algorithm = new Third_Algorithm(problem);
                         third_algorithm.runAlgorithm();
                         break;
