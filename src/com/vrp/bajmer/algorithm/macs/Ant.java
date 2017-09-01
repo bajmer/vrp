@@ -20,19 +20,12 @@ class Ant {
     private List<Integer> unvisitedCustomers;
     private List<Customer> feasibleNodes;
 
-
-    Ant(List<Customer> customers) {
+    Ant() {
         id = antID;
         antID++;
 
         feasibleNodes = new ArrayList<>();
         unvisitedCustomers = new ArrayList<>();
-
-//        tworzona jest lista nieodwiedzonych klientów
-        for (Customer c : customers) {
-            unvisitedCustomers.add(c.getId());
-        }
-
     }
 
     static double getAlfa() {
@@ -103,6 +96,13 @@ class Ant {
             }
         }
         return false;
+    }
+
+    void resetUnvisitedCustomers(List<Customer> customers) {
+//        tworzona jest lista nieodwiedzonych klientów
+        for (Customer c : customers) {
+            unvisitedCustomers.add(c.getId());
+        }
     }
 
     void removeFromUnvisitedCustomers(int idToRemove) {

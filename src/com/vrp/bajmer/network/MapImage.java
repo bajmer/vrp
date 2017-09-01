@@ -41,13 +41,13 @@ public class MapImage {
 
     private static Map<String, String> fillColours() {
         Map<String, String> colours = new LinkedHashMap<String, String>();
-        colours.put("black", "0x000000FF");
         colours.put("red", "0xFF0000FF");
         colours.put("lime", "0x00FF00FF");
         colours.put("blue", "0x0000FFFF");
         colours.put("yellow", "0xFFFF00FF");
         colours.put("aqua", "0x00FFFFFF");
         colours.put("magenta", "0xFF00FFFF");
+        colours.put("black", "0x000000FF");
         colours.put("brown", "0xA52A2AFF");
         colours.put("dark magenta", "0x8B008BFF");
         colours.put("olive", "0x808000FF");

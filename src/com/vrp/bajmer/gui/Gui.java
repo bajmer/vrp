@@ -432,7 +432,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         DefaultTreeModel model = (DefaultTreeModel) treeSolutions.getModel();
         model.insertNodeInto(solutionNode, root, root.getChildCount());
 
-        treeSolutions.expandPath(new TreePath(root.getPath()));
-        treeSolutions.scrollPathToVisible(new TreePath(solutionNode.getPath()));
+        TreePath rootPath = new TreePath(root.getPath());
+        TreePath solutionPath = new TreePath(solutionNode.getPath());
+        treeSolutions.expandPath(rootPath);
+        treeSolutions.scrollPathToVisible(solutionPath);
+        treeSolutions.setSelectionPath(solutionPath);
     }
 }

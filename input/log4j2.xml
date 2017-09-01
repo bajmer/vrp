@@ -22,7 +22,7 @@
         </JTextAreaAppender>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="warn">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileLogger"/>
             <AppenderRef ref="jtextarea-log"/>

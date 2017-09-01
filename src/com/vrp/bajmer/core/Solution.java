@@ -22,8 +22,8 @@ public class Solution {
         this.usedAlgorithm = usedAlgorithm;
         this.depot = depot;
         this.listOfRoutes = new ArrayList<>();
-        this.totalDistanceCost = 0.0;
-        this.totalDurationCost = Duration.ZERO;
+        this.totalDistanceCost = 100000.0;
+        this.totalDurationCost = Duration.ofSeconds(1000000);
     }
 
     public int getSolutionID() {
