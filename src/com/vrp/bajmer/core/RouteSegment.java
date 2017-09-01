@@ -142,7 +142,7 @@ public class RouteSegment implements Cloneable {
     }
 
     public boolean isSegmentExist(int a, int b) {
-        return (a == src.getId() && b == dst.getId()) || (b == src.getId() && a == dst.getId());
+        return (a == src.getId() && b == dst.getId()) /*|| (b == src.getId() && a == dst.getId())*/;
     }
 
     @Override

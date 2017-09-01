@@ -90,6 +90,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fNumberOfAnts.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
+        //do poprawy walidatory pól
         NumberFormat doubleFormat = NumberFormat.getNumberInstance();
         integerFormat.setGroupingUsed(false);
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);

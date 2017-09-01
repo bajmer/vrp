@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marcin on 2017-06-26.
@@ -25,6 +26,8 @@ public class MACSAlgorithm extends Algorithm {
     private List<Ant> ants;
     private List<Solution> acsTimeSolutions;
     private List<Solution> acsVeiSolutions;
+    private List<RouteSegment> acsTimeRouteSegments;
+    private List<RouteSegment> acsVeiRouteSegments;
     private Solution bestMACSSolution;
     private Solution bestAcsTimeSolution;
     private Solution bestAcsVeiSolution;
@@ -35,12 +38,11 @@ public class MACSAlgorithm extends Algorithm {
         this.gamma = gamma;
         this.numberOfAnts = numberOfAnts;
 
-        ants = new ArrayList<>(numberOfAnts);
-        acsTimeSolutions = new ArrayList<>();
-        acsVeiSolutions = new ArrayList<>();
-        bestAcsTimeSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
-        bestAcsVeiSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
-
+        this.ants = new ArrayList<>(numberOfAnts);
+        this.acsTimeSolutions = new ArrayList<>();
+        this.acsVeiSolutions = new ArrayList<>();
+        this.bestAcsTimeSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
+        this.bestAcsVeiSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
         Ant.setAlfa(alfa);
         Ant.setBeta(beta);
 
@@ -48,6 +50,18 @@ public class MACSAlgorithm extends Algorithm {
         for (int i = 0; i < numberOfAnts; i++) {
             ants.add(new Ant());
         }
+
+//        utworzenie tablicy segmentów trasy, zawierającej również obrócone segmenty
+        List<RouteSegment> notSwappedSegments = new ArrayList<>(super.getRouteSegments().size());
+        notSwappedSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+        List<RouteSegment> swappedSegments = new ArrayList<>(super.getRouteSegments().size());
+        swappedSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+        for (RouteSegment rs : swappedSegments) {
+            rs.swapSrcDst();
+        }
+        this.acsTimeRouteSegments = new ArrayList<>(super.getRouteSegments().size() * 2);
+        acsTimeRouteSegments.addAll(notSwappedSegments);
+        acsTimeRouteSegments.addAll(swappedSegments);
     }
 
     @Override
@@ -97,12 +111,11 @@ public class MACSAlgorithm extends Algorithm {
             acsTimeSolutions.clear();
 //            construct solution for each ant
             for (Ant ant : ants) {
-                newActiveAnt(ant, ACS_TIME);
+                newActiveAnt(ant, ACS_TIME, acsTimeRouteSegments);
             }
 
-//        update the best solution if it is improved
-            for (Solution s : acsTimeSolutions) {
 //            find the best ant solution
+            for (Solution s : acsTimeSolutions) {
 //                double distanceCost = s.getTotalDistanceCost();
                 Duration durationCost = s.getTotalDurationCost();
 //                gdy czas rozwiązania jest mniejszy niż w najlepszym rozwiązaniu
@@ -116,6 +129,7 @@ public class MACSAlgorithm extends Algorithm {
 //                }
             }
 
+//            update the best solution if it is improved
 //            if solution is feasible and duration cost is less than the tmp best solution cost
 //            if (bestAcsTimeSolution.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()
 //                        /*&& bestAcsTimeSolution.isFeasible()*/) < 0) {
@@ -154,9 +168,12 @@ public class MACSAlgorithm extends Algorithm {
 //        }
 //    }
 
-    private void newActiveAnt(Ant ant, String colony) {
+    private void newActiveAnt(Ant ant, String colony, List<RouteSegment> routeSegments) {
         ant.resetUnvisitedCustomers(super.getCustomers());
         Solution antSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
+
+//        List<RouteSegment> routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
+//        routeSegments.addAll(super.getRouteSegments().stream().map(RouteSegment::clone).collect(Collectors.toList()));
 
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
@@ -169,9 +186,9 @@ public class MACSAlgorithm extends Algorithm {
 //            when ant is in node i compute the set of feasible nodes
 //            when feasible nodes are avaible
         while (true) {
-            if (ant.updateFeasibleNodes(tmpNodeId, super.getRouteSegments(), route, weightLimit, sizeLimit)) {
+            if (ant.updateFeasibleNodes(tmpNodeId, routeSegments, route, weightLimit, sizeLimit)) {
 //                Choose probabilistically the next node j
-                int nextNodeId = ant.chooseNextNode(tmpNodeId, super.getRouteSegments());
+                int nextNodeId = ant.chooseNextNode(tmpNodeId, routeSegments);
 //            Add j to path, i <- j and update parameters
                 for (Customer c : super.getCustomers()) {
                     if (c.getId() == nextNodeId) {
@@ -180,9 +197,10 @@ public class MACSAlgorithm extends Algorithm {
                         break;
                     }
                 }
-                for (RouteSegment rs : super.getRouteSegments()) {
+                for (RouteSegment rs : routeSegments) {
                     if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
                         route.addSegmentAsLast(rs);
+
 //                    LOCAL pheromone updating (Equation 3) on added segment
 //                    localPheromoneUpdate(rs);
                         break;
@@ -191,7 +209,7 @@ public class MACSAlgorithm extends Algorithm {
                 tmpNodeId = nextNodeId;
             } else {
                 route.addCustomerAsLast(super.getProblem().getDepot());
-                for (RouteSegment rs : super.getRouteSegments()) {
+                for (RouteSegment rs : routeSegments) {
                     if (rs.isSegmentExist(tmpNodeId, super.getProblem().getDepot().getId())) {
                         route.addSegmentAsLast(rs);
 //                    LOCAL pheromone updating (Equation 3) on added segment
@@ -240,7 +258,20 @@ public class MACSAlgorithm extends Algorithm {
     }
 
     private void globalPheromoneUpdate(Solution bestSolution) {
+//        List<RouteSegment> routeSegments;
+//        if (colony.equals(ACS_TIME)) {
+//            routeSegments = acsTimeRouteSegments;
+//        } else {
+//            routeSegments = acsVeiRouteSegments;
+//        }
 
+        for (Route r : bestSolution.getListOfRoutes()) {
+            for (RouteSegment rs : r.getRouteSegments()) {
+                double tau = rs.getMacsPheromoneLevel(); //pheromone level
+                tau = (1 - gamma) * tau + gamma / bestSolution.getTotalDistanceCost(); //wzór na nową ilość feromonu
+                rs.setMacsPheromoneLevel(tau);
+            }
+        }
     }
 
     private void saveAntSolution(Solution solution, String colony) {
