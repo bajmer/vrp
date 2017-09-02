@@ -19,6 +19,7 @@ public class MACSAlgorithm extends Algorithm {
     private static final String ACS_TIME = "ACS_TIME";
     private static final String ACS_VEI = "ACS_VEI";
     private static final String MACS = "Multiple Ant Colony System";
+    private static final double INITIAL_PHEROMONE_LEVEL = 0.1;
     //    private double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
 //    private double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
     private double gamma; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
@@ -68,7 +69,7 @@ public class MACSAlgorithm extends Algorithm {
     public void runAlgorithm() {
         logger.info("Running the Multiple Ant Colony System algorithm...");
 //        MACS_Procedure();
-//        newActiveAnt(new Ant(super.getCustomers()), ACS_TIME);
+//        constructNewSolution(new Ant(super.getCustomers()), ACS_TIME);
         ACS_TIME_Procedure(0);
 //        saveSolution();
     }
@@ -103,15 +104,17 @@ public class MACSAlgorithm extends Algorithm {
 //    }
 
     private void ACS_TIME_Procedure(int v) {
-//        initialize pheromone and data structure using v
+//        ustawienie początkowej ilości feromonu dla każdego segmentu
+        for (RouteSegment rs : acsTimeRouteSegments) {
+            rs.setMacsPheromoneLevel(INITIAL_PHEROMONE_LEVEL);
+        }
 
         int i = 0;
-//        main loop
         while (i < 10) {
             acsTimeSolutions.clear();
-//            construct solution for each ant
+//            wyznaczenie rozwiąznia przez każdą mrówkę
             for (Ant ant : ants) {
-                newActiveAnt(ant, ACS_TIME, acsTimeRouteSegments);
+                constructNewSolution(ant, ACS_TIME, acsTimeRouteSegments);
             }
 
 //            find the best ant solution
@@ -129,6 +132,12 @@ public class MACSAlgorithm extends Algorithm {
 //                }
             }
 
+            for (Route r : bestAcsTimeSolution.getListOfRoutes()) {
+                for (RouteSegment rs : r.getRouteSegments()) {
+                    rs.setMacsPartOfTheBestSolution(true);
+                }
+            }
+
 //            update the best solution if it is improved
 //            if solution is feasible and duration cost is less than the tmp best solution cost
 //            if (bestAcsTimeSolution.getTotalDurationCost().compareTo(bestMACSSolution.getTotalDurationCost()
@@ -137,6 +146,7 @@ public class MACSAlgorithm extends Algorithm {
 //              generate event???
 //            }
 
+            logger.info("The best solution in this iteration is: " + bestAcsTimeSolution.toString());
 //        perform global updating according to Equation 2
             globalPheromoneUpdate(bestAcsTimeSolution);
             i++;
@@ -152,7 +162,7 @@ public class MACSAlgorithm extends Algorithm {
 //        while (/*warunek stopu*/) {
 ////            construct solution for each ant
 //            for (Ant ant : ants) {
-//                newActiveAnt(ant);
+//                constructNewSolution(ant);
 //            }
 //
 ////        update the best solution if it is improved
@@ -168,7 +178,7 @@ public class MACSAlgorithm extends Algorithm {
 //        }
 //    }
 
-    private void newActiveAnt(Ant ant, String colony, List<RouteSegment> routeSegments) {
+    private void constructNewSolution(Ant ant, String colony, List<RouteSegment> routeSegments) {
         ant.resetUnvisitedCustomers(super.getCustomers());
         Solution antSolution = new Solution(super.getProblem().getProblemID(), MACS, super.getProblem().getDepot());
 
@@ -264,13 +274,16 @@ public class MACSAlgorithm extends Algorithm {
 //        } else {
 //            routeSegments = acsVeiRouteSegments;
 //        }
-
-        for (Route r : bestSolution.getListOfRoutes()) {
-            for (RouteSegment rs : r.getRouteSegments()) {
-                double tau = rs.getMacsPheromoneLevel(); //pheromone level
-                tau = (1 - gamma) * tau + gamma / bestSolution.getTotalDistanceCost(); //wzór na nową ilość feromonu
-                rs.setMacsPheromoneLevel(tau);
+        for (RouteSegment rs : acsTimeRouteSegments) {
+            double tau = rs.getMacsPheromoneLevel(); //poziom feromonu
+            logger.info(rs.getSrc().getId() + "->" + rs.getDst().getId() + ": " + tau);
+//            jeśli segment trasy należy do najlepszej trasy
+            if (rs.isMacsPartOfTheBestSolution()) {
+                tau = (1 - gamma) * tau + gamma / bestSolution.getTotalDistanceCost(); //parowanie feromonu + feromon najlepszego rozwiązania
+            } else {
+                tau = (1 - gamma) * tau; //zwykłe parowanie feromonu
             }
+            rs.setMacsPheromoneLevel(tau);
         }
     }
 

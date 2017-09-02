@@ -28,6 +28,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Objects;
 import java.util.Vector;
@@ -90,15 +92,24 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fNumberOfAnts.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
-        //do poprawy walidatory pól
-        NumberFormat doubleFormat = NumberFormat.getNumberInstance();
-        integerFormat.setGroupingUsed(false);
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        DecimalFormat doubleFormat = new DecimalFormat("###.##", dfs);
+        doubleFormat.setGroupingUsed(false);
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
-        doubleFormatter.setValueClass(Integer.class);
-        doubleFormatter.setAllowsInvalid(false);
+        doubleFormatter.setValueClass(Double.class);
         fAlfa.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fBeta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fGamma.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+
+        fAlgorithmId.setText("1");
+        fNumberOfVehicles.setText("1");
+        fWeightLimit.setText("1500");
+        fSizeLimit.setText("9");
+        fNumberOfAnts.setText("10");
+        fAlfa.setText("1");
+        fBeta.setText("3");
+        fGamma.setText("0.5");
 
         boxAlgorithms.addItem(CW_ALG);
         boxAlgorithms.addItem(MACS_ALG);

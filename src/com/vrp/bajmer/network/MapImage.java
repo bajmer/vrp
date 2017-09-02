@@ -27,9 +27,9 @@ public class MapImage {
     private static final String endOfURL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
     private static final String imagePath = "solution_images/";
 
-    private static final String defaultDepotMarker = "&markers=size:small|color:green|";
+    private static final String defaultDepotMarker = "&markers=size:small|color:yellow|";
     private static final String defaultCustomerMarker = "&markers=size:small|color:blue";
-    private static final String biggerDepotMarker = "&markers=size:normal|color:green|";
+    private static final String biggerDepotMarker = "&markers=size:normal|color:yellow|";
     private static final String biggerCustomerMarker = "&markers=size:normal|color:blue";
     private static final String choosenMarker = "&markers=size:normal|color:red|";
     private static final String fromMarker = "&markers=size:normal|color:green|";
