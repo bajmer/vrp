@@ -31,6 +31,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -67,6 +68,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JFormattedTextField fAlfa;
     private JFormattedTextField fBeta;
     private JFormattedTextField fGamma;
+    private JSlider sNumberOfAnts;
+    private JSlider sAlfa;
+    private JSlider sBeta;
+    private JSlider sGamma;
     private JTree treeSolutions;
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
@@ -110,6 +115,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fAlfa.setText("1");
         fBeta.setText("3");
         fGamma.setText("0.5");
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(100, new JLabel("1.0"));
+        labelTable.put(50, new JLabel("0.5"));
+        labelTable.put(0, new JLabel("0.0"));
+        sGamma.setLabelTable(labelTable);
 
         boxAlgorithms.addItem(CW_ALG);
         boxAlgorithms.addItem(MACS_ALG);
