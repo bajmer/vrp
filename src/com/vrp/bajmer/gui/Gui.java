@@ -3,7 +3,7 @@ package com.vrp.bajmer.gui;
 import com.vrp.bajmer.algorithm.Algorithm;
 import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.algorithm.clarke_wright.ClarkeWrightAlgorithm;
-import com.vrp.bajmer.algorithm.macs.MACSAlgorithm;
+import com.vrp.bajmer.algorithm.macs.ACSAlgorithm;
 import com.vrp.bajmer.core.*;
 import com.vrp.bajmer.io.FileReader;
 import com.vrp.bajmer.network.DistanceMatrix;
@@ -42,7 +42,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     private static final Logger logger = LogManager.getLogger(Gui.class);
     private static final String CW_ALG = "Clarke-Wright";
-    private static final String MACS_ALG = "Multiple Ant Colony System";
+    private static final String MACS_ALG = "Ant Colony System";
     private static final String TH_ALG = "Third";
     private JPanel mainPanel;
     private JPanel mapPanel;
@@ -206,7 +206,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         double alfa = Double.parseDouble(fAlfa.getText());
                         double beta = Double.parseDouble(fBeta.getText());
                         double gamma = Double.parseDouble(fGamma.getText());
-                        Algorithm macs_algorithm = new MACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
+                        Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
                         macs_algorithm.runAlgorithm();
                         break;
                     case TH_ALG:

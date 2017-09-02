@@ -12,20 +12,17 @@ import java.util.Random;
  * Created by Marcin on 2017-08-27.
  */
 class Ant {
-
-    private static int antID = 1;
     private static double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
     private static double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
-    private int id;
     private List<Integer> unvisitedCustomers;
     private List<Customer> feasibleNodes;
 
-    Ant() {
-        id = antID;
-        antID++;
-
+    Ant(List<Customer> customers) {
         feasibleNodes = new ArrayList<>();
         unvisitedCustomers = new ArrayList<>();
+        for (Customer c : customers) {
+            unvisitedCustomers.add(c.getId());
+        }
     }
 
     static double getAlfa() {
@@ -44,15 +41,7 @@ class Ant {
         Ant.beta = beta;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public List<Integer> getUnvisitedCustomers() {
+    List<Integer> getUnvisitedCustomers() {
         return unvisitedCustomers;
     }
 
@@ -68,7 +57,7 @@ class Ant {
         this.feasibleNodes = feasibleNodes;
     }
 
-    boolean updateFeasibleNodes(int tmpNodeId, List<RouteSegment> routeSegments, Route route, double weightLimit, double sizeLimit) {
+    boolean updateFeasibleCustomers(int tmpNodeId, List<RouteSegment> routeSegments, Route route, double weightLimit, double sizeLimit) {
         feasibleNodes.clear();
         for (RouteSegment rs : routeSegments) {
             Customer c = null;
@@ -79,7 +68,7 @@ class Ant {
             }
 
 //            if c is on unvisited list
-            if (c != null && isUnvisited(c.getId())) {
+            if (c != null && isCustomerUnvisited(c.getId())) {
 //                if customer can be added (dopisać warunki czasowe)
                 if (route.canAdd(c.getPackageWeight(), weightLimit, c.getPackageSize(), sizeLimit)) {
                     feasibleNodes.add(c);
@@ -89,7 +78,7 @@ class Ant {
         return feasibleNodes.size() != 0;
     }
 
-    private boolean isUnvisited(int id) {
+    private boolean isCustomerUnvisited(int id) {
         for (int i : unvisitedCustomers) {
             if (i == id) {
                 return true;
@@ -98,23 +87,14 @@ class Ant {
         return false;
     }
 
-    void resetUnvisitedCustomers(List<Customer> customers) {
-//        tworzona jest lista nieodwiedzonych klientów
-        for (Customer c : customers) {
-            unvisitedCustomers.add(c.getId());
-        }
-    }
-
     void removeFromUnvisitedCustomers(int idToRemove) {
-//        if (idToRemove != 0) {
         for (int i = 0; i < unvisitedCustomers.size(); i++) {
             int id = unvisitedCustomers.get(i);
             if (id == idToRemove) {
-                    unvisitedCustomers.remove(i);
-                    return;
-                }
+                unvisitedCustomers.remove(i);
+                return;
             }
-//        }
+        }
     }
 
     int chooseNextNode(int currentNodeId, List<RouteSegment> routeSegments) {
@@ -137,7 +117,7 @@ class Ant {
     private void calculateProbabilityForAllFeasibleNodes(int currentNodeId, List<RouteSegment> routeSegments) {
         double downNumber = 0;
 
-//        iteracja po wszystkich możliwych segmentach, zapisywanie liczników oraz sumowanie ich
+//        iteracja po wszystkich odcinkach trasy łączących dostępnych klientów, zapisywanie liczników oraz sumowanie ich
         for (Customer nextCustomer : feasibleNodes) {
             for (RouteSegment rs : routeSegments) {
                 if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
