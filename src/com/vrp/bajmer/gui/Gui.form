@@ -372,9 +372,9 @@
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <majorTickSpacing value="1000"/>
-                  <maximum value="3000"/>
-                  <minorTickSpacing value="100"/>
+                  <majorTickSpacing value="200"/>
+                  <maximum value="1000"/>
+                  <minorTickSpacing value="20"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <paintTrack value="true"/>

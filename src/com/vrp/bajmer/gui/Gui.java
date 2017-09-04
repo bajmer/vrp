@@ -111,11 +111,15 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fNumberOfVehicles.setText("1");
         fWeightLimit.setText("1500");
         fSizeLimit.setText("9");
-        fNumberOfAnts.setText("10");
+        fNumberOfAnts.setText("100");
         fAlfa.setText("1");
         fBeta.setText("3");
         fGamma.setText("0.5");
 
+        sNumberOfAnts.addChangeListener(e -> fNumberOfAnts.setText(integerFormat.format(sNumberOfAnts.getValue())));
+        sAlfa.addChangeListener(e -> fAlfa.setText(integerFormat.format(sAlfa.getValue())));
+        sBeta.addChangeListener(e -> fBeta.setText(integerFormat.format(sBeta.getValue())));
+        sGamma.addChangeListener(e -> fGamma.setText(doubleFormat.format((double) sGamma.getValue() / 100)));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(100, new JLabel("1.0"));
         labelTable.put(50, new JLabel("0.5"));
