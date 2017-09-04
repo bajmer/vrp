@@ -24,7 +24,7 @@
     <Loggers>
         <Root level="warn">
             <!--<AppenderRef ref="jtextarea-log"/>-->
-            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="Console"/>
             <!--<AppenderRef ref="FileLogger"/>-->
         </Root>
     </Loggers>

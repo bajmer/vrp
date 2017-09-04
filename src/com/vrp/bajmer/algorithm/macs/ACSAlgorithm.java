@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,21 +17,24 @@ import java.util.stream.Collectors;
 public class ACSAlgorithm extends Algorithm {
 
     private static final Logger logger = LogManager.getLogger(ACSAlgorithm.class);
-    private static final String ACS = "Ant Colony System";
-    private static final double INITIAL_PHEROMONE_LEVEL = 0.1;
-    private double gamma; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
-    private int numberOfAnts; //ilość mrówek, preferowana wartość = n (ilość miast)
-    private List<Solution> antsSolutions;
-    private List<RouteSegment> globalAcsRouteSegments;
-    private Solution tmpBestAcsSolution;
 
-    public ACSAlgorithm(Problem problem, int numberOfAnts, double alfa, double beta, double gamma) {
+    private static final String ACS = "Ant Colony System";
+    private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
+    private double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
+    private int m; //ilość mrówek, preferowana wartość = n (ilość miast)
+    private List<Solution> antsSolutions;
+    private List<RouteSegment> acsRouteSegments;
+    private Solution tmpBestAcsSolution;
+    private List<Integer> routeSegmentsIDsInBestSolution;
+
+    public ACSAlgorithm(Problem problem, int m, double q0, double beta, double ro) {
         super(problem, "Ant Colony System");
-        this.gamma = gamma;
-        this.numberOfAnts = numberOfAnts;
+        this.ro = ro;
+        this.m = m;
         this.antsSolutions = new ArrayList<>();
+        this.routeSegmentsIDsInBestSolution = new ArrayList<>();
         this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
-        Ant.setAlfa(alfa);
+        Ant.setQ0(q0);
         Ant.setBeta(beta);
 
 //        utworzenie tablicy odcinków trasy, zawierającej również obrócone odcinki
@@ -41,9 +45,10 @@ public class ACSAlgorithm extends Algorithm {
         for (RouteSegment rs : swappedSegments) {
             rs.swapSrcDst();
         }
-        this.globalAcsRouteSegments = new ArrayList<>(super.getRouteSegments().size() * 2);
-        globalAcsRouteSegments.addAll(notSwappedSegments);
-        globalAcsRouteSegments.addAll(swappedSegments);
+//        this.acsRouteSegments = new List<>(super.getRouteSegments().size() * 2);
+        this.acsRouteSegments = new LinkedList<>();
+        acsRouteSegments.addAll(notSwappedSegments);
+        acsRouteSegments.addAll(swappedSegments);
     }
 
     @Override
@@ -54,41 +59,37 @@ public class ACSAlgorithm extends Algorithm {
     }
 
     private void ACS_Procedure() {
-//        ustawienie początkowej ilości feromonu dla każdego odcinka trasy
-        for (RouteSegment rs : globalAcsRouteSegments) {
-            rs.setMacsPheromoneLevel(INITIAL_PHEROMONE_LEVEL);
+        for (RouteSegment rs : acsRouteSegments) {
+            rs.setMacsPheromoneLevel(INITIAL_PHEROMONE_LEVEL); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
         }
 
         int i = 1;
-        while (i <= 5) {
+        while (i <= 10) {
+            logger.warn("***************ITERACJA " + i + "********************************************************************************************");
             antsSolutions.clear();
-            List<RouteSegment> localAcsRouteSegments = new ArrayList<>(globalAcsRouteSegments.size());
-            localAcsRouteSegments.addAll(globalAcsRouteSegments.stream().map(RouteSegment::clone).collect(Collectors.toList()));
-            for (int k = 0; k < numberOfAnts; k++) {
-                Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers()), localAcsRouteSegments); //wyznaczenie rozwiąznia przez każdą mrówkę
+            routeSegmentsIDsInBestSolution.clear();
+            for (int k = 0; k < m; k++) {
+                Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
                 saveAntSolution(antSolution);
-                logger.warn("Najlepsze rozwiązanie dla mrówki " + k + ": " + antSolution.toString());
-                logger.warn("***************ITERACJA " + i + "********************************************************************************************");
-                localPheromoneUpdate(localAcsRouteSegments); //lokalne aktualizowanie feromonu
+//                logger.warn("----------------Najlepsze rozwiązanie dla mrówki " + k + ": " + antSolution.toString() + "-------------------------");
+//                localPheromoneUpdate(localAcsRouteSegments); //lokalne aktualizowanie feromonu
             }
 
             for (Solution s : antsSolutions) {
-                Duration durationCost = s.getTotalDurationCost();
-                if (durationCost.compareTo(tmpBestAcsSolution.getTotalDurationCost()) < 0) {
-                    tmpBestAcsSolution = s; //znalezienie najlepszego rozwiązania wśród mrówek
+                double distanceCost = s.getTotalDistanceCost();
+//                logger.warn("Rozwiązanie mrówek w iteracji " + i + ": " + s.toString());
+                if (distanceCost < tmpBestAcsSolution.getTotalDistanceCost()) {
+                    tmpBestAcsSolution = s; //gdy koszt rozwiązania jest mniejszy niż w najlepszym rozwiązaniu
                 }
-//                double distanceCost = s.getTotalDistanceCost();
-//                gdy długość rozwiązania jest mniejsza niż w najlepszym rozwiązaniu
-//                if (distanceCost < tmpBestAcsSolution.getTotalDistanceCost()) {
-//                    tmpBestAcsSolution = s;
-//                }
             }
 
-            logger.warn("Najlepsze rozwiązanie w iteracji " + i + ": " + tmpBestAcsSolution.toString());
+            logger.warn("0000000000000000000000000Najlepsze rozwiązanie w iteracji " + i + ": " + tmpBestAcsSolution.toString() + "000000000000000000000000000000");
 
             for (Route r : tmpBestAcsSolution.getListOfRoutes()) {
                 for (RouteSegment rs : r.getRouteSegments()) {
-                    rs.setPartOfTheBestACSSolution(true);
+                    int rsID = rs.getId();
+                    routeSegmentsIDsInBestSolution.add(rsID);
+                    //rs.setPartOfTheBestACSSolution(true);
                 }
             }
 
@@ -99,46 +100,46 @@ public class ACSAlgorithm extends Algorithm {
         Storage.getSolutionsList().add(tmpBestAcsSolution);
     }
 
-    private Solution constructNewAntSolution(Ant ant, List<RouteSegment> routeSegments/*lokalna kopia odcinków trasy*/) {
+    private Solution constructNewAntSolution(Ant ant) {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
         Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
+
         Route route = new Route();
         route.addCustomerAsLast(super.getProblem().getDepot());
         int tmpNodeId = route.getLastCustomerId(); //umieszczenie mrówki w magazynie
 
-//            when ant is in node i compute the set of feasible nodes and feasible nodes are avaible
         while (true) {
-            if (ant.updateFeasibleCustomers(tmpNodeId, routeSegments, route, weightLimit, sizeLimit)) {
-                int nextNodeId = ant.chooseNextNode(tmpNodeId, routeSegments); //wybór kolejnego klienta
+            ant.removeFromUnvisitedCustomers(tmpNodeId); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
+            if (ant.updateFeasibleCustomers(tmpNodeId, acsRouteSegments, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
+                int nextNodeId = ant.chooseNextNode(tmpNodeId, acsRouteSegments); //wybór kolejnego klienta
                 for (Customer c : super.getCustomers()) {
                     if (c.getId() == nextNodeId) {
-                        route.addCustomerAsLast(c); //dodanie klienta do budowanej trasy
-                        ant.removeFromUnvisitedCustomers(tmpNodeId); //usunięcie klienta z listy nieodwiedzonych klientów
+                        route.addCustomerAsLast(c); //dodanie kolejnego klienta do budowanej trasy
                         break;
                     }
                 }
-                for (RouteSegment rs : routeSegments) {
+                for (RouteSegment rs : acsRouteSegments) {
                     if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
-                        route.addSegmentAsLast(rs); //dodanie odcinka do budowanej trasy
+                        route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
                         rs.setPartOfAntSolution(true);
                         break;
                     }
                 }
                 tmpNodeId = nextNodeId;
-            } else {
-                route.addCustomerAsLast(super.getProblem().getDepot());
-                for (RouteSegment rs : routeSegments) {
+            } else { //jeżeli lista dostępnych klientów jest pusta
+                ant.removeFromUnvisitedCustomers(tmpNodeId); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
+                route.addCustomerAsLast(super.getProblem().getDepot()); //dodanie magazynu do listy klienów trasy
+                for (RouteSegment rs : acsRouteSegments) {
                     if (rs.isSegmentExist(tmpNodeId, super.getProblem().getDepot().getId())) {
-                        route.addSegmentAsLast(rs);
+                        route.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
                         break;
                     }
                 }
-                ant.removeFromUnvisitedCustomers(tmpNodeId);
-                antSolution.getListOfRoutes().add(route);
+                antSolution.getListOfRoutes().add(route); //dodanie trasy 0-..-i-..-0 do listy tras
 
                 if (ant.getUnvisitedCustomers().size() == 0) {
-                    break;
+                    break; //jeżeli nie ma więcej nieodwiedzonych klientów przerywamy pętlę (dodać warunek na nieodwiedzonych niedostępnych klientów!!)
                 } else {
                     route = new Route();
                     route.addCustomerAsLast(super.getProblem().getDepot());
@@ -153,7 +154,7 @@ public class ACSAlgorithm extends Algorithm {
         for (RouteSegment rs : localAcsRouteSegments) {
             double tau = rs.getMacsPheromoneLevel(); //poziom feromonu
             if (rs.isPartOfAntSolution()) {
-                tau = (1 - gamma) * tau + gamma * INITIAL_PHEROMONE_LEVEL;
+                tau = (1 - ro) * tau + ro * INITIAL_PHEROMONE_LEVEL;
                 rs.setMacsPheromoneLevel(tau);
                 rs.setPartOfAntSolution(false);
             }
@@ -163,35 +164,10 @@ public class ACSAlgorithm extends Algorithm {
 
     //    DO WERYFIKACJI!!!!
     private void globalPheromoneUpdate(Solution bestSolution) {
-        for (Route r : bestSolution.getListOfRoutes()) {
-            for (RouteSegment rs : r.getRouteSegments()) {
-                for (RouteSegment grs : globalAcsRouteSegments) {
-                    double tau = grs.getMacsPheromoneLevel(); //poziom feromonu
-                    if (grs.getSrc().equals(rs.getSrc()) && grs.getDst().equals(rs.getDst())) {
-                        if (rs.isPartOfTheBestACSSolution()) {
-                            tau = (1 - gamma) * tau + gamma / bestSolution.getTotalDistanceCost(); //parowanie feromonu + feromon najlepszego rozwiązania
-                            //rs.setPartOfTheBestACSSolution(false);
-                        } else {
-                            tau = (1 - gamma) * tau; //zwykłe parowanie feromonu
-                        }
-                        logger.warn("Aktualizowanie feromonu GLOBALNIE: " + rs.getSrc().getId() + "->" + rs.getDst().getId() + " - poziom feromonu: " + tau);
-                        grs.setMacsPheromoneLevel(tau);
-                    }
-                }
-            }
+        for (RouteSegment grs : acsRouteSegments) {
+
         }
 
-//        for (RouteSegment rs : globalAcsRouteSegments) {
-//            double tau = rs.getMacsPheromoneLevel(); //poziom feromonu
-//            logger.info("Global pheromone update: " + rs.getSrc().getId() + "->" + rs.getDst().getId() + ": " + tau);
-//
-//            if (rs.isPartOfTheBestACSSolution()) { //jeśli odcinek trasy należy do najlepszej trasy
-//                tau = (1 - gamma) * tau + gamma / bestSolution.getTotalDistanceCost(); //parowanie feromonu + feromon najlepszego rozwiązania
-//            } else {
-//                tau = (1 - gamma) * tau; //zwykłe parowanie feromonu
-//            }
-//            rs.setMacsPheromoneLevel(tau);
-//        }
     }
 
     private void saveAntSolution(Solution solution) {

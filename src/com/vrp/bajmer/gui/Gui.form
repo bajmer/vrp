@@ -297,10 +297,10 @@
               <component id="944d" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="1.0" ipadx="45"/>
+                  <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="1.0" ipadx="10"/>
                 </constraints>
                 <properties>
-                  <text value="Number of ants"/>
+                  <text value="Number of ants (m)"/>
                 </properties>
               </component>
               <component id="93371" class="javax.swing.JLabel">
@@ -309,10 +309,10 @@
                   <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="1.0" ipadx="10"/>
                 </constraints>
                 <properties>
-                  <text value="Alfa"/>
+                  <text value="Exploitation tresh. (q0)"/>
                 </properties>
               </component>
-              <component id="6a138" class="javax.swing.JFormattedTextField" binding="fNumberOfAnts">
+              <component id="6a138" class="javax.swing.JFormattedTextField" binding="fAcsParam_m">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -327,10 +327,10 @@
                   <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="1.0" ipadx="10"/>
                 </constraints>
                 <properties>
-                  <text value="Beta"/>
+                  <text value="Dist. importance (beta)"/>
                 </properties>
               </component>
-              <component id="b873d" class="javax.swing.JFormattedTextField" binding="fBeta">
+              <component id="b873d" class="javax.swing.JFormattedTextField" binding="fAcsParam_beta">
                 <constraints>
                   <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -345,10 +345,10 @@
                   <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="1.0" ipadx="10"/>
                 </constraints>
                 <properties>
-                  <text value="Gamma"/>
+                  <text value="Pheromone decay (ro)"/>
                 </properties>
               </component>
-              <component id="c4ad1" class="javax.swing.JFormattedTextField" binding="fGamma">
+              <component id="c4ad1" class="javax.swing.JFormattedTextField" binding="fAcsParam_ro">
                 <constraints>
                   <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -357,7 +357,7 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="bd6a9" class="javax.swing.JFormattedTextField" binding="fAlfa">
+              <component id="bd6a9" class="javax.swing.JFormattedTextField" binding="fAcsParam_q0">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -366,26 +366,26 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="2115a" class="javax.swing.JSlider" binding="sNumberOfAnts">
+              <component id="2115a" class="javax.swing.JSlider" binding="sAcsParam_m">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <majorTickSpacing value="200"/>
-                  <maximum value="1000"/>
-                  <minorTickSpacing value="20"/>
+                  <majorTickSpacing value="20"/>
+                  <maximum value="100"/>
+                  <minorTickSpacing value="5"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <paintTrack value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="100"/>
+                  <value value="20"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
                 </clientProperties>
               </component>
-              <component id="87b55" class="javax.swing.JSlider" binding="sAlfa">
+              <component id="87b55" class="javax.swing.JSlider" binding="sAcsParam_q0">
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
@@ -397,13 +397,13 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="1"/>
+                  <value value="9"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
                 </clientProperties>
               </component>
-              <component id="1c8d2" class="javax.swing.JSlider" binding="sBeta">
+              <component id="1c8d2" class="javax.swing.JSlider" binding="sAcsParam_beta">
                 <constraints>
                   <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
@@ -425,7 +425,7 @@
                   <Slider.paintThumbArrowShape class="java.lang.Boolean" value="false"/>
                 </clientProperties>
               </component>
-              <component id="6828a" class="javax.swing.JSlider" binding="sGamma">
+              <component id="6828a" class="javax.swing.JSlider" binding="sAcsParam_ro">
                 <constraints>
                   <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
@@ -433,14 +433,14 @@
                 <properties>
                   <extent value="0"/>
                   <inverted value="false"/>
-                  <majorTickSpacing value="50"/>
-                  <maximum value="100"/>
-                  <minorTickSpacing value="10"/>
+                  <majorTickSpacing value="5"/>
+                  <maximum value="10"/>
+                  <minorTickSpacing value="1"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <paintTrack value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="50"/>
+                  <value value="5"/>
                   <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>

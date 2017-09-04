@@ -42,7 +42,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     private static final Logger logger = LogManager.getLogger(Gui.class);
     private static final String CW_ALG = "Clarke-Wright";
-    private static final String MACS_ALG = "Ant Colony System";
+    private static final String ACS_ALG = "Ant Colony System";
     private static final String TH_ALG = "Third";
     private JPanel mainPanel;
     private JPanel mapPanel;
@@ -64,14 +64,14 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteDetails;
     private JScrollPane jspSolutions;
-    private JFormattedTextField fNumberOfAnts;
-    private JFormattedTextField fAlfa;
-    private JFormattedTextField fBeta;
-    private JFormattedTextField fGamma;
-    private JSlider sNumberOfAnts;
-    private JSlider sAlfa;
-    private JSlider sBeta;
-    private JSlider sGamma;
+    private JFormattedTextField fAcsParam_m;
+    private JFormattedTextField fAcsParam_q0;
+    private JFormattedTextField fAcsParam_beta;
+    private JFormattedTextField fAcsParam_ro;
+    private JSlider sAcsParam_m;
+    private JSlider sAcsParam_q0;
+    private JSlider sAcsParam_beta;
+    private JSlider sAcsParam_ro;
     private JTree treeSolutions;
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
@@ -95,7 +95,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fNumberOfVehicles.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
-        fNumberOfAnts.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fAcsParam_m.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
@@ -103,41 +103,46 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         doubleFormat.setGroupingUsed(false);
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
         doubleFormatter.setValueClass(Double.class);
-        fAlfa.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
-        fBeta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
-        fGamma.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fAcsParam_q0.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fAcsParam_beta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fAcsParam_ro.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
         fAlgorithmId.setText("1");
         fNumberOfVehicles.setText("1");
         fWeightLimit.setText("1500");
         fSizeLimit.setText("9");
-        fNumberOfAnts.setText("100");
-        fAlfa.setText("1");
-        fBeta.setText("3");
-        fGamma.setText("0.5");
+        fAcsParam_m.setText("20");
+        fAcsParam_q0.setText("0.9");
+        fAcsParam_beta.setText("3");
+        fAcsParam_ro.setText("0.5");
 
-        sNumberOfAnts.addChangeListener(e -> fNumberOfAnts.setText(integerFormat.format(sNumberOfAnts.getValue())));
-        sAlfa.addChangeListener(e -> fAlfa.setText(integerFormat.format(sAlfa.getValue())));
-        sBeta.addChangeListener(e -> fBeta.setText(integerFormat.format(sBeta.getValue())));
-        sGamma.addChangeListener(e -> fGamma.setText(doubleFormat.format((double) sGamma.getValue() / 100)));
+        sAcsParam_m.addChangeListener(e -> fAcsParam_m.setText(integerFormat.format(sAcsParam_m.getValue())));
+        sAcsParam_q0.addChangeListener(e -> fAcsParam_q0.setText(doubleFormat.format((double) sAcsParam_q0.getValue() / 10)));
+        sAcsParam_beta.addChangeListener(e -> fAcsParam_beta.setText(integerFormat.format(sAcsParam_beta.getValue())));
+        sAcsParam_ro.addChangeListener(e -> fAcsParam_ro.setText(doubleFormat.format((double) sAcsParam_ro.getValue() / 10)));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(100, new JLabel("1.0"));
-        labelTable.put(50, new JLabel("0.5"));
+        labelTable.put(10, new JLabel("1.0"));
+        labelTable.put(5, new JLabel("0.5"));
         labelTable.put(0, new JLabel("0.0"));
-        sGamma.setLabelTable(labelTable);
+        sAcsParam_ro.setLabelTable(labelTable);
+        sAcsParam_q0.setLabelTable(labelTable);
 
         boxAlgorithms.addItem(CW_ALG);
-        boxAlgorithms.addItem(MACS_ALG);
+        boxAlgorithms.addItem(ACS_ALG);
         boxAlgorithms.addItem(TH_ALG);
         boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
         boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
-        fNumberOfAnts.setEnabled(false);
-        fAlfa.setEnabled(false);
-        fBeta.setEnabled(false);
-        fGamma.setEnabled(false);
+        fAcsParam_m.setEditable(false);
+        fAcsParam_q0.setEditable(false);
+        fAcsParam_beta.setEditable(false);
+        fAcsParam_ro.setEditable(false);
+        sAcsParam_m.setEnabled(false);
+        sAcsParam_q0.setEnabled(false);
+        sAcsParam_beta.setEnabled(false);
+        sAcsParam_ro.setEnabled(false);
 
         this.createCustomerTable();
         this.createRouteDetailsTable();
@@ -181,16 +186,16 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
-            if (Objects.equals(algorithmName, MACS_ALG)) {
-                fNumberOfAnts.setEnabled(true);
-                fAlfa.setEnabled(true);
-                fBeta.setEnabled(true);
-                fGamma.setEnabled(true);
+            if (Objects.equals(algorithmName, ACS_ALG)) {
+                sAcsParam_m.setEnabled(true);
+                sAcsParam_q0.setEnabled(true);
+                sAcsParam_beta.setEnabled(true);
+                sAcsParam_ro.setEnabled(true);
             } else {
-                fNumberOfAnts.setEnabled(false);
-                fAlfa.setEnabled(false);
-                fBeta.setEnabled(false);
-                fGamma.setEnabled(false);
+                sAcsParam_m.setEnabled(false);
+                sAcsParam_q0.setEnabled(false);
+                sAcsParam_beta.setEnabled(false);
+                sAcsParam_ro.setEnabled(false);
             }
 
         } else if (source == bFindSolution) {
@@ -205,11 +210,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
-                    case MACS_ALG:
-                        int numberOfAnts = Integer.parseInt(fNumberOfAnts.getText());
-                        double alfa = Double.parseDouble(fAlfa.getText());
-                        double beta = Double.parseDouble(fBeta.getText());
-                        double gamma = Double.parseDouble(fGamma.getText());
+                    case ACS_ALG:
+                        int numberOfAnts = Integer.parseInt(fAcsParam_m.getText());
+                        double alfa = Double.parseDouble(fAcsParam_q0.getText());
+                        double beta = Double.parseDouble(fAcsParam_beta.getText());
+                        double gamma = Double.parseDouble(fAcsParam_ro.getText());
                         Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
                         macs_algorithm.runAlgorithm();
                         break;
@@ -231,11 +236,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         if (choosedNode == null)
             return;
 
-        if (choosedNode.getLevel() == 0) {
-            //root
+        if (choosedNode.getLevel() == 0) { //ROOT level
             setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-        } else if (choosedNode.getLevel() == 1) {
-            //solution
+        } else if (choosedNode.getLevel() == 1) { //SOLUTION level
             Solution s = (Solution) choosedNode.getUserObject();
             try {
                 ImageIcon imageIcon = s.getImageIcon();
@@ -247,8 +250,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.warn("Cannot create an image of the solution!");
                 logger.debug(ex);
             }
-        } else if (choosedNode.getLevel() == 2) {
-            //route
+        } else if (choosedNode.getLevel() == 2) { //ROUTE level
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) choosedNode.getUserObject();
@@ -263,8 +265,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.warn("Cannot create an image of the route!");
                 logger.debug(ex);
             }
-        } else if (choosedNode.getLevel() == 3) {
-            //route segment
+        } else if (choosedNode.getLevel() == 3) { //ROUTE SEGMENT level
             DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();

@@ -12,7 +12,7 @@ import java.util.Random;
  * Created by Marcin on 2017-08-27.
  */
 class Ant {
-    private static double alfa; //parametr regulujący wpływ tau (ilości feromonu), preferowana wartość to "1"
+    private static double q0; //parametr określający proporcję między eksploatacją najlepszej krawędzi i eksploracją nowej
     private static double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
     private List<Integer> unvisitedCustomers;
     private List<Customer> feasibleNodes;
@@ -21,16 +21,18 @@ class Ant {
         feasibleNodes = new ArrayList<>();
         unvisitedCustomers = new ArrayList<>();
         for (Customer c : customers) {
-            unvisitedCustomers.add(c.getId());
+            if (c.getId() != 0) {
+                unvisitedCustomers.add(c.getId()); //utworzenie listy nieodwiedzonych klientów (bez magazynu)
+            }
         }
     }
 
-    static double getAlfa() {
-        return alfa;
+    static double getQ0() {
+        return q0;
     }
 
-    static void setAlfa(double alfa) {
-        Ant.alfa = alfa;
+    static void setQ0(double q0) {
+        Ant.q0 = q0;
     }
 
     static double getBeta() {
@@ -60,18 +62,12 @@ class Ant {
     boolean updateFeasibleCustomers(int tmpNodeId, List<RouteSegment> routeSegments, Route route, double weightLimit, double sizeLimit) {
         feasibleNodes.clear();
         for (RouteSegment rs : routeSegments) {
-            Customer c = null;
             if (rs.getSrc().getId() == tmpNodeId) {
-                c = rs.getDst();
-            } else if (rs.getDst().getId() == tmpNodeId) {
-                c = rs.getSrc();
-            }
-
-//            if c is on unvisited list
-            if (c != null && isCustomerUnvisited(c.getId())) {
-//                if customer can be added (dopisać warunki czasowe)
-                if (route.canAdd(c.getPackageWeight(), weightLimit, c.getPackageSize(), sizeLimit)) {
-                    feasibleNodes.add(c);
+                Customer c = rs.getDst();
+                if (isCustomerUnvisited(c.getId())) { //jeśli klient jest na liście nieodwiedzonych klientów
+                    if (route.canAdd(c.getPackageWeight(), weightLimit, c.getPackageSize(), sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
+                        feasibleNodes.add(c);
+                    }
                 }
             }
         }
@@ -98,20 +94,50 @@ class Ant {
     }
 
     int chooseNextNode(int currentNodeId, List<RouteSegment> routeSegments) {
-        calculateProbabilityForAllFeasibleNodes(currentNodeId, routeSegments);
-        double weightSum = 0;
-        for (Customer c : feasibleNodes) {
-            weightSum += c.getMacsChoiceProbability();
-        }
-        double value = new Random().nextDouble() * weightSum; //zakres 0-1 * suma wag
+        if (currentNodeId == 0) {
+            //jeżeli mrówka jest w magazynie wybiera losowo miasto z listy dostępnych miast
+            int randomValue = new Random().nextInt(unvisitedCustomers.size());
+            return feasibleNodes.get(randomValue).getId();
+        } else {
+            //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
+            double q = new Random().nextDouble();
+            calculateProbabilityForAllFeasibleNodes(currentNodeId, routeSegments);
 
-        for (Customer c : feasibleNodes) {
-            value -= c.getMacsChoiceProbability();
-            if (value <= 0) {
-                return c.getId();
+            if (q <= q0) {
+                //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
+                int tmpNextCustomerID = 0;
+                double tmpUpNumber = 0;
+
+                for (Customer nextCustomer : feasibleNodes) {
+                    for (RouteSegment rs : routeSegments) {
+                        if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
+                            double rsUpNumber = rs.getMacsUpNumber();
+                            if (rsUpNumber > tmpUpNumber) {
+                                tmpUpNumber = rsUpNumber;
+                                tmpNextCustomerID = nextCustomer.getId();
+                                break;
+                            }
+                        }
+                    }
+                }
+                return tmpNextCustomerID;
+            } else {
+                //wylosowanie klienta uwzględniając prawdopodobieństwo
+                double weightSum = 0;
+                for (Customer c : feasibleNodes) {
+                    weightSum += c.getMacsChoiceProbability();
+                }
+                double value = new Random().nextDouble() * weightSum; //zakres 0-1 * suma wag
+
+                for (Customer c : feasibleNodes) {
+                    value -= c.getMacsChoiceProbability();
+                    if (value <= 0) {
+                        return c.getId();
+                    }
+                }
+                return 0;
             }
         }
-        return feasibleNodes.get(0).getId(); //jeśli błąd losowania, funkcja zwraca pierwszy węzeł z dostępnych na liście feasibleNodes
     }
 
     private void calculateProbabilityForAllFeasibleNodes(int currentNodeId, List<RouteSegment> routeSegments) {
@@ -125,10 +151,10 @@ class Ant {
 //                    Duration duration = rs.getDuration();
                     double ni = 1 / distance;
                     double tau = rs.getMacsPheromoneLevel(); //pheromone level on segment
-                    double upNumber = Math.pow(tau, alfa) * Math.pow(ni, beta); //licznik
+                    double upNumber = tau * Math.pow(ni, beta); //licznik
                     rs.setMacsUpNumber(upNumber);
 
-                    downNumber = downNumber + upNumber; //mianownik
+                    downNumber += upNumber; //mianownik
 
                     break;
                 }
