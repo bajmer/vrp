@@ -96,7 +96,7 @@ class Ant {
     int chooseNextNode(int currentNodeId, List<RouteSegment> routeSegments) {
         if (currentNodeId == 0) {
             //jeżeli mrówka jest w magazynie wybiera losowo miasto z listy dostępnych miast
-            int randomValue = new Random().nextInt(unvisitedCustomers.size());
+            int randomValue = new Random().nextInt(feasibleNodes.size());
             return feasibleNodes.get(randomValue).getId();
         } else {
             //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
@@ -108,10 +108,11 @@ class Ant {
                 int tmpNextCustomerID = 0;
                 double tmpUpNumber = 0;
 
+//                ZOPTYMALIZOWAĆ
                 for (Customer nextCustomer : feasibleNodes) {
                     for (RouteSegment rs : routeSegments) {
                         if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
-                            double rsUpNumber = rs.getMacsUpNumber();
+                            double rsUpNumber = rs.getAcsUpNumber();
                             if (rsUpNumber > tmpUpNumber) {
                                 tmpUpNumber = rsUpNumber;
                                 tmpNextCustomerID = nextCustomer.getId();
@@ -140,6 +141,7 @@ class Ant {
         }
     }
 
+    //    ZOPTYMALIZOWAć!!!!!!!!!!!
     private void calculateProbabilityForAllFeasibleNodes(int currentNodeId, List<RouteSegment> routeSegments) {
         double downNumber = 0;
 
@@ -150,9 +152,9 @@ class Ant {
                     double distance = rs.getDistance();
 //                    Duration duration = rs.getDuration();
                     double ni = 1 / distance;
-                    double tau = rs.getMacsPheromoneLevel(); //pheromone level on segment
+                    double tau = rs.getAcsPheromoneLevel(); //pheromone level on segment
                     double upNumber = tau * Math.pow(ni, beta); //licznik
-                    rs.setMacsUpNumber(upNumber);
+                    rs.setAcsUpNumber(upNumber);
 
                     downNumber += upNumber; //mianownik
 
@@ -164,7 +166,7 @@ class Ant {
         for (Customer nextCustomer : feasibleNodes) {
             for (RouteSegment rs : routeSegments) {
                 if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
-                    double probability = rs.getMacsUpNumber() / downNumber; //dzielenie
+                    double probability = rs.getAcsUpNumber() / downNumber; //dzielenie
                     nextCustomer.setMacsChoiceProbability(probability);
                 }
             }

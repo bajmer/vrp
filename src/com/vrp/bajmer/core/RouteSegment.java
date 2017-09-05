@@ -25,10 +25,9 @@ public class RouteSegment implements Cloneable {
     private double clarkWrightSaving;
     private String geometry;
     private ImageIcon imageIcon;
-    private double macsPheromoneLevel;
-    private double macsUpNumber;
-    private boolean partOfTheBestACSSolution = false;
-    private boolean partOfAntSolution = false;
+    private double acsPheromoneLevel;
+    private double acsUpNumber;
+    private boolean acsPartOfBestSolution = false;
 
     public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;
@@ -120,36 +119,28 @@ public class RouteSegment implements Cloneable {
         this.imageIcon = imageIcon;
     }
 
-    public double getMacsPheromoneLevel() {
-        return macsPheromoneLevel;
+    public double getAcsPheromoneLevel() {
+        return acsPheromoneLevel;
     }
 
-    public void setMacsPheromoneLevel(double macsPheromoneLevel) {
-        this.macsPheromoneLevel = macsPheromoneLevel;
+    public void setAcsPheromoneLevel(double acsPheromoneLevel) {
+        this.acsPheromoneLevel = acsPheromoneLevel;
     }
 
-    public double getMacsUpNumber() {
-        return macsUpNumber;
+    public double getAcsUpNumber() {
+        return acsUpNumber;
     }
 
-    public void setMacsUpNumber(double macsUpNumber) {
-        this.macsUpNumber = macsUpNumber;
+    public void setAcsUpNumber(double acsUpNumber) {
+        this.acsUpNumber = acsUpNumber;
     }
 
-    public boolean isPartOfTheBestACSSolution() {
-        return partOfTheBestACSSolution;
+    public boolean isAcsPartOfBestSolution() {
+        return acsPartOfBestSolution;
     }
 
-    public void setPartOfTheBestACSSolution(boolean partOfTheBestACSSolution) {
-        this.partOfTheBestACSSolution = partOfTheBestACSSolution;
-    }
-
-    public boolean isPartOfAntSolution() {
-        return partOfAntSolution;
-    }
-
-    public void setPartOfAntSolution(boolean partOfAntSolution) {
-        this.partOfAntSolution = partOfAntSolution;
+    public void setAcsPartOfBestSolution(boolean acsPartOfBestSolution) {
+        this.acsPartOfBestSolution = acsPartOfBestSolution;
     }
 
     public void swapSrcDst() {
