@@ -3,7 +3,9 @@ package com.vrp.bajmer.core;
 import javax.swing.*;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,8 +28,9 @@ public class Customer {
     private LocalTime maxDeliveryHour;
     private Map<Integer, Double> distances = new HashMap<>();
     private Map<Integer, Duration> durations = new HashMap<>();
+    private List<RouteSegment> routeSegmentsFromCustomer = new ArrayList<>();
     private ImageIcon imageIcon;
-    private double macsChoiceProbability;
+    private double acsChoiceProbability;
 
     public Customer(String fullAddress, String streetAndNumber, String postalCode, String city, double latitude, double longitude,
                     double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
@@ -130,6 +133,14 @@ public class Customer {
         this.durations = durations;
     }
 
+    public List<RouteSegment> getRouteSegmentsFromCustomer() {
+        return routeSegmentsFromCustomer;
+    }
+
+    public void setRouteSegmentsFromCustomer(List<RouteSegment> routeSegmentsFromCustomer) {
+        this.routeSegmentsFromCustomer = routeSegmentsFromCustomer;
+    }
+
     public double getPackageWeight() {
         return packageWeight;
     }
@@ -170,11 +181,11 @@ public class Customer {
         this.imageIcon = imageIcon;
     }
 
-    public double getMacsChoiceProbability() {
-        return macsChoiceProbability;
+    public double getAcsChoiceProbability() {
+        return acsChoiceProbability;
     }
 
-    public void setMacsChoiceProbability(double macsChoiceProbability) {
-        this.macsChoiceProbability = macsChoiceProbability;
+    public void setAcsChoiceProbability(double acsChoiceProbability) {
+        this.acsChoiceProbability = acsChoiceProbability;
     }
 }

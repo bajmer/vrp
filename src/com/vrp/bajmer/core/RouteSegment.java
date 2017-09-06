@@ -27,7 +27,8 @@ public class RouteSegment implements Cloneable {
     private ImageIcon imageIcon;
     private double acsPheromoneLevel;
     private double acsUpNumber;
-    private boolean acsPartOfBestSolution = false;
+    private boolean partOfBestAcsSolution = false;
+    private boolean partOfAntAcsSolution = false;
 
     public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;
@@ -135,12 +136,20 @@ public class RouteSegment implements Cloneable {
         this.acsUpNumber = acsUpNumber;
     }
 
-    public boolean isAcsPartOfBestSolution() {
-        return acsPartOfBestSolution;
+    public boolean isPartOfBestAcsSolution() {
+        return partOfBestAcsSolution;
     }
 
-    public void setAcsPartOfBestSolution(boolean acsPartOfBestSolution) {
-        this.acsPartOfBestSolution = acsPartOfBestSolution;
+    public void setPartOfBestAcsSolution(boolean partOfBestAcsSolution) {
+        this.partOfBestAcsSolution = partOfBestAcsSolution;
+    }
+
+    public boolean isPartOfAntAcsSolution() {
+        return partOfAntAcsSolution;
+    }
+
+    public void setPartOfAntAcsSolution(boolean partOfAntAcsSolution) {
+        this.partOfAntAcsSolution = partOfAntAcsSolution;
     }
 
     public void swapSrcDst() {

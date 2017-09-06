@@ -19,20 +19,20 @@ public class ACSAlgorithm extends Algorithm {
     private static final Logger logger = LogManager.getLogger(ACSAlgorithm.class);
 
     private static final String ACS = "Ant Colony System";
-    private static final double INITIAL_PHEROMONE_LEVEL = 0.0002;
+    private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
     private double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
     private int m; //ilość mrówek, preferowana wartość = n (ilość miast)
     private List<Solution> antsSolutions;
     private List<RouteSegment> acsRouteSegments;
     private Solution tmpBestAcsSolution;
-    private List<Integer> routeSegmentsToUpdatePheromoneLocally;
+    private double minTau = INITIAL_PHEROMONE_LEVEL;
+    private double maxTau = INITIAL_PHEROMONE_LEVEL;
 
     public ACSAlgorithm(Problem problem, int m, double q0, double beta, double ro) {
         super(problem, "Ant Colony System");
         this.ro = ro;
         this.m = m;
         this.antsSolutions = new ArrayList<>();
-        this.routeSegmentsToUpdatePheromoneLocally = new ArrayList<>();
         this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
         Ant.setQ0(q0);
         Ant.setBeta(beta);
@@ -45,7 +45,6 @@ public class ACSAlgorithm extends Algorithm {
         for (RouteSegment rs : swappedSegments) {
             rs.swapSrcDst();
         }
-//        this.acsRouteSegments = new List<>(super.getRouteSegments().size() * 2);
         this.acsRouteSegments = new LinkedList<>();
         acsRouteSegments.addAll(notSwappedSegments);
         acsRouteSegments.addAll(swappedSegments);
@@ -60,6 +59,12 @@ public class ACSAlgorithm extends Algorithm {
 
     private void ACS_Procedure() {
         for (RouteSegment rs : acsRouteSegments) {
+            for (Customer c : super.getCustomers()) {
+                if (c.equals(rs.getSrc())) {
+                    c.getRouteSegmentsFromCustomer().add(rs); //przypisanie każdemu klientowi listy wychodzących z niego odcinków trasy
+                    break;
+                }
+            }
             rs.setAcsPheromoneLevel(INITIAL_PHEROMONE_LEVEL); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
         }
 
@@ -70,7 +75,7 @@ public class ACSAlgorithm extends Algorithm {
             for (int k = 0; k < m; k++) {
                 Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
                 saveAntSolution(antSolution);
-                localPheromoneUpdate(); //lokalne aktualizowanie feromonu
+                localPheromoneUpdate(antSolution); //lokalne aktualizowanie feromonu
             }
 
             for (Solution s : antsSolutions) {
@@ -84,7 +89,7 @@ public class ACSAlgorithm extends Algorithm {
 
             for (Route r : tmpBestAcsSolution.getListOfRoutes()) {
                 for (RouteSegment rs : r.getRouteSegments()) {
-                    rs.setAcsPartOfBestSolution(true);
+                    rs.setPartOfBestAcsSolution(true);
                 }
             }
 
@@ -95,43 +100,37 @@ public class ACSAlgorithm extends Algorithm {
     }
 
     private Solution constructNewAntSolution(Ant ant) {
-        routeSegmentsToUpdatePheromoneLocally.clear();
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
         Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
 
         Route route = new Route();
         route.addCustomerAsLast(super.getProblem().getDepot());
-        int tmpNodeId = route.getLastCustomerId(); //umieszczenie mrówki w magazynie
+        Customer tmpNode = route.getLastCustomer(); //umieszczenie mrówki w magazynie
 
         while (true) {
-            ant.removeFromUnvisitedCustomers(tmpNodeId); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
-            if (ant.updateFeasibleCustomers(tmpNodeId, acsRouteSegments, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
-                int nextNodeId = ant.chooseNextNode(tmpNodeId, acsRouteSegments); //wybór kolejnego klienta
-                route.addCustomerAsLast(super.getCustomers().get(nextNodeId));
-//                for (Customer c : super.getCustomers()) {
-//                    if (c.getId() == nextNodeId) {
-//                        route.addCustomerAsLast(c); //dodanie kolejnego klienta do budowanej trasy
-//                        break;
-//                    }
-//                }
+            ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
+            if (ant.updateFeasibleCustomers(tmpNode, acsRouteSegments, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
+                Customer nextNode = ant.chooseNextNode(tmpNode, acsRouteSegments); //wybór kolejnego klienta
 
-                for (RouteSegment rs : acsRouteSegments) {
-                    if (rs.isSegmentExist(tmpNodeId, nextNodeId)) {
+                route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
+
+                for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                    if (rs.getDst().equals(nextNode)) {
                         route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
-                        if (tmpNodeId != 0) {
-                            routeSegmentsToUpdatePheromoneLocally.add(acsRouteSegments.indexOf(rs));
+                        if (tmpNode.getId() != 0) {
+                            rs.setPartOfAntAcsSolution(true);
                         }
                         break;
                     }
                 }
-                tmpNodeId = nextNodeId;
+                tmpNode = nextNode;
 
             } else { //jeżeli lista dostępnych klientów jest pusta
-                ant.removeFromUnvisitedCustomers(tmpNodeId); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
+                ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
                 route.addCustomerAsLast(super.getProblem().getDepot()); //dodanie magazynu do listy klienów trasy
-                for (RouteSegment rs : acsRouteSegments) {
-                    if (rs.isSegmentExist(tmpNodeId, super.getProblem().getDepot().getId())) {
+                for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                    if (rs.getDst().equals(super.getProblem().getDepot())) {
                         route.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
                         break;
                     }
@@ -143,34 +142,44 @@ public class ACSAlgorithm extends Algorithm {
                 } else {
                     route = new Route();
                     route.addCustomerAsLast(super.getProblem().getDepot());
-                    tmpNodeId = route.getLastCustomerId();
+                    tmpNode = route.getLastCustomer();
                 }
             }
         }
         return antSolution;
     }
 
-    private void localPheromoneUpdate() {
-        for (int rsIndex : routeSegmentsToUpdatePheromoneLocally) {
-            RouteSegment partOfAntSolution = acsRouteSegments.get(rsIndex);
-            double tau = partOfAntSolution.getAcsPheromoneLevel(); //poziom feromonu
-            tau = (1 - ro) * tau + ro * INITIAL_PHEROMONE_LEVEL;
-            partOfAntSolution.setAcsPheromoneLevel(tau);
-//            logger.warn("Aktualizowanie feromonu lokalnie: " + partOfAntSolution.getSrc().getId() + "->" + partOfAntSolution.getDst().getId()
-//                    + " - poziom feromonu: " + partOfAntSolution.getAcsPheromoneLevel());
+    private void localPheromoneUpdate(Solution antSolution) {
+        for (Route r : antSolution.getListOfRoutes()) {
+            for (RouteSegment rs : r.getRouteSegments()) {
+                if (rs.isPartOfAntAcsSolution()) {
+                    double tau = rs.getAcsPheromoneLevel(); //poziom feromonu
+                    tau = (1 - ro) * tau + ro * INITIAL_PHEROMONE_LEVEL;
+                    rs.setAcsPheromoneLevel(tau);
+                    rs.setPartOfAntAcsSolution(false);
+                }
+            }
         }
     }
 
     private void globalPheromoneUpdate(Solution bestSolution) {
         for (RouteSegment rs : acsRouteSegments) {
             double tau = rs.getAcsPheromoneLevel();
-            if (rs.isAcsPartOfBestSolution()) {
+            if (rs.isPartOfBestAcsSolution()) {
                 tau = (1 - ro) * tau + 1 / bestSolution.getTotalDistanceCost();
-                rs.setAcsPartOfBestSolution(false);
+                rs.setPartOfBestAcsSolution(false);
             } else {
                 tau = (1 - ro) * tau;
             }
-            rs.setAcsPheromoneLevel(tau);
+            if (tau > maxTau) {
+                maxTau = tau;
+            }
+            if (tau < minTau) {
+                minTau = tau;
+            }
+            if (tau > 1E-100) {
+                rs.setAcsPheromoneLevel(tau);
+            }
         }
     }
 

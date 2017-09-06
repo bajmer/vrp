@@ -59,28 +59,17 @@ class Ant {
         this.feasibleNodes = feasibleNodes;
     }
 
-    boolean updateFeasibleCustomers(int tmpNodeId, List<RouteSegment> routeSegments, Route route, double weightLimit, double sizeLimit) {
+    boolean updateFeasibleCustomers(Customer tmpNode, List<RouteSegment> routeSegments, Route route, double weightLimit, double sizeLimit) {
         feasibleNodes.clear();
-        for (RouteSegment rs : routeSegments) {
-            if (rs.getSrc().getId() == tmpNodeId) {
-                Customer c = rs.getDst();
-                if (isCustomerUnvisited(c.getId())) { //jeśli klient jest na liście nieodwiedzonych klientów
-                    if (route.canAdd(c.getPackageWeight(), weightLimit, c.getPackageSize(), sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
-                        feasibleNodes.add(c);
-                    }
+        for (RouteSegment rsFromCustomer : tmpNode.getRouteSegmentsFromCustomer()) {
+            Customer dst = rsFromCustomer.getDst();
+            if (unvisitedCustomers.contains(dst.getId())) { //jeśli klient jest na liście nieodwiedzonych klientów
+                if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
+                    feasibleNodes.add(dst);
                 }
             }
         }
         return feasibleNodes.size() != 0;
-    }
-
-    private boolean isCustomerUnvisited(int id) {
-        for (int i : unvisitedCustomers) {
-            if (i == id) {
-                return true;
-            }
-        }
-        return false;
     }
 
     void removeFromUnvisitedCustomers(int idToRemove) {
@@ -93,83 +82,71 @@ class Ant {
         }
     }
 
-    int chooseNextNode(int currentNodeId, List<RouteSegment> routeSegments) {
-        if (currentNodeId == 0) {
+    Customer chooseNextNode(Customer currentNode, List<RouteSegment> routeSegments) {
+        if (currentNode.getId() == 0) {
             //jeżeli mrówka jest w magazynie wybiera losowo miasto z listy dostępnych miast
             int randomValue = new Random().nextInt(feasibleNodes.size());
-            return feasibleNodes.get(randomValue).getId();
+            return feasibleNodes.get(randomValue);
         } else {
             //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
-            double q = new Random().nextDouble();
-            calculateProbabilityForAllFeasibleNodes(currentNodeId, routeSegments);
-
-            if (q <= q0) {
-                //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
-                int tmpNextCustomerID = 0;
-                double tmpUpNumber = 0;
-
-//                ZOPTYMALIZOWAĆ
-                for (Customer nextCustomer : feasibleNodes) {
-                    for (RouteSegment rs : routeSegments) {
-                        if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
-                            double rsUpNumber = rs.getAcsUpNumber();
-                            if (rsUpNumber > tmpUpNumber) {
-                                tmpUpNumber = rsUpNumber;
-                                tmpNextCustomerID = nextCustomer.getId();
-                                break;
-                            }
-                        }
-                    }
-                }
-                return tmpNextCustomerID;
+            Customer bestExploitationCustomer = calculateProbabilityForAllFeasibleNodes(currentNode);
+            if (new Random().nextDouble() <= q0) {
+                return bestExploitationCustomer; //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
             } else {
                 //wylosowanie klienta uwzględniając prawdopodobieństwo
                 double weightSum = 0;
                 for (Customer c : feasibleNodes) {
-                    weightSum += c.getMacsChoiceProbability();
+                    weightSum += c.getAcsChoiceProbability();
                 }
                 double value = new Random().nextDouble() * weightSum; //zakres 0-1 * suma wag
 
                 for (Customer c : feasibleNodes) {
-                    value -= c.getMacsChoiceProbability();
+                    value -= c.getAcsChoiceProbability();
                     if (value <= 0) {
-                        return c.getId();
+                        return c;
                     }
                 }
-                return 0;
+                return null;
             }
         }
     }
 
-    //    ZOPTYMALIZOWAć!!!!!!!!!!!
-    private void calculateProbabilityForAllFeasibleNodes(int currentNodeId, List<RouteSegment> routeSegments) {
+    private Customer calculateProbabilityForAllFeasibleNodes(Customer currentNode) {
         double downNumber = 0;
+        double bestUpNumber = 0;
+        Customer bestExploitationNode = null;
 
-//        iteracja po wszystkich odcinkach trasy łączących dostępnych klientów, zapisywanie liczników oraz sumowanie ich
-        for (Customer nextCustomer : feasibleNodes) {
-            for (RouteSegment rs : routeSegments) {
-                if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
-                    double distance = rs.getDistance();
-//                    Duration duration = rs.getDuration();
-                    double ni = 1 / distance;
-                    double tau = rs.getAcsPheromoneLevel(); //pheromone level on segment
-                    double upNumber = tau * Math.pow(ni, beta); //licznik
-                    rs.setAcsUpNumber(upNumber);
+        if (feasibleNodes.size() == 1) {
+//            System.out.println("break");
+        }
 
-                    downNumber += upNumber; //mianownik
-
+        for (RouteSegment rs : currentNode.getRouteSegmentsFromCustomer()) {
+            if (feasibleNodes.contains(rs.getDst())) {
+                double distance = rs.getDistance();
+                double ni = 1 / distance;
+                double tau = rs.getAcsPheromoneLevel(); //pheromone level on segment
+                double upNumber = tau * Math.pow(ni, beta); //licznik
+                rs.setAcsUpNumber(upNumber);
+                if (upNumber > bestUpNumber) {
+                    bestUpNumber = upNumber;
+                    bestExploitationNode = rs.getDst();
+                }
+                downNumber += upNumber; //mianownik
+                if (downNumber == 0) {
                     break;
                 }
             }
         }
 
-        for (Customer nextCustomer : feasibleNodes) {
-            for (RouteSegment rs : routeSegments) {
-                if (rs.isSegmentExist(currentNodeId, nextCustomer.getId())) {
-                    double probability = rs.getAcsUpNumber() / downNumber; //dzielenie
-                    nextCustomer.setMacsChoiceProbability(probability);
-                }
+        for (RouteSegment rs : currentNode.getRouteSegmentsFromCustomer()) {
+            if (feasibleNodes.contains(rs.getDst())) {
+                double probability = rs.getAcsUpNumber() / downNumber; //obliczanie prawdopodobieństwa wyboru danego odcinka trasy
+                rs.getDst().setAcsChoiceProbability(probability);
             }
         }
+        if (bestExploitationNode == null) {
+            return null;
+        }
+        return bestExploitationNode;
     }
 }
