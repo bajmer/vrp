@@ -25,7 +25,7 @@ cmake-build-debug/
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 
-## File-based com.vrp.bajmer.core format:
+## File-based core format:
 *.iws
 
 ## Plugin-specific files:
@@ -35,7 +35,6 @@ cmake-build-debug/
 /lib/
 /logs/
 /solution_images/
-/input/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -60,4 +59,4 @@ fabric.properties
 
 # End of https://www.gitignore.io/api/intellij+iml
 
-/input/Customers Data.csv
+/input/Dane klientów.xlsx

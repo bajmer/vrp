@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="gui">
+    <Properties>
+        <Property name="logPath">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <RollingFile name="FileLogger" fileName="${logPath}/app.log"
+                     filePattern="${logPath}/app.log.%d{yyyy-MM-dd-HH}.zip">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%c{1}][%-5level] %msg%n"/>
+            <Policies>
+                <CronTriggeringPolicy schedule="0 0 0-23 * * ?"/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%c{1}][%-5level] %msg%n"/>
+        </Console>
+
+        <JTextAreaAppender name="jtextarea-log" maxLines="1000000">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}][%-5level] %msg%n"/>
+        </JTextAreaAppender>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="jtextarea-log"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileLogger"/>
+        </Root>
+    </Loggers>
+</Configuration>
