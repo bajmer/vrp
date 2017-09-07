@@ -20,18 +20,20 @@ public class ACSAlgorithm extends Algorithm {
 
     private static final String ACS = "Ant Colony System";
     private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
-    private double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
+    private int i; //ilość iteracji algorytmu
     private int m; //ilość mrówek, preferowana wartość = n (ilość miast)
+    private double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
     private List<Solution> antsSolutions;
     private List<RouteSegment> acsRouteSegments;
     private Solution tmpBestAcsSolution;
     private double minTau = INITIAL_PHEROMONE_LEVEL;
     private double maxTau = INITIAL_PHEROMONE_LEVEL;
 
-    public ACSAlgorithm(Problem problem, int m, double q0, double beta, double ro) {
+    public ACSAlgorithm(Problem problem, int i, int m, double q0, double beta, double ro) {
         super(problem, "Ant Colony System");
-        this.ro = ro;
+        this.i = i;
         this.m = m;
+        this.ro = ro;
         this.antsSolutions = new ArrayList<>();
         this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
         Ant.setQ0(q0);
@@ -54,7 +56,7 @@ public class ACSAlgorithm extends Algorithm {
     public void runAlgorithm() {
         logger.info("Running the Ant Colony System algorithm...");
         ACS_Procedure();
-//        saveSolution();
+        saveSolution();
     }
 
     private void ACS_Procedure() {
@@ -69,8 +71,7 @@ public class ACSAlgorithm extends Algorithm {
         }
 
         int iteration = 1;
-        while (iteration <= 10000) {
-            logger.warn("***************ITERACJA " + iteration + "********************************************************************************************");
+        while (iteration <= i) {
             antsSolutions.clear();
             for (int k = 0; k < m; k++) {
                 Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
@@ -84,19 +85,16 @@ public class ACSAlgorithm extends Algorithm {
                     tmpBestAcsSolution = s; //gdy koszt rozwiązania jest mniejszy niż w najlepszym rozwiązaniu
                 }
             }
-
-            logger.warn("------------------------Najlepsze rozwiązanie po iteracji " + iteration + ": " + tmpBestAcsSolution.toString() + "-------------------------------");
+            logger.trace("The best solution after iteration " + iteration + ": " + tmpBestAcsSolution.toString());
 
             for (Route r : tmpBestAcsSolution.getListOfRoutes()) {
                 for (RouteSegment rs : r.getRouteSegments()) {
                     rs.setPartOfBestAcsSolution(true);
                 }
             }
-
             globalPheromoneUpdate(tmpBestAcsSolution); //globalne aktualizowanie feromonu
             iteration++;
         }
-        Storage.getSolutionsList().add(tmpBestAcsSolution);
     }
 
     private Solution constructNewAntSolution(Ant ant) {
@@ -171,14 +169,11 @@ public class ACSAlgorithm extends Algorithm {
             } else {
                 tau = (1 - ro) * tau;
             }
-            if (tau > maxTau) {
-                maxTau = tau;
-            }
-            if (tau < minTau) {
-                minTau = tau;
-            }
-            if (tau > 1E-100) {
+
+            if (tau > 1E-50) {
                 rs.setAcsPheromoneLevel(tau);
+            } else {
+                return;
             }
         }
     }
@@ -196,18 +191,10 @@ public class ACSAlgorithm extends Algorithm {
         antsSolutions.add(solution);
     }
 
-    //    przenieść do klasy ALgorithm
     @Override
     public void saveSolution() {
         logger.info("Saving solution...");
-        logger.info(super.getRoutes().size() + " routes have been found");
-        double totalDistance = 0;
-        Duration totalDuration = Duration.ZERO;
-        for (Route route : super.getRoutes()) {
-            route.setArrivalAndDepartureTimeForCustomers();
-            totalDistance += route.getTotalDistance();
-            totalDuration = totalDuration.plus(route.getTotalDuration());
-            logger.info(route.toString());
+        for (Route route : tmpBestAcsSolution.getListOfRoutes()) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);
@@ -216,12 +203,11 @@ public class ACSAlgorithm extends Algorithm {
                     sb.append("->");
                 }
             }
-            logger.info(sb.toString());
+            logger.info(route.toString() + ", (" + sb.toString() + ")");
         }
-        logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
-        super.getSolution().setTotalDistanceCost(totalDistance);
-        super.getSolution().setTotalDurationCost(totalDuration);
-        Storage.getSolutionsList().add(super.getSolution());
+        logger.info("Total distance cost: " + tmpBestAcsSolution.getTotalDistanceCost() + "km. Total duration cost: " + tmpBestAcsSolution.getTotalDurationCost().toHours()
+                + ":" + tmpBestAcsSolution.getTotalDurationCost().toMinutes() % 60 + "h");
+        Storage.getSolutionsList().add(tmpBestAcsSolution);
         logger.info("Saving solution has been completed.");
     }
 }

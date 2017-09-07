@@ -290,7 +290,6 @@ public class ClarkeWrightAlgorithm extends Algorithm {
     @Override
     public void saveSolution() {
         logger.info("Saving solution...");
-        logger.info(super.getRoutes().size() + " routes have been found");
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
         for (Route route : super.getRoutes()) {
@@ -306,7 +305,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                     sb.append("->");
                 }
             }
-            logger.info(sb.toString());
+            logger.info(route.toString() + ", (" + sb.toString() + ")");
         }
         logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
         super.getSolution().setTotalDistanceCost(totalDistance);

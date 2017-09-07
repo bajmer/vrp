@@ -1,7 +1,6 @@
 package com.vrp.bajmer.gui;
 
 import com.vrp.bajmer.algorithm.Algorithm;
-import com.vrp.bajmer.algorithm.Third_Algorithm;
 import com.vrp.bajmer.algorithm.clarke_wright.ClarkeWrightAlgorithm;
 import com.vrp.bajmer.algorithm.macs.ACSAlgorithm;
 import com.vrp.bajmer.core.*;
@@ -43,7 +42,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private static final Logger logger = LogManager.getLogger(Gui.class);
     private static final String CW_ALG = "Clarke-Wright";
     private static final String ACS_ALG = "Ant Colony System";
-    private static final String TH_ALG = "Third";
     private JPanel mainPanel;
     private JPanel mapPanel;
     private JPanel leftPanel;
@@ -53,29 +51,31 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JButton bLoad;
     private JButton bGetDistance;
     private JButton bFindSolution;
-    private JTable tCustomers;
-    private JTable tRouteDetails;
-    private JFormattedTextField fAlgorithmId;
-    private JFormattedTextField fNumberOfVehicles;
-    private JFormattedTextField fWeightLimit;
-    private JFormattedTextField fSizeLimit;
+    private String algorithmName;
     private JComboBox<String> boxAlgorithms;
     private JTextArea appLog;
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteDetails;
     private JScrollPane jspSolutions;
+    private JFormattedTextField fWeightLimit;
+    private JFormattedTextField fSizeLimit;
+    private JFormattedTextField fAcsParam_i;
     private JFormattedTextField fAcsParam_m;
     private JFormattedTextField fAcsParam_q0;
     private JFormattedTextField fAcsParam_beta;
     private JFormattedTextField fAcsParam_ro;
+    private JSlider sWeightLimit;
+    private JSlider sSizeLimit;
+    private JSlider sAcsParam_i;
     private JSlider sAcsParam_m;
     private JSlider sAcsParam_q0;
     private JSlider sAcsParam_beta;
     private JSlider sAcsParam_ro;
+    private JTable tCustomers;
+    private JTable tRouteDetails;
     private JTree treeSolutions;
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
-    private String algorithmName;
     private MapImage mapImage;
 
     public Gui() {
@@ -91,10 +91,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         NumberFormatter intFormatter = new NumberFormatter(integerFormat);
         intFormatter.setValueClass(Integer.class);
         intFormatter.setAllowsInvalid(false);
-        fAlgorithmId.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
-        fNumberOfVehicles.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fAcsParam_i.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fAcsParam_m.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -107,15 +106,17 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fAcsParam_beta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fAcsParam_ro.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
-        fAlgorithmId.setText("1");
-        fNumberOfVehicles.setText("1");
         fWeightLimit.setText("1500");
         fSizeLimit.setText("9");
+        fAcsParam_i.setText("100");
         fAcsParam_m.setText("20");
         fAcsParam_q0.setText("0.9");
         fAcsParam_beta.setText("3");
         fAcsParam_ro.setText("0.5");
 
+        sWeightLimit.addChangeListener(e -> fWeightLimit.setText(integerFormat.format(sWeightLimit.getValue())));
+        sSizeLimit.addChangeListener(e -> fSizeLimit.setText(integerFormat.format(sSizeLimit.getValue())));
+        sAcsParam_i.addChangeListener(e -> fAcsParam_i.setText(integerFormat.format(sAcsParam_i.getValue())));
         sAcsParam_m.addChangeListener(e -> fAcsParam_m.setText(integerFormat.format(sAcsParam_m.getValue())));
         sAcsParam_q0.addChangeListener(e -> fAcsParam_q0.setText(doubleFormat.format((double) sAcsParam_q0.getValue() / 10)));
         sAcsParam_beta.addChangeListener(e -> fAcsParam_beta.setText(integerFormat.format(sAcsParam_beta.getValue())));
@@ -129,16 +130,19 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         boxAlgorithms.addItem(CW_ALG);
         boxAlgorithms.addItem(ACS_ALG);
-        boxAlgorithms.addItem(TH_ALG);
         boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
         boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
+        fWeightLimit.setEditable(false);
+        fSizeLimit.setEditable(false);
+        fAcsParam_i.setEditable(false);
         fAcsParam_m.setEditable(false);
         fAcsParam_q0.setEditable(false);
         fAcsParam_beta.setEditable(false);
         fAcsParam_ro.setEditable(false);
+        sAcsParam_i.setEnabled(false);
         sAcsParam_m.setEnabled(false);
         sAcsParam_q0.setEnabled(false);
         sAcsParam_beta.setEnabled(false);
@@ -187,11 +191,13 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
             if (Objects.equals(algorithmName, ACS_ALG)) {
+                sAcsParam_i.setEnabled(true);
                 sAcsParam_m.setEnabled(true);
                 sAcsParam_q0.setEnabled(true);
                 sAcsParam_beta.setEnabled(true);
                 sAcsParam_ro.setEnabled(true);
             } else {
+                sAcsParam_i.setEnabled(false);
                 sAcsParam_m.setEnabled(false);
                 sAcsParam_q0.setEnabled(false);
                 sAcsParam_beta.setEnabled(false);
@@ -200,27 +206,22 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         } else if (source == bFindSolution) {
             try {
-                int algorithmIDInt = Integer.parseInt(fAlgorithmId.getText());
-                int numberOfVehiclesInt = Integer.parseInt(fNumberOfVehicles.getText());
                 double weightLimitDouble = Double.parseDouble(fWeightLimit.getText());
                 double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
-                Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, weightLimitDouble, sizeLimitDouble);
+                Problem problem = new Problem(weightLimitDouble, sizeLimitDouble);
                 switch (algorithmName) {
                     case CW_ALG:
                         Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
                     case ACS_ALG:
+                        int numberOfIterations = Integer.parseInt(fAcsParam_i.getText());
                         int numberOfAnts = Integer.parseInt(fAcsParam_m.getText());
                         double alfa = Double.parseDouble(fAcsParam_q0.getText());
                         double beta = Double.parseDouble(fAcsParam_beta.getText());
                         double gamma = Double.parseDouble(fAcsParam_ro.getText());
-                        Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfAnts, alfa, beta, gamma);
+                        Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
                         macs_algorithm.runAlgorithm();
-                        break;
-                    case TH_ALG:
-                        Algorithm third_algorithm = new Third_Algorithm(problem);
-                        third_algorithm.runAlgorithm();
                         break;
                 }
                 this.addNodeToSolutionsTree();
