@@ -28,10 +28,10 @@ public class FileReader {
 
     private static final Logger logger = LogManager.getLogger(FileReader.class);
 
-    private final String fieldsSeparator = ";";
-    private final String addressSeparator = ",";
-    private final double defaultPackageWeight = 0.0;
-    private final double defaultPackageCapacity = 0.0;
+    private static final String fieldsSeparator = ";";
+    private static final String addressSeparator = ",";
+    private static final double defaultPackageWeight = 0.0;
+    private static final double defaultPackageCapacity = 0.0;
     private final LocalTime defaultMinDeliveryHour = LocalTime.of(8, 0);
     private final LocalTime defaultMaxDeliveryHour = LocalTime.of(18, 0);
     private Geolocator geolocator;
@@ -126,12 +126,12 @@ public class FileReader {
                 Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
                 Database.getCustomerList().add(customer);
                 logger.debug("ID: " + customer.getId()
-                        + ", Adres: " + customer.getFullAddress()
+                        + ", Address: " + customer.getFullAddress()
                         + ", Latitude: " + customer.getLatitude()
                         + ", Longitude: " + customer.getLongitude()
-                        + ", Masa: " + customer.getPackageWeight()
-                        + ", Objetosc: " + customer.getPackageSize()
-                        + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
+                        + ", Package weight: " + customer.getPackageWeight()
+                        + ", Package size: " + customer.getPackageSize()
+                        + ", Time window: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
             }
         } catch (IOException e) {
             logger.error("Unexpected error while reading the file!");
