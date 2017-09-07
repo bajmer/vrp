@@ -103,11 +103,11 @@ public class MapImage {
     private String parseURL(Solution s) {
         StringBuilder paths = new StringBuilder();
         StringBuilder markers = new StringBuilder();
-        Storage.getCustomerList().get(0);
+        Database.getCustomerList().get(0);
         markers.append(defaultDepotMarker);
         markers.append(s.getDepot().getLatitude()).append(",").append(s.getDepot().getLongitude());
         markers.append(defaultCustomerMarker);
-        for (Customer c : Storage.getCustomerList()) {
+        for (Customer c : Database.getCustomerList()) {
             if (c.getId() == 0) {
                 continue;
             }
@@ -170,9 +170,9 @@ public class MapImage {
 
     private String parseURL(Customer c) {
         StringBuilder markers = new StringBuilder();
-        Storage.getCustomerList().get(0);
+        Database.getCustomerList().get(0);
         markers.append(choosenMarker).append(c.getLatitude()).append(",").append(c.getLongitude());
-        for (Customer customer : Storage.getCustomerList()) {
+        for (Customer customer : Database.getCustomerList()) {
             if (!customer.equals(c)) {
                 if (customer.getId() == 0) {
                     markers.append(defaultDepotMarker).append(customer.getLatitude()).append(",").append(customer.getLongitude());
@@ -182,7 +182,7 @@ public class MapImage {
         }
 
         markers.append(defaultCustomerMarker);
-        for (Customer customer : Storage.getCustomerList()) {
+        for (Customer customer : Database.getCustomerList()) {
             if (!customer.equals(c)) {
                 if (customer.getId() == 0) {
                     continue;

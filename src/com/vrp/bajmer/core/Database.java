@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * Created by mbala on 24.05.17.
  */
-public class Storage {
+public class Database {
     private static List<Customer> customerList = new ArrayList<>();
     private static List<RouteSegment> routeSegmentsList = new ArrayList<>();
     private static List<Solution> solutionsList = new ArrayList<>();
 
-    public Storage() {
+    public Database() {
     }
 
     public static List<Customer> getCustomerList() {
@@ -19,7 +19,7 @@ public class Storage {
     }
 
     public static void setCustomerList(List<Customer> customerList) {
-        Storage.customerList = customerList;
+        Database.customerList = customerList;
     }
 
     public static List<RouteSegment> getRouteSegmentsList() {
@@ -27,7 +27,7 @@ public class Storage {
     }
 
     public static void setRouteSegmentsList(List<RouteSegment> routeSegmentsList) {
-        Storage.routeSegmentsList = routeSegmentsList;
+        Database.routeSegmentsList = routeSegmentsList;
     }
 
     public static List<Solution> getSolutionsList() {
@@ -35,6 +35,6 @@ public class Storage {
     }
 
     public static void setSolutionsList(List<Solution> solutionsList) {
-        Storage.solutionsList = solutionsList;
+        Database.solutionsList = solutionsList;
     }
 }

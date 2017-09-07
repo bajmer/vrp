@@ -12,9 +12,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-//        Window window = new Window();
-//        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        window.setVisible(true);
         Gui gui = new Gui();
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gui.setExtendedState(JFrame.MAXIMIZED_BOTH);

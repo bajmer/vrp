@@ -24,9 +24,9 @@ public abstract class Algorithm {
         this.algorithmName = name;
         this.solution = new Solution(problem.getProblemID(), name, problem.getDepot());
 
-        this.customers = Storage.getCustomerList();
-        this.routeSegments = new ArrayList<>(Storage.getRouteSegmentsList().size());
-        this.routeSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+        this.customers = Database.getCustomerList();
+        this.routeSegments = new ArrayList<>(Database.getRouteSegmentsList().size());
+        this.routeSegments.addAll(Database.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
 
         this.routes = this.solution.getListOfRoutes();
     }

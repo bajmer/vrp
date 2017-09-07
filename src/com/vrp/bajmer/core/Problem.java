@@ -14,8 +14,8 @@ public class Problem {
     public Problem(double weightLimitPerVehicle, double sizeLimitPerVehicle) {
         ID++;
         this.problemID = ID;
-        this.depot = Storage.getCustomerList().get(0);
-        this.numberOfCustomers = Storage.getCustomerList().size() - 1;
+        this.depot = Database.getCustomerList().get(0);
+        this.numberOfCustomers = Database.getCustomerList().size() - 1;
         this.weightLimitPerVehicle = weightLimitPerVehicle;
         this.sizeLimitPerVehicle = sizeLimitPerVehicle;
     }

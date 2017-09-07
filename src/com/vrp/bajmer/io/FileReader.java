@@ -1,7 +1,7 @@
 package com.vrp.bajmer.io;
 
 import com.vrp.bajmer.core.Customer;
-import com.vrp.bajmer.core.Storage;
+import com.vrp.bajmer.core.Database;
 import com.vrp.bajmer.gui.Gui;
 import com.vrp.bajmer.network.Geolocator;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +58,8 @@ public class FileReader {
     public void readFile(File file) throws IOException {
         logger.info("Reading file...");
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
-            Storage.getCustomerList().clear();
-            Storage.getRouteSegmentsList().clear();
+            Database.getCustomerList().clear();
+            Database.getRouteSegmentsList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
@@ -124,7 +124,7 @@ public class FileReader {
                 }
 
                 Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
-                Storage.getCustomerList().add(customer);
+                Database.getCustomerList().add(customer);
                 logger.debug("ID: " + customer.getId()
                         + ", Adres: " + customer.getFullAddress()
                         + ", Latitude: " + customer.getLatitude()

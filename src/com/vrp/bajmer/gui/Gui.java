@@ -121,6 +121,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         sAcsParam_q0.addChangeListener(e -> fAcsParam_q0.setText(doubleFormat.format((double) sAcsParam_q0.getValue() / 10)));
         sAcsParam_beta.addChangeListener(e -> fAcsParam_beta.setText(integerFormat.format(sAcsParam_beta.getValue())));
         sAcsParam_ro.addChangeListener(e -> fAcsParam_ro.setText(doubleFormat.format((double) sAcsParam_ro.getValue() / 10)));
+
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(10, new JLabel("1.0"));
         labelTable.put(5, new JLabel("0.5"));
@@ -294,7 +295,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         if (source == tCustomers.getSelectionModel()) {
             String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
             int index = Integer.parseInt(id);
-            Customer c = Storage.getCustomerList().get(index);
+            Customer c = Database.getCustomerList().get(index);
             try {
                 ImageIcon imageIcon = c.getImageIcon();
                 if (imageIcon == null) {
@@ -329,7 +330,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     private void fillCustomerTable() {
         Vector<Vector<String>> data = new Vector<>();
-        for (Customer c : Storage.getCustomerList()) {
+        for (Customer c : Database.getCustomerList()) {
             Vector<String> row = new Vector<>();
             row.add(Integer.toString(c.getId()));
             row.add(c.getFullAddress());
@@ -444,7 +445,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     }
 
     private void addNodeToSolutionsTree() {
-        Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+        Solution newestSolution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
 
         DefaultMutableTreeNode solutionNode = new DefaultMutableTreeNode(newestSolution);
 

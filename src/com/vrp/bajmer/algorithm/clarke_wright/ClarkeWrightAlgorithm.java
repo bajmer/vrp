@@ -310,7 +310,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
-        Storage.getSolutionsList().add(super.getSolution());
+        Database.getSolutionsList().add(super.getSolution());
         logger.info("Saving solution has been completed.");
     }
 }

@@ -41,9 +41,9 @@ public class ACSAlgorithm extends Algorithm {
 
 //        utworzenie tablicy odcinków trasy, zawierającej również obrócone odcinki
         List<RouteSegment> notSwappedSegments = new ArrayList<>(super.getRouteSegments().size());
-        notSwappedSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+        notSwappedSegments.addAll(Database.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
         List<RouteSegment> swappedSegments = new ArrayList<>(super.getRouteSegments().size());
-        swappedSegments.addAll(Storage.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
+        swappedSegments.addAll(Database.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
         for (RouteSegment rs : swappedSegments) {
             rs.swapSrcDst();
         }
@@ -207,7 +207,7 @@ public class ACSAlgorithm extends Algorithm {
         }
         logger.info("Total distance cost: " + tmpBestAcsSolution.getTotalDistanceCost() + "km. Total duration cost: " + tmpBestAcsSolution.getTotalDurationCost().toHours()
                 + ":" + tmpBestAcsSolution.getTotalDurationCost().toMinutes() % 60 + "h");
-        Storage.getSolutionsList().add(tmpBestAcsSolution);
+        Database.getSolutionsList().add(tmpBestAcsSolution);
         logger.info("Saving solution has been completed.");
     }
 }

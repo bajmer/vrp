@@ -1,8 +1,8 @@
 package com.vrp.bajmer.network;
 
 import com.vrp.bajmer.core.Customer;
+import com.vrp.bajmer.core.Database;
 import com.vrp.bajmer.core.RouteSegment;
-import com.vrp.bajmer.core.Storage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -26,10 +26,10 @@ public class DistanceMatrix extends JSON {
     public void downloadDistanceMatrix() throws Exception {
         logger.info("Downloading distance matrix...");
         try {
-            for (int i = 0; i < Storage.getCustomerList().size(); i++) {
-                for (int j = i; j < Storage.getCustomerList().size(); j++) {
-                    Customer src = Storage.getCustomerList().get(i);
-                    Customer dst = Storage.getCustomerList().get(j);
+            for (int i = 0; i < Database.getCustomerList().size(); i++) {
+                for (int j = i; j < Database.getCustomerList().size(); j++) {
+                    Customer src = Database.getCustomerList().get(i);
+                    Customer dst = Database.getCustomerList().get(j);
                     logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
                     if (j != i) {
                         double srcLat = src.getLatitude();
@@ -46,7 +46,7 @@ public class DistanceMatrix extends JSON {
                                     String geometry = getGeometryFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
                                     if (distanceInKm > 0) {
-                                        Storage.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
+                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
                                         src.getDistances().put(dst.getId(), distanceInKm);
                                         src.getDurations().put(dst.getId(), duration);
                                         dst.getDistances().put(src.getId(), distanceInKm);
