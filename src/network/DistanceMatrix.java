@@ -13,9 +13,9 @@ import java.time.Duration;
 public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
-    //    private static final String beginOfURL = "http://127.0.0.1:5000/route/v1/driving/";
-    private static final String endOfURL = "?generate_hints=false";
-    private static final String beginOfURL = "http://192.168.56.101:5000/route/v1/driving/";
+    private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
+    private static final String END_OF_URL = "?generate_hints=false";
+//    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
 
     public DistanceMatrix() {
     }
@@ -35,7 +35,7 @@ public class DistanceMatrix extends JSON {
                         double dstLon = dst.getLongitude();
                         if (srcLat != 0 && srcLon != 0) {
                             if (dstLat != 0 && dstLon != 0) {
-                                String routeURL = parseURL(beginOfURL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), endOfURL);
+                                String routeURL = parseURL(BEGIN_OF_URL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), END_OF_URL);
                                 JSONObject jsonObject = sendRequest(routeURL);
                                 if (jsonObject != null) {
                                     double distanceInKm = getDistanceFromJSON(jsonObject);
