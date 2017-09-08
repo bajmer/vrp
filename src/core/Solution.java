@@ -1,12 +1,9 @@
-package com.vrp.bajmer.core;
+package core;
 
 import javax.swing.*;
 import java.time.Duration;
 import java.util.ArrayList;
 
-/**
- * Created by mbala on 03.07.17.
- */
 public class Solution {
     private int solutionID;
     private String usedAlgorithm;
@@ -15,14 +12,15 @@ public class Solution {
     private double totalDistanceCost;
     private Duration totalDurationCost;
     private ImageIcon imageIcon;
+    private boolean feasible;
 
     public Solution(int problemID, String usedAlgorithm, Customer depot) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
         this.depot = depot;
         this.listOfRoutes = new ArrayList<>();
-        this.totalDistanceCost = 0.0;
-        this.totalDurationCost = Duration.ZERO;
+        this.totalDistanceCost = 100000.0;
+        this.totalDurationCost = Duration.ofSeconds(1000000);
     }
 
     public int getSolutionID() {
@@ -79,6 +77,14 @@ public class Solution {
 
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
+    }
+
+    public boolean isFeasible() {
+        return feasible;
+    }
+
+    public void setFeasible(boolean feasible) {
+        this.feasible = feasible;
     }
 
     @Override

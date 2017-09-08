@@ -1,9 +1,9 @@
-package com.vrp.bajmer.io;
+package io;
 
-import com.vrp.bajmer.core.Customer;
-import com.vrp.bajmer.core.Storage;
-import com.vrp.bajmer.gui.Gui;
-import com.vrp.bajmer.network.Geolocator;
+import core.Customer;
+import core.Database;
+import gui.Gui;
+import network.Geolocator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,21 +20,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by mbala on 24.05.17.
- */
 
 public class FileReader {
 
     private static final Logger logger = LogManager.getLogger(FileReader.class);
 
-    private final String fieldsSeparator = ";";
-    private final String addressSeparator = ",";
-    private final double defaultPackageWeight = 0.0;
-    private final double defaultPackageCapacity = 0.0;
+    private static final String FIELDS_SEPARATOR = ";";
+    private static final String ADDRESS_SEPARATOR = ",";
+    private static final double DEFAULT_PACKAGE_WEIGHT = 0.0;
+    private static final double DEFAULT_PACKAGE_CAPACITY = 0.0;
     private final LocalTime defaultMinDeliveryHour = LocalTime.of(8, 0);
     private final LocalTime defaultMaxDeliveryHour = LocalTime.of(18, 0);
-    private Geolocator geolocator;
+    private final Geolocator geolocator;
 
     public FileReader(Geolocator geolocator) {
         this.geolocator = geolocator;
@@ -58,13 +55,13 @@ public class FileReader {
     public void readFile(File file) throws IOException {
         logger.info("Reading file...");
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
-            Storage.getCustomerList().clear();
-            Storage.getRouteSegmentsList().clear();
+            Database.getCustomerList().clear();
+            Database.getRouteSegmentsList().clear();
             String line;
             int lineNumber = 0;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
-                String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, fieldsSeparator);
+                String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, FIELDS_SEPARATOR);
 
                 String address = fields[0];
                 String[] addressFields = splitFullAddress(address);
@@ -91,12 +88,12 @@ public class FileReader {
                     continue;
                 }
 
-                double weight = defaultPackageWeight;
+                double weight = DEFAULT_PACKAGE_WEIGHT;
                 if (NumberUtils.isParsable(fields[1])) {
                     weight = Double.parseDouble(fields[1]);
                 }
 
-                double capacity = defaultPackageCapacity;
+                double capacity = DEFAULT_PACKAGE_CAPACITY;
                 if (NumberUtils.isParsable(fields[2])) {
                     capacity = Double.parseDouble(fields[2]);
                 }
@@ -124,14 +121,14 @@ public class FileReader {
                 }
 
                 Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
-                Storage.getCustomerList().add(customer);
+                Database.getCustomerList().add(customer);
                 logger.debug("ID: " + customer.getId()
-                        + ", Adres: " + customer.getFullAddress()
+                        + ", Address: " + customer.getFullAddress()
                         + ", Latitude: " + customer.getLatitude()
                         + ", Longitude: " + customer.getLongitude()
-                        + ", Masa: " + customer.getPackageWeight()
-                        + ", Objetosc: " + customer.getPackageSize()
-                        + ", Okno czasowe: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
+                        + ", Package weight: " + customer.getPackageWeight()
+                        + ", Package size: " + customer.getPackageSize()
+                        + ", Time window: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
             }
         } catch (IOException e) {
             logger.error("Unexpected error while reading the file!");
@@ -142,7 +139,7 @@ public class FileReader {
 
     private String[] splitFullAddress(String fullAddress) {
         ArrayList<String> fields = new ArrayList<>();
-        String[] tmpFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, addressSeparator);
+        String[] tmpFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, ADDRESS_SEPARATOR);
 
         String streetAndNumber = tmpFields[0].replace("ul.", "");
         fields.add(streetAndNumber);

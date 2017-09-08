@@ -1,14 +1,13 @@
-package com.vrp.bajmer.gui;
+package gui;
 
-import com.vrp.bajmer.algorithm.Algorithm;
-import com.vrp.bajmer.algorithm.ClarkWrightAlgorithm;
-import com.vrp.bajmer.algorithm.Second_Algorithm;
-import com.vrp.bajmer.algorithm.Third_Algorithm;
-import com.vrp.bajmer.core.*;
-import com.vrp.bajmer.io.FileReader;
-import com.vrp.bajmer.network.DistanceMatrix;
-import com.vrp.bajmer.network.Geolocator;
-import com.vrp.bajmer.network.MapImage;
+import algorithm.Algorithm;
+import algorithm.clarke_wright.ClarkeWrightAlgorithm;
+import algorithm.macs.ACSAlgorithm;
+import core.*;
+import io.FileReader;
+import network.DistanceMatrix;
+import network.Geolocator;
+import network.MapImage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,44 +27,53 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Vector;
 
-/**
- * Created by mbala on 21.07.17.
- */
 public class Gui extends JFrame implements ActionListener, TreeSelectionListener, ListSelectionListener {
 
     private static final Logger logger = LogManager.getLogger(Gui.class);
-
+    private static final String CW_ALG = "Clarke-Wright";
+    private static final String ACS_ALG = "Ant Colony System";
+    private final MapImage mapImage;
     private JPanel mainPanel;
+    private JPanel mapPanel;
     private JPanel leftPanel;
     private JPanel rightPanel;
     private JPanel bottomPanel;
-    private JPanel mapPanel;
     private JLabel mapLabel;
     private JButton bLoad;
     private JButton bGetDistance;
     private JButton bFindSolution;
-    private JTable tCustomers;
-    private JTable tRouteDetails;
-    private JFormattedTextField fAlgorithmId;
-    private JFormattedTextField fNumberOfVehicles;
-    private JFormattedTextField fWeightLimit;
-    private JFormattedTextField fSizeLimit;
-    private JComboBox boxAlgorithms;
+    private String algorithmName;
+    private JComboBox<String> boxAlgorithms;
     private JTextArea appLog;
     private JScrollPane jspCustomers;
     private JScrollPane jspRouteDetails;
     private JScrollPane jspSolutions;
+    private JFormattedTextField fWeightLimit;
+    private JFormattedTextField fSizeLimit;
+    private JFormattedTextField fAcsParam_i;
+    private JFormattedTextField fAcsParam_m;
+    private JFormattedTextField fAcsParam_q0;
+    private JFormattedTextField fAcsParam_beta;
+    private JFormattedTextField fAcsParam_ro;
+    private JSlider sWeightLimit;
+    private JSlider sSizeLimit;
+    private JSlider sAcsParam_i;
+    private JSlider sAcsParam_m;
+    private JSlider sAcsParam_q0;
+    private JSlider sAcsParam_beta;
+    private JSlider sAcsParam_ro;
+    private JTable tCustomers;
+    private JTable tRouteDetails;
     private JTree treeSolutions;
-    private JFrame algorithmProperties;
-
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
-    private String algorithmName;
-    private MapImage mapImage;
-
 
     public Gui() {
         bLoad.addActionListener(this);
@@ -77,22 +85,66 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         NumberFormat integerFormat = NumberFormat.getIntegerInstance();
         integerFormat.setGroupingUsed(false);
-        NumberFormatter numberFormatter = new NumberFormatter(integerFormat);
-        numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setAllowsInvalid(false);
-        fAlgorithmId.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fNumberOfVehicles.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        NumberFormatter intFormatter = new NumberFormatter(integerFormat);
+        intFormatter.setValueClass(Integer.class);
+        intFormatter.setAllowsInvalid(false);
+        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fAcsParam_i.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fAcsParam_m.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
-        boxAlgorithms.addItem("Clark-Wright");
-        boxAlgorithms.addItem("Second");
-        boxAlgorithms.addItem("Third");
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        DecimalFormat doubleFormat = new DecimalFormat("###.##", dfs);
+        doubleFormat.setGroupingUsed(false);
+        NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
+        doubleFormatter.setValueClass(Double.class);
+        fAcsParam_q0.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fAcsParam_beta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+        fAcsParam_ro.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
+
+        fWeightLimit.setText("1500");
+        fSizeLimit.setText("9");
+        fAcsParam_i.setText("100");
+        fAcsParam_m.setText("20");
+        fAcsParam_q0.setText("0.9");
+        fAcsParam_beta.setText("3");
+        fAcsParam_ro.setText("0.5");
+
+        sWeightLimit.addChangeListener(e -> fWeightLimit.setText(integerFormat.format(sWeightLimit.getValue())));
+        sSizeLimit.addChangeListener(e -> fSizeLimit.setText(integerFormat.format(sSizeLimit.getValue())));
+        sAcsParam_i.addChangeListener(e -> fAcsParam_i.setText(integerFormat.format(sAcsParam_i.getValue())));
+        sAcsParam_m.addChangeListener(e -> fAcsParam_m.setText(integerFormat.format(sAcsParam_m.getValue())));
+        sAcsParam_q0.addChangeListener(e -> fAcsParam_q0.setText(doubleFormat.format((double) sAcsParam_q0.getValue() / 10)));
+        sAcsParam_beta.addChangeListener(e -> fAcsParam_beta.setText(integerFormat.format(sAcsParam_beta.getValue())));
+        sAcsParam_ro.addChangeListener(e -> fAcsParam_ro.setText(doubleFormat.format((double) sAcsParam_ro.getValue() / 10)));
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(10, new JLabel("1.0"));
+        labelTable.put(5, new JLabel("0.5"));
+        labelTable.put(0, new JLabel("0.0"));
+        sAcsParam_ro.setLabelTable(labelTable);
+        sAcsParam_q0.setLabelTable(labelTable);
+
+        boxAlgorithms.addItem(CW_ALG);
+        boxAlgorithms.addItem(ACS_ALG);
         boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
         boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
+        fWeightLimit.setEditable(false);
+        fSizeLimit.setEditable(false);
+        fAcsParam_i.setEditable(false);
+        fAcsParam_m.setEditable(false);
+        fAcsParam_q0.setEditable(false);
+        fAcsParam_beta.setEditable(false);
+        fAcsParam_ro.setEditable(false);
+        sAcsParam_i.setEnabled(false);
+        sAcsParam_m.setEnabled(false);
+        sAcsParam_q0.setEnabled(false);
+        sAcsParam_beta.setEnabled(false);
+        sAcsParam_ro.setEnabled(false);
 
         this.createCustomerTable();
         this.createRouteDetailsTable();
@@ -136,25 +188,38 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
             bFindSolution.setEnabled(true);
+            if (Objects.equals(algorithmName, ACS_ALG)) {
+                sAcsParam_i.setEnabled(true);
+                sAcsParam_m.setEnabled(true);
+                sAcsParam_q0.setEnabled(true);
+                sAcsParam_beta.setEnabled(true);
+                sAcsParam_ro.setEnabled(true);
+            } else {
+                sAcsParam_i.setEnabled(false);
+                sAcsParam_m.setEnabled(false);
+                sAcsParam_q0.setEnabled(false);
+                sAcsParam_beta.setEnabled(false);
+                sAcsParam_ro.setEnabled(false);
+            }
+
         } else if (source == bFindSolution) {
             try {
-                int algorithmIDInt = Integer.parseInt(fAlgorithmId.getText());
-                int numberOfVehiclesInt = Integer.parseInt(fNumberOfVehicles.getText());
                 double weightLimitDouble = Double.parseDouble(fWeightLimit.getText());
                 double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
-                Problem problem = new Problem(algorithmIDInt, numberOfVehiclesInt, weightLimitDouble, sizeLimitDouble);
+                Problem problem = new Problem(weightLimitDouble, sizeLimitDouble);
                 switch (algorithmName) {
-                    case "Clark-Wright":
-                        Algorithm clark_wright_algorithm = new ClarkWrightAlgorithm(problem);
+                    case CW_ALG:
+                        Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                         clark_wright_algorithm.runAlgorithm();
                         break;
-                    case "Second com.vrp.bajmer.algorithm":
-                        Algorithm second_algorithm = new Second_Algorithm(problem);
-                        second_algorithm.runAlgorithm();
-                        break;
-                    case "Third com.vrp.bajmer.algorithm":
-                        Algorithm third_algorithm = new Third_Algorithm(problem);
-                        third_algorithm.runAlgorithm();
+                    case ACS_ALG:
+                        int numberOfIterations = Integer.parseInt(fAcsParam_i.getText());
+                        int numberOfAnts = Integer.parseInt(fAcsParam_m.getText());
+                        double alfa = Double.parseDouble(fAcsParam_q0.getText());
+                        double beta = Double.parseDouble(fAcsParam_beta.getText());
+                        double gamma = Double.parseDouble(fAcsParam_ro.getText());
+                        Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
+                        macs_algorithm.runAlgorithm();
                         break;
                 }
                 this.addNodeToSolutionsTree();
@@ -170,11 +235,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         if (choosedNode == null)
             return;
 
-        if (choosedNode.getLevel() == 0) {
-            //root
+        if (choosedNode.getLevel() == 0) { //ROOT level
             setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-        } else if (choosedNode.getLevel() == 1) {
-            //solution
+        } else if (choosedNode.getLevel() == 1) { //SOLUTION level
             Solution s = (Solution) choosedNode.getUserObject();
             try {
                 ImageIcon imageIcon = s.getImageIcon();
@@ -186,8 +249,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.warn("Cannot create an image of the solution!");
                 logger.debug(ex);
             }
-        } else if (choosedNode.getLevel() == 2) {
-            //route
+        } else if (choosedNode.getLevel() == 2) { //ROUTE level
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
             Route r = (Route) choosedNode.getUserObject();
@@ -202,8 +264,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.warn("Cannot create an image of the route!");
                 logger.debug(ex);
             }
-        } else if (choosedNode.getLevel() == 3) {
-            //route segment
+        } else if (choosedNode.getLevel() == 3) { //ROUTE SEGMENT level
             DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
             DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
             Solution s = (Solution) solutionNode.getUserObject();
@@ -231,7 +292,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         if (source == tCustomers.getSelectionModel()) {
             String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
             int index = Integer.parseInt(id);
-            Customer c = Storage.getCustomerList().get(index);
+            Customer c = Database.getCustomerList().get(index);
             try {
                 ImageIcon imageIcon = c.getImageIcon();
                 if (imageIcon == null) {
@@ -266,7 +327,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     private void fillCustomerTable() {
         Vector<Vector<String>> data = new Vector<>();
-        for (Customer c : Storage.getCustomerList()) {
+        for (Customer c : Database.getCustomerList()) {
             Vector<String> row = new Vector<>();
             row.add(Integer.toString(c.getId()));
             row.add(c.getFullAddress());
@@ -381,7 +442,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     }
 
     private void addNodeToSolutionsTree() {
-        Solution newestSolution = Storage.getSolutionsList().get(Storage.getSolutionsList().size() - 1);
+        Solution newestSolution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
 
         DefaultMutableTreeNode solutionNode = new DefaultMutableTreeNode(newestSolution);
 
@@ -398,7 +459,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         DefaultTreeModel model = (DefaultTreeModel) treeSolutions.getModel();
         model.insertNodeInto(solutionNode, root, root.getChildCount());
 
-        treeSolutions.expandPath(new TreePath(root.getPath()));
-        treeSolutions.scrollPathToVisible(new TreePath(solutionNode.getPath()));
+        TreePath rootPath = new TreePath(root.getPath());
+        TreePath solutionPath = new TreePath(solutionNode.getPath());
+        treeSolutions.expandPath(rootPath);
+        treeSolutions.scrollPathToVisible(solutionPath);
+        treeSolutions.setSelectionPath(solutionPath);
     }
 }

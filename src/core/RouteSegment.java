@@ -1,4 +1,4 @@
-package com.vrp.bajmer.core;
+package core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,9 +7,6 @@ import javax.swing.*;
 import java.time.Duration;
 import java.time.LocalTime;
 
-/**
- * Created by Marcin on 2017-06-25.
- */
 public class RouteSegment implements Cloneable {
 
     private static final Logger logger = LogManager.getLogger(RouteSegment.class);
@@ -25,6 +22,10 @@ public class RouteSegment implements Cloneable {
     private double clarkWrightSaving;
     private String geometry;
     private ImageIcon imageIcon;
+    private double acsPheromoneLevel;
+    private double acsUpNumber;
+    private boolean partOfBestAcsSolution = false;
+    private boolean partOfAntAcsSolution = false;
 
     public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;
@@ -72,7 +73,7 @@ public class RouteSegment implements Cloneable {
         return departure;
     }
 
-    public void setDeparture(LocalTime departure) {
+    void setDeparture(LocalTime departure) {
         this.departure = departure;
     }
 
@@ -80,7 +81,7 @@ public class RouteSegment implements Cloneable {
         return arrival;
     }
 
-    public void setArrival(LocalTime arrival) {
+    void setArrival(LocalTime arrival) {
         this.arrival = arrival;
     }
 
@@ -116,10 +117,46 @@ public class RouteSegment implements Cloneable {
         this.imageIcon = imageIcon;
     }
 
+    public double getAcsPheromoneLevel() {
+        return acsPheromoneLevel;
+    }
+
+    public void setAcsPheromoneLevel(double acsPheromoneLevel) {
+        this.acsPheromoneLevel = acsPheromoneLevel;
+    }
+
+    public double getAcsUpNumber() {
+        return acsUpNumber;
+    }
+
+    public void setAcsUpNumber(double acsUpNumber) {
+        this.acsUpNumber = acsUpNumber;
+    }
+
+    public boolean isPartOfBestAcsSolution() {
+        return partOfBestAcsSolution;
+    }
+
+    public void setPartOfBestAcsSolution(boolean partOfBestAcsSolution) {
+        this.partOfBestAcsSolution = partOfBestAcsSolution;
+    }
+
+    public boolean isPartOfAntAcsSolution() {
+        return partOfAntAcsSolution;
+    }
+
+    public void setPartOfAntAcsSolution(boolean partOfAntAcsSolution) {
+        this.partOfAntAcsSolution = partOfAntAcsSolution;
+    }
+
     public void swapSrcDst() {
         Customer tmp = this.src;
         this.src = this.dst;
         this.dst = tmp;
+    }
+
+    public boolean isSegmentExist(int a, int b) {
+        return (a == src.getId() && b == dst.getId()) /*|| (b == src.getId() && a == dst.getId())*/;
     }
 
     @Override

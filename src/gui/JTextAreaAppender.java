@@ -1,8 +1,4 @@
-package com.vrp.bajmer.gui;
-
-/**
- * Created by Marcin on 2017-07-21.
- */
+package gui;
 
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -20,12 +16,11 @@ import java.util.ArrayList;
 @Plugin(name = "JTextAreaAppender", category = "Core", elementType = "appender", printObject = true)
 public class JTextAreaAppender extends AbstractAppender {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile ArrayList<JTextArea> jTextAreaList = new ArrayList<JTextArea>();
+    private static volatile ArrayList<JTextArea> jTextAreaList = new ArrayList<>();
 
     private int maxLines = 0;
 
-    protected JTextAreaAppender(String name, Layout<?> layout, Filter filter, int maxLines, boolean ignoreExceptions) {
+    private JTextAreaAppender(String name, Layout<?> layout, Filter filter, int maxLines, boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         this.maxLines = maxLines;
     }
@@ -57,28 +52,25 @@ public class JTextAreaAppender extends AbstractAppender {
         final String message = new String(this.getLayout().toByteArray(event));
 
         try {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    for (JTextArea jTA : jTextAreaList) {
-                        try {
-                            if (jTA != null) {
-                                if (jTA.getText().length() == 0) {
-                                    jTA.setText(message);
-                                } else {
-                                    jTA.append("\n" + message);
-                                    if (maxLines > 0 & jTA.getLineCount() > maxLines + 1) {
-                                        int endIdx = jTA.getDocument().getText(0, jTA.getDocument().getLength()).indexOf("\n", 0);
-                                        jTA.getDocument().remove(0, endIdx + 1);
-                                    }
+            SwingUtilities.invokeLater(() -> {
+                for (JTextArea jTA : jTextAreaList) {
+                    try {
+                        if (jTA != null) {
+                            if (jTA.getText().length() == 0) {
+                                jTA.setText(message);
+                            } else {
+                                jTA.append("\n" + message);
+                                if (maxLines > 0 & jTA.getLineCount() > maxLines + 1) {
+                                    int endIdx = jTA.getDocument().getText(0, jTA.getDocument().getLength()).indexOf("\n", 0);
+                                    jTA.getDocument().remove(0, endIdx + 1);
                                 }
-                                String content = jTA.getText();
-                                jTA.setText(content.substring(0, content.length() - 1));
                             }
-                        } catch (final Throwable t) {
-                            System.out.println("Unable to append log to text area: "
-                                    + t.getMessage());
+                            String content = jTA.getText();
+                            jTA.setText(content.substring(0, content.length() - 1));
                         }
+                    } catch (final Throwable t) {
+                        System.out.println("Unable to append log to text area: "
+                                + t.getMessage());
                     }
                 }
             });

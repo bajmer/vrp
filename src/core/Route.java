@@ -1,4 +1,4 @@
-package com.vrp.bajmer.core;
+package core;
 
 import javax.swing.*;
 import java.math.BigDecimal;
@@ -9,19 +9,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by mbala on 03.07.17.
- */
 public class Route {
 
     private static int routeID = 0;
+    private final LocalTime startTime;
     private int id;
     private ArrayList<Customer> customersInRoute;
     private ArrayList<RouteSegment> routeSegments;
     private Map<Customer, ImageIcon> customersIcons;
     private double totalDistance;
     private Duration totalDuration;
-    private LocalTime startTime;
     private double currentPackagesWeight;
     private double currentPackagesSize;
     private ImageIcon imageIcon;
@@ -168,6 +165,10 @@ public class Route {
 
     public boolean isCustomerLast(Customer customer) {
         return customersInRoute.get(customersInRoute.size() - 1).equals(customer);
+    }
+
+    public Customer getLastCustomer() {
+        return customersInRoute.get(customersInRoute.size() - 1);
     }
 
     private double round(double x) {

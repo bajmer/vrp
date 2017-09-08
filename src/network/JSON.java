@@ -1,4 +1,4 @@
-package com.vrp.bajmer.network;
+package network;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,21 +12,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by Marcin on 2017-07-10.
- */
-public class JSON {
+class JSON {
 
     private static final Logger logger = LogManager.getLogger(JSON.class);
 
-    public JSON() {
+    JSON() {
     }
 
-    public String parseURL(String beginOfURL, double srcLong, double srcLat, double dstLong, double dstLat, String endOfURL) {
+    String parseURL(String beginOfURL, double srcLong, double srcLat, double dstLong, double dstLat, String endOfURL) {
         return beginOfURL + srcLong + "," + srcLat + ";" + dstLong + "," + dstLat + endOfURL;
     }
 
-    public String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city) {
+    String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city) {
         streetAndNumber = streetAndNumber.replace(" ", "%20");
         city = city.replace(" ", "%20");
 
@@ -34,7 +31,7 @@ public class JSON {
                 + "&city=" + city + "&country=Polska";
     }
 
-    public JSONObject sendRequest(String url) throws ConnectException {
+    JSONObject sendRequest(String url) throws ConnectException {
         logger.debug("Sending a request to URL: " + url + " ...");
         HttpURLConnection connection = null;
         String response = null;
