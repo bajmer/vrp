@@ -4,7 +4,7 @@ Aby uruchomić serwer routingowy należy skorzystać z obrazu dockerowego wykonu
   1) wget http://download.geofabrik.de/europe/poland/mazowieckie-latest.osm.pbf (pobranie mapy województwa mazowieckiego)
   2) docker run -t -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/car.lua /data/mazowieckie-latest.osm.pbf
   3) docker run -t -v $(pwd):/data osrm/osrm-backend osrm-contract /data/mazowieckie-latest.osrm
-  4) docker run -t -i -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed /data/berlin-latest.osrm (uruchomienie serwera na porcie 5000.
+  4) docker run -t -i -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed /data/mazowieckie-latest.osrm (uruchomienie serwera na porcie 5000.
   
 Po uruchomieniu programu należy:
   1) Wcisnąć przycisk "Load customers", w celu wczytania klientów (uwaga - pierwsza pozycja na liście to magazyn, czyli punkt startowy dla pojazdów). Przykładowa lokalizacja pliku z klientami: /input/Customers_15.csv
