@@ -294,11 +294,13 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             int index = Integer.parseInt(id);
             Customer c = Database.getCustomerList().get(index);
             try {
-                ImageIcon imageIcon = c.getImageIcon();
-                if (imageIcon == null) {
+                if (c.getImageIcon() == null) {
                     mapImage.createCustomerImage(c);
+                }
+                if (c.getImageIcon() != null) {
+                    mapLabel.setIcon(c.getImageIcon());
                 } else {
-                    mapLabel.setIcon(imageIcon);
+                    throw new Exception();
                 }
             } catch (Exception ex) {
                 logger.warn("Cannot create an image of customers!");
@@ -362,6 +364,8 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tCustomers.getColumnModel().getColumn(5).setPreferredWidth(100);
         tCustomers.getColumnModel().getColumn(6).setPreferredWidth(80);
         tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);
+
+        tCustomers.changeSelection(0, 0, false, false);
     }
 
     private void createRouteDetailsTable() {
