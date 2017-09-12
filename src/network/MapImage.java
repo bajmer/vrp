@@ -58,46 +58,54 @@ public class MapImage {
         String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
         logger.debug("Creating an images of solution " + solutionImageName + "...");
 
-        String url = parseURL(s);
-        sendRequestToGoogleMaps(url, solutionImageName);
-        s.setImageIcon(new ImageIcon(solutionImageName));
+        try {
+            String url = parseURL(s, false);
+            sendRequestToGoogleMaps(url, solutionImageName);
+            s.setImageIcon(new ImageIcon(solutionImageName));
+        } catch (Exception e) {
+            logger.debug("Cannot create full solution image! Creating simple solution image...");
+            String simpleURL = parseURL(s, true);
+            sendRequestToGoogleMaps(simpleURL, solutionImageName);
+            s.setImageIcon(new ImageIcon(solutionImageName));
+        }
 
-        logger.debug("Creating an images of solution " + solutionImageName + " has been completed.");
+        logger.debug("Creating an image of solution " + solutionImageName + " has been completed.");
     }
 
     public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
-        logger.debug("Creating an images of route" + routeImageName + "...");
+        logger.debug("Creating images of route" + routeImageName + "...");
 
         String urlForSingleRoute = parseURL(r);
         sendRequestToGoogleMaps(urlForSingleRoute, routeImageName);
         r.setImageIcon(new ImageIcon(routeImageName));
 
-        logger.debug("Creating an images of route" + routeImageName + " has been completed.");
+        logger.debug("Creating images of route" + routeImageName + " has been completed.");
     }
 
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
-        logger.debug("Creating an images of route segment" + routeSegmentImageName + "...");
+        logger.debug("Creating images of route segment" + routeSegmentImageName + "...");
 
         String url = parseURL(rs);
         sendRequestToGoogleMaps(url, routeSegmentImageName);
         rs.setImageIcon(new ImageIcon(routeSegmentImageName));
 
-        logger.debug("Creating an images of route segment " + routeSegmentImageName + " has been completed.");
+        logger.debug("Creating images of route segment " + routeSegmentImageName + " has been completed.");
     }
 
     public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = IMAGE_PATH + "C" + c.getId();
-        logger.debug("Creating an images of customer" + customerImageName + "...");
+        logger.debug("Creating images of customer" + customerImageName + "...");
+
         String url = parseURL(c);
         sendRequestToGoogleMaps(url, customerImageName);
-
         c.setImageIcon(new ImageIcon(customerImageName));
-        logger.debug("Creating an images of customer has been completed.");
+
+        logger.debug("Creating images of customer has been completed.");
     }
 
-    private String parseURL(Solution s) {
+    private String parseURL(Solution s, boolean simpleURL) {
         StringBuilder paths = new StringBuilder();
         StringBuilder markers = new StringBuilder();
         Database.getCustomerList().get(0);
@@ -118,11 +126,20 @@ public class MapImage {
         int colourIndex = 0;
         for (Route r : s.getListOfRoutes()) {
             String colour = (new ArrayList<>(COLOURS.values())).get(colourIndex);
-            for (RouteSegment rs : r.getRouteSegments()) {
+            if (!simpleURL) {
+                for (RouteSegment rs : r.getRouteSegments()) {
+                    paths.append("&path=color:");
+                    paths.append(colour);
+                    paths.append("|weight:2|enc:");
+                    paths.append(rs.getGeometry());
+                }
+            } else {
                 paths.append("&path=color:");
                 paths.append(colour);
-                paths.append("|weight:2|enc:");
-                paths.append(rs.getGeometry());
+                paths.append("|weight:2");
+                for (Customer c : r.getCustomersInRoute()) {
+                    paths.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
+                }
             }
             colourIndex++;
             if (colourIndex == COLOURS.size()) {
