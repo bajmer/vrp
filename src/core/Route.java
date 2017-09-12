@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class Route {
 
+    private static final LocalTime startTime = LocalTime.of(8, 0);
     private static int routeID = 0;
-    private final LocalTime startTime;
     private int id;
     private ArrayList<Customer> customersInRoute;
     private ArrayList<RouteSegment> routeSegments;
@@ -21,6 +21,7 @@ public class Route {
     private Duration totalDuration;
     private double currentPackagesWeight;
     private double currentPackagesSize;
+    private LocalTime currentTime;
     private ImageIcon imageIcon;
 
     public Route() {
@@ -31,7 +32,8 @@ public class Route {
         this.customersIcons = new HashMap<>();
         this.totalDistance = 0.0;
         this.totalDuration = Duration.ZERO;
-        this.startTime = LocalTime.of(8, 0);
+        this.currentTime = startTime;
+//        this.startTime = LocalTime.of(8, 0);
         this.currentPackagesWeight = 0.0;
         this.currentPackagesSize = 0.0;
     }
@@ -138,17 +140,25 @@ public class Route {
         int firstPosition = 0;
         routeSegments.add(firstPosition, routeSegment);
         totalDistance += routeSegment.getDistance();
-        totalDuration = totalDuration.plus(routeSegment.getDuration());
+        totalDuration = totalDuration.plus(routeSegment.getDuration()).plus(Customer.getServiceTime());
+        currentTime = startTime.plus(totalDuration);
     }
 
     public void addSegmentAsLast(RouteSegment routeSegment) {
         routeSegments.add(routeSegment);
         totalDistance += routeSegment.getDistance();
-        totalDuration = totalDuration.plus(routeSegment.getDuration());
+        totalDuration = totalDuration.plus(routeSegment.getDuration().plus(Customer.getServiceTime()));
+        currentTime = startTime.plus(totalDuration);
     }
 
-    public boolean canAdd(double packageWeight, double weightLimit, double packageSize, double sizeLimit) {
-        return canAddWeight(packageWeight, weightLimit) && canAddSize(packageSize, sizeLimit);
+    public boolean canAddCustomer(RouteSegment rs, Customer c, double weightLimit, double sizeLimit) {
+        return canAddWeight(c.getPackageWeight(), weightLimit)
+                && canAddSize(c.getPackageSize(), sizeLimit)
+                && canAddTime(c.getMinDeliveryHour(), c.getMaxDeliveryHour(), rs.getDuration());
+    }
+
+    public boolean canMergeRoute(Route r, double weightLimit, double sizeLimit) {
+        return canAddWeight(r.getCurrentPackagesWeight(), weightLimit) && canAddSize(r.getCurrentPackagesSize(), sizeLimit);
     }
 
     private boolean canAddWeight(double packageWeight, double weightLimit) {
@@ -157,6 +167,10 @@ public class Route {
 
     private boolean canAddSize(double packageSize, double sizeLimit) {
         return currentPackagesSize + packageSize <= sizeLimit;
+    }
+
+    private boolean canAddTime(LocalTime minTime, LocalTime maxTime, Duration rsDuration) {
+        return currentTime.plus(rsDuration).isAfter(minTime) && currentTime.plus(rsDuration).isBefore(maxTime);
     }
 
     public boolean isCustomerFirst(Customer customer) {

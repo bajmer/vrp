@@ -190,6 +190,7 @@ public class ACSAlgorithm extends Algorithm {
     protected void saveSolution() {
         logger.info("Saving solution...");
         for (Route route : tmpBestAcsSolution.getListOfRoutes()) {
+            route.setArrivalAndDepartureTimeForCustomers();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);

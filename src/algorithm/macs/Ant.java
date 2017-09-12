@@ -61,7 +61,7 @@ class Ant {
         for (RouteSegment rsFromCustomer : tmpNode.getRouteSegmentsFromCustomer()) {
             Customer dst = rsFromCustomer.getDst();
             if (unvisitedCustomers.contains(dst.getId())) { //jeśli klient jest na liście nieodwiedzonych klientów
-                if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
+                if (route.canAddCustomer(rsFromCustomer, dst, weightLimit, sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
                     feasibleNodes.add(dst);
                 }
             }

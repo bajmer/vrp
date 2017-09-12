@@ -92,7 +92,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 //            pierwszy klient nie należy do trasy, a drugi jest brzegowym węzłem trasy
             else if (!isCustomerInRoute(src)) {
                 for (Route route : super.getRoutes()) {
-                    if (route.canAdd(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
+                    if (route.canAddCustomer(segment, src, weightLimit, sizeLimit)) {
                         if (route.isCustomerFirst(dst)) {
                             route.addCustomerAsFirst(src);
                             route.addSegmentAsFirst(segment);
@@ -120,7 +120,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 //            drugi klient nie należy do trasy, a pierwszy jest brzegowym węzłem trasy
             else if (!isCustomerInRoute(dst)) {
                 for (Route route : super.getRoutes()) {
-                    if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
+                    if (route.canAddCustomer(segment, dst, weightLimit, sizeLimit)) {
                         if (route.isCustomerFirst(src)) {
                             route.addCustomerAsFirst(dst);
                             segment.swapSrcDst();
@@ -152,7 +152,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
             for (Route routeA : super.getRoutes()) {
                 for (Route routeB : super.getRoutes()) {
                     if (routeA != routeB) {
-                        if (routeA.canAdd(routeB.getCurrentPackagesWeight(), weightLimit, routeB.getCurrentPackagesSize(), sizeLimit)) {
+                        if (routeA.canMergeRoute(routeB, weightLimit, sizeLimit)) {
 //                            węzły można połączyć na 8 sposobów:
                             if (routeA.isCustomerLast(src) && routeB.isCustomerFirst(dst)) { // (1) .....s   d.....
                                 //routeA jest 1 trasą, do niej doklejamy routeB
