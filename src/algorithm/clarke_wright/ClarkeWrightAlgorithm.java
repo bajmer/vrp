@@ -291,7 +291,6 @@ public class ClarkeWrightAlgorithm extends Algorithm {
             route.setArrivalAndDepartureTimeForCustomers();
             totalDistance += route.getTotalDistance();
             totalDuration = totalDuration.plus(route.getTotalDuration());
-            logger.info(route.toString());
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
                 Customer c = route.getCustomersInRoute().get(i);

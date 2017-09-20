@@ -13,9 +13,9 @@ import java.time.Duration;
 public class DistanceMatrix extends JSON {
 
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
-    private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
+    //    private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
     private static final String END_OF_URL = "?generate_hints=false";
-//    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
+    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
 
     public DistanceMatrix() {
     }
