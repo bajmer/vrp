@@ -47,6 +47,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JPanel bottomPanel;
     private JLabel mapLabel;
     private JButton bLoad;
+    private JButton bTest;
     private JButton bGetDistance;
     private JButton bFindSolution;
     private String algorithmName;
@@ -77,6 +78,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     public Gui() {
         bLoad.addActionListener(this);
+        bTest.addActionListener(this);
         bGetDistance.addActionListener(this);
         bFindSolution.addActionListener(this);
         boxAlgorithms.addActionListener(this);
@@ -133,7 +135,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         bGetDistance.setEnabled(false);
         boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
-        fWeightLimit.setEditable(false);
+//        fWeightLimit.setEditable(false);
         fSizeLimit.setEditable(false);
         fAcsParam_i.setEditable(false);
         fAcsParam_m.setEditable(false);
@@ -176,6 +178,20 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             } catch (Exception ex) {
                 logger.error("Unexpected error while processing the file!", ex);
             }
+        } else if (source == bTest) {
+            try {
+                FileReader fileReader = new FileReader();
+                File customersInputFile = fileReader.chooseFile(this);
+                if (customersInputFile != null) {
+                    fileReader.readTestFile(customersInputFile);
+
+//                    this.fillCustomerTable();
+                    boxAlgorithms.setEnabled(true);
+                }
+            } catch (Exception ex) {
+                logger.error("Unexpected error while processing the test file!", ex);
+            }
+
         } else if (source == bGetDistance) {
             try {
                 DistanceMatrix distanceMatrix = new DistanceMatrix();

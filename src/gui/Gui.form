@@ -64,7 +64,7 @@
                 <preferred-size width="300" height="29"/>
                 <maximum-size width="300" height="-1"/>
               </grid>
-              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <text value="Load customers"/>
@@ -72,7 +72,7 @@
           </component>
           <scrollpane id="3d073" binding="jspCustomers">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+              <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="-1" height="220"/>
                 <preferred-size width="-1" height="220"/>
                 <maximum-size width="-1" height="220"/>
@@ -94,7 +94,7 @@
           </scrollpane>
           <component id="efd65" class="javax.swing.JButton" binding="bGetDistance">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="300" height="-1"/>
                 <preferred-size width="300" height="35"/>
                 <maximum-size width="300" height="-1"/>
@@ -108,7 +108,7 @@
           </component>
           <component id="4d29f" class="javax.swing.JButton" binding="bFindSolution">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+              <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="300" height="-1"/>
                 <preferred-size width="300" height="35"/>
                 <maximum-size width="300" height="-1"/>
@@ -122,7 +122,7 @@
           </component>
           <scrollpane id="e161d" binding="jspSolutions">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0" ipady="100"/>
             </constraints>
             <properties/>
@@ -133,7 +133,7 @@
           </scrollpane>
           <scrollpane id="cc58e" binding="jspRouteDetails">
             <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+              <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="300" height="-1"/>
                 <preferred-size width="300" height="214"/>
                 <maximum-size width="300" height="-1"/>
@@ -155,6 +155,15 @@
               </component>
             </children>
           </scrollpane>
+          <component id="90670" class="javax.swing.JButton" binding="bTest">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Test"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="66b41" binding="rightPanel" layout-manager="GridBagLayout">
@@ -249,7 +258,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="1500"/>
+                  <value value="500"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>

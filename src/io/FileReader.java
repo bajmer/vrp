@@ -2,6 +2,7 @@ package io;
 
 import core.Customer;
 import core.Database;
+import core.RouteSegment;
 import gui.Gui;
 import network.Geolocator;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -31,7 +33,11 @@ public class FileReader {
     private static final double DEFAULT_PACKAGE_CAPACITY = 0.0;
     private final LocalTime defaultMinDeliveryHour = LocalTime.of(8, 0);
     private final LocalTime defaultMaxDeliveryHour = LocalTime.of(18, 0);
-    private final Geolocator geolocator;
+    private Geolocator geolocator;
+
+    public FileReader() {
+
+    }
 
     public FileReader(Geolocator geolocator) {
         this.geolocator = geolocator;
@@ -156,5 +162,60 @@ public class FileReader {
         fields.add(city);
 
         return fields.toArray(new String[fields.size()]);
+    }
+
+    public void readTestFile(File file) throws IOException {
+        logger.info("Reading test file...");
+        try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
+            Database.getCustomerList().clear();
+            Database.getRouteSegmentsList().clear();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, FIELDS_SEPARATOR);
+
+                double x = Double.parseDouble(fields[0]);
+                double y = Double.parseDouble(fields[1]);
+                double demand = Double.parseDouble(fields[2]);
+
+                Customer customer = new Customer(x, y, demand);
+                Database.getCustomerList().add(customer);
+            }
+        } catch (IOException e) {
+            logger.error("Unexpected error while reading the file!");
+            throw e;
+        }
+        logger.info("Reading file has been completed.");
+
+        logger.info("Calculating distance matrix for test file...");
+        try {
+            for (int i = 0; i < Database.getCustomerList().size(); i++) {
+                for (int j = i; j < Database.getCustomerList().size(); j++) {
+                    Customer src = Database.getCustomerList().get(i);
+                    Customer dst = Database.getCustomerList().get(j);
+                    logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
+                    if (j != i) {
+                        double srcLat = src.getLatitude();
+                        double srcLon = src.getLongitude();
+                        double dstLat = dst.getLatitude();
+                        double dstLon = dst.getLongitude();
+
+                        double xd = srcLat - dstLat;
+                        double yd = srcLon - dstLon;
+                        double distance = (double) Math.round(Math.sqrt(xd * xd + yd * yd));
+
+                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distance, Duration.ZERO, null));
+                        src.getDistances().put(dst.getId(), distance);
+                        src.getDurations().put(dst.getId(), Duration.ZERO);
+                        dst.getDistances().put(src.getId(), distance);
+                        dst.getDurations().put(src.getId(), Duration.ZERO);
+                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distance + " km");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while calculating distance matrix for test file!");
+            throw e;
+        }
+        logger.info("Calculating distance matrix for test file has been completed.");
     }
 }

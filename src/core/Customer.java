@@ -46,6 +46,22 @@ public class Customer {
         this.imageIcon = null;
     }
 
+    public Customer(double x, double y, double demand) {
+        this.id = customerID;
+        customerID++;
+        this.fullAddress = "";
+        this.streetAndNumber = "";
+        this.postalCode = "";
+        this.city = "";
+        this.latitude = x;
+        this.longitude = y;
+        this.packageWeight = demand;
+        this.packageSize = 0;
+        this.minDeliveryHour = LocalTime.of(8, 0);
+        this.maxDeliveryHour = LocalTime.of(18, 0);
+        this.imageIcon = null;
+    }
+
     public static int getCustomerID() {
         return customerID;
     }
