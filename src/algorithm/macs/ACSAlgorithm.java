@@ -165,7 +165,7 @@ public class ACSAlgorithm extends Algorithm {
                 tau = (1 - ro) * tau;
             }
 
-            if (tau > 1E-50) {
+            if (tau > 1E-100) {
                 rs.setAcsPheromoneLevel(tau);
             } else {
                 return;

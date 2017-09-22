@@ -54,7 +54,9 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipadx="250"/>
         </constraints>
-        <properties/>
+        <properties>
+          <maximumSize width="220" height="394"/>
+        </properties>
         <border type="etched"/>
         <children>
           <component id="48935" class="javax.swing.JButton" binding="bLoad">
@@ -64,7 +66,7 @@
                 <preferred-size width="300" height="29"/>
                 <maximum-size width="300" height="-1"/>
               </grid>
-              <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
+              <gridbag top="5" left="5" bottom="5" right="5" weightx="1.0" weighty="0.0"/>
             </constraints>
             <properties>
               <text value="Load customers"/>
@@ -81,6 +83,7 @@
             </constraints>
             <properties>
               <horizontalScrollBarPolicy value="30"/>
+              <maximumSize width="220" height="32767"/>
             </properties>
             <border type="etched" title="Customers">
               <font name="DejaVu Sans Mono" size="11" style="0"/>
@@ -125,7 +128,9 @@
               <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0" ipady="100"/>
             </constraints>
-            <properties/>
+            <properties>
+              <maximumSize width="220" height="32767"/>
+            </properties>
             <border type="etched" title="Solutions">
               <font name="Dialog" size="11" style="0"/>
             </border>
@@ -157,11 +162,11 @@
           </scrollpane>
           <component id="90670" class="javax.swing.JButton" binding="bTest">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="Test"/>
+              <text value="Load test"/>
             </properties>
           </component>
         </children>
@@ -277,7 +282,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="9"/>
+                  <value value="10"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -398,7 +403,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="9"/>
+                  <value value="10"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -418,7 +423,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="3"/>
+                  <value value="5"/>
                   <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>
