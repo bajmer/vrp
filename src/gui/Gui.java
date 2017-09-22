@@ -320,21 +320,23 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         if (!test) {
             Object source = e.getSource();
             if (source == tCustomers.getSelectionModel()) {
-                String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
-                int index = Integer.parseInt(id);
-                Customer c = Database.getCustomerList().get(index);
-                try {
-                    if (c.getImageIcon() == null) {
-                        mapImage.createCustomerImage(c);
+                if (tCustomers.getSelectedRow() >= 0) {
+                    String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
+                    int index = Integer.parseInt(id);
+                    Customer c = Database.getCustomerList().get(index);
+                    try {
+                        if (c.getImageIcon() == null) {
+                            mapImage.createCustomerImage(c);
+                        }
+                        if (c.getImageIcon() != null) {
+                            mapLabel.setIcon(c.getImageIcon());
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception ex) {
+                        logger.warn("Cannot create an image of customers!");
+                        logger.debug(ex);
                     }
-                    if (c.getImageIcon() != null) {
-                        mapLabel.setIcon(c.getImageIcon());
-                    } else {
-                        throw new Exception();
-                    }
-                } catch (Exception ex) {
-                    logger.warn("Cannot create an image of customers!");
-                    logger.debug(ex);
                 }
             }
         }
