@@ -1,6 +1,7 @@
 package core;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
 
@@ -87,6 +88,10 @@ public class Solution {
         this.feasible = feasible;
     }
 
+    private double round(double x) {
+        return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
     @Override
     public String toString() {
         long minutes = totalDurationCost.toMinutes() % 60;
@@ -94,7 +99,7 @@ public class Solution {
         sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
         return "S" + solutionID + ", "
                 + usedAlgorithm + ", "
-                + totalDistanceCost + "km, "
+                + round(totalDistanceCost) + "km, "
                 + totalDurationCost.toHours() + ":" + sMinutes + "h";
     }
 }

@@ -190,19 +190,10 @@ public class ACSAlgorithm extends Algorithm {
     protected void saveSolution() {
         logger.info("Saving solution...");
         for (Route route : tmpBestAcsSolution.getListOfRoutes()) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
-                Customer c = route.getCustomersInRoute().get(i);
-                sb.append(c.getId());
-                if (i != route.getCustomersInRoute().size() - 1) {
-                    sb.append("->");
-                }
-            }
-            logger.info(route.toString() + ", (" + sb.toString() + ")");
+            logger.info(route.toString());
         }
-        logger.info("Total distance cost: " + tmpBestAcsSolution.getTotalDistanceCost() + "km. Total duration cost: " + tmpBestAcsSolution.getTotalDurationCost().toHours()
-                + ":" + tmpBestAcsSolution.getTotalDurationCost().toMinutes() % 60 + "h");
         Database.getSolutionsList().add(tmpBestAcsSolution);
+        logger.info(tmpBestAcsSolution.toString());
         logger.info("Saving solution has been completed.");
     }
 }

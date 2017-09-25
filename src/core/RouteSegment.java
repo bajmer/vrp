@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -159,15 +160,19 @@ public class RouteSegment implements Cloneable {
         return (a == src.getId() && b == dst.getId()) /*|| (b == src.getId() && a == dst.getId())*/;
     }
 
+    private double round(double x) {
+        return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
     @Override
     public String toString() {
         long minutes = duration.toMinutes() % 60;
         String sMinutes;
         sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
-        return "From: " + src.getId() + "-" + src.getCity()
-                + ", To: " + dst.getId() + "-" + dst.getCity()
-                + ", Distance: " + distance
-                + "km, Duration: " + duration.toHours() + ":" + sMinutes + "h";
+        return src.getId() + "-" + dst.getId()
+                + "(" + src.getCity().toUpperCase() + "-" + dst.getCity().toUpperCase() + ")"
+                + ", " + round(distance)
+                + "km, " + duration.toHours() + ":" + sMinutes + "h";
     }
 
     @Override
