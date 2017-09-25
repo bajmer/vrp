@@ -1,4 +1,4 @@
-package algorithm.macs;
+package algorithm.acs;
 
 import algorithm.Algorithm;
 import core.*;
@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class ACSAlgorithm extends Algorithm {
@@ -104,20 +105,57 @@ public class ACSAlgorithm extends Algorithm {
         while (true) {
             ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
             if (ant.updateFeasibleCustomers(tmpNode, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
-                Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
+                if (route.getCurrentPackagesWeight() < 0.8 * weightLimit) {
+                    Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
 
-                route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
+                    route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
 
-                for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
-                    if (rs.getDst().equals(nextNode)) {
-                        route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
-                        if (tmpNode.getId() != 0) {
-                            rs.setPartOfAntAcsSolution(true);
+                    for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                        if (rs.getDst().equals(nextNode)) {
+                            route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
+                            if (tmpNode.getId() != 0) {
+                                rs.setPartOfAntAcsSolution(true);
+                            }
+                            break;
                         }
-                        break;
+                    }
+                    tmpNode = nextNode;
+                } else {
+                    if (new Random().nextDouble() > 0.5) {
+                        Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
+
+                        route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
+
+                        for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                            if (rs.getDst().equals(nextNode)) {
+                                route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
+                                if (tmpNode.getId() != 0) {
+                                    rs.setPartOfAntAcsSolution(true);
+                                }
+                                break;
+                            }
+                        }
+                        tmpNode = nextNode;
+                    } else {
+                        ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
+                        route.addCustomerAsLast(super.getProblem().getDepot()); //dodanie magazynu do listy klienów trasy
+                        for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                            if (rs.getDst().equals(super.getProblem().getDepot())) {
+                                route.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
+                                break;
+                            }
+                        }
+                        antSolution.getListOfRoutes().add(route); //dodanie trasy 0-..-i-..-0 do listy tras
+
+                        if (ant.getUnvisitedCustomers().size() == 0) {
+                            break; //jeżeli nie ma więcej nieodwiedzonych klientów przerywamy pętlę (dodać warunek na nieodwiedzonych niedostępnych klientów!!)
+                        } else {
+                            route = new Route();
+                            route.addCustomerAsLast(super.getProblem().getDepot());
+                            tmpNode = route.getLastCustomer();
+                        }
                     }
                 }
-                tmpNode = nextNode;
 
             } else { //jeżeli lista dostępnych klientów jest pusta
                 ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
@@ -165,7 +203,7 @@ public class ACSAlgorithm extends Algorithm {
                 tau = (1 - ro) * tau;
             }
 
-            if (tau > 1E-100) {
+            if (tau > 1E-320) {
                 rs.setAcsPheromoneLevel(tau);
             } else {
                 return;

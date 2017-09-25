@@ -1,8 +1,8 @@
 package gui;
 
 import algorithm.Algorithm;
+import algorithm.acs.ACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
-import algorithm.macs.ACSAlgorithm;
 import core.*;
 import io.FileReader;
 import network.DistanceMatrix;
