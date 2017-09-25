@@ -110,7 +110,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fSizeLimit.setText("9");
         fAcsParam_i.setText("100");
         fAcsParam_m.setText("20");
-        fAcsParam_q0.setText("0.9");
+        fAcsParam_q0.setText("0.8");
         fAcsParam_beta.setText("3");
         fAcsParam_ro.setText("0.5");
 

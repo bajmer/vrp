@@ -263,7 +263,8 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="500"/>
+                  <value value="1500"/>
+                  <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -282,7 +283,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="10"/>
+                  <value value="9"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -403,7 +404,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="10"/>
+                  <value value="8"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -423,7 +424,7 @@
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="5"/>
+                  <value value="3"/>
                   <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>

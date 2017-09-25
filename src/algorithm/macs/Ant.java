@@ -80,15 +80,16 @@ class Ant {
     }
 
     Customer chooseNextNode(Customer currentNode) {
+        Customer nextNode = null;
         if (currentNode.getId() == 0) {
             //jeżeli mrówka jest w magazynie wybiera losowo miasto z listy dostępnych miast
             int randomValue = new Random().nextInt(feasibleNodes.size());
-            return feasibleNodes.get(randomValue);
+            nextNode = feasibleNodes.get(randomValue);
         } else {
             //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
             Customer bestExploitationCustomer = calculateProbabilityForAllFeasibleNodes(currentNode);
             if (new Random().nextDouble() <= q0) {
-                return bestExploitationCustomer; //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
+                nextNode = bestExploitationCustomer; //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
             } else {
                 //wylosowanie klienta uwzględniając prawdopodobieństwo
                 double weightSum = 0;
@@ -100,12 +101,13 @@ class Ant {
                 for (Customer c : feasibleNodes) {
                     value -= c.getAcsChoiceProbability();
                     if (value <= 0) {
-                        return c;
+                        nextNode = c;
+                        break;
                     }
                 }
-                return null;
             }
         }
+        return nextNode;
     }
 
     private Customer calculateProbabilityForAllFeasibleNodes(Customer currentNode) {
