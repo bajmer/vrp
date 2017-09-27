@@ -23,18 +23,22 @@ class JSON {
         return beginOfURL + srcLong + "," + srcLat + ";" + dstLong + "," + dstLat + endOfURL;
     }
 
-    String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city) {
-        streetAndNumber = streetAndNumber.replace(" ", "%20");
-        city = city.replace(" ", "%20");
+    String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city, String endOfURL) {
+//        streetAndNumber = streetAndNumber.replace(" ", "%20");
+        streetAndNumber = streetAndNumber.replace(" ", "+");
+//        city = city.replace(" ", "%20");
+        city = city.replace(" ", "+");
 
-        return beginOfURL + "&street=" + streetAndNumber + "&postalcode=" + postalCode
-                + "&city=" + city + "&country=Polska";
+//        return beginOfURL + "&street=" + streetAndNumber + "&postalcode=" + postalCode
+        return beginOfURL + streetAndNumber + ",%20" + postalCode + "+" + city + endOfURL;
+//                + "&city=" + city + "&country=Polska";
     }
 
     JSONObject sendRequest(String url) throws ConnectException {
         logger.debug("Sending a request to URL: " + url + " ...");
         HttpURLConnection connection = null;
-        String response = null;
+        String line;
+        String response = "";
         try {
             connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("GET");
@@ -44,7 +48,10 @@ class JSON {
 
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                response = in.readLine();
+                while ((line = in.readLine()) != null) {
+                    response += line;
+//                    response = in.readLine();
+                }
             } else {
                 logger.warn("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
             }

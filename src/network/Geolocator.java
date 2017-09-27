@@ -11,9 +11,10 @@ public class Geolocator extends JSON {
 
     private static final Logger logger = LogManager.getLogger(Geolocator.class);
 
-    private static final String BEGIN_OF_URL = "http://nominatim.openstreetmap.org/search?format=json";
+    //    private static final String BEGIN_OF_URL = "http://nominatim.openstreetmap.org/search?format=json";
     //    http://nominatim.openstreetmap.org/search?format=json&street=10%20Spokojna&postalcode=07-200&city=Wyszk%C3%B3w&country=Polska
-
+    private static final String BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+    private static final String END_OF_URL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
 
     public Geolocator() {
     }
@@ -21,7 +22,7 @@ public class Geolocator extends JSON {
     public List<Double> downloadCoordinates(String streetAndNumber, String postalCode, String city, int lineNumber) throws Exception {
         logger.debug("Downloading coordinates for customer in line " + lineNumber + "...");
         try {
-            String URL = parseURL(BEGIN_OF_URL, streetAndNumber, postalCode, city);
+            String URL = parseURL(BEGIN_OF_URL, streetAndNumber, postalCode, city, END_OF_URL);
             JSONObject jsonObject = sendRequest(URL);
             if (jsonObject != null) {
                 List<Double> coordinates = getCoordinatesFromJSON(jsonObject);
@@ -46,8 +47,10 @@ public class Geolocator extends JSON {
     private List<Double> getCoordinatesFromJSON(JSONObject jsonObject) {
         List<Double> coordinates = new ArrayList<>();
         try {
-            double lat = jsonObject.getDouble("lat");
-            double lon = jsonObject.getDouble("lon");
+            double lat = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+            double lon = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+//            double lat = jsonObject.getDouble("lat");
+//            double lon = jsonObject.getDouble("lon");
             coordinates.add(lat);
             coordinates.add(lon);
         } catch (org.json.JSONException e) {

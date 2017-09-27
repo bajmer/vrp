@@ -138,7 +138,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         bFindSolution.setEnabled(false);
         fWeightLimit.setEditable(false);
         fSizeLimit.setEditable(false);
-        fAcsParam_i.setEditable(false);
+//        fAcsParam_i.setEditable(false);
         fAcsParam_m.setEditable(false);
         fAcsParam_q0.setEditable(false);
         fAcsParam_beta.setEditable(false);
