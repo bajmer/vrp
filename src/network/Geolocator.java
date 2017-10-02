@@ -11,8 +11,6 @@ public class Geolocator extends JSON {
 
     private static final Logger logger = LogManager.getLogger(Geolocator.class);
 
-    //    private static final String BEGIN_OF_URL = "http://nominatim.openstreetmap.org/search?format=json";
-    //    http://nominatim.openstreetmap.org/search?format=json&street=10%20Spokojna&postalcode=07-200&city=Wyszk%C3%B3w&country=Polska
     private static final String BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
     private static final String END_OF_URL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
 
@@ -49,8 +47,6 @@ public class Geolocator extends JSON {
         try {
             double lat = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
             double lon = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-//            double lat = jsonObject.getDouble("lat");
-//            double lon = jsonObject.getDouble("lon");
             coordinates.add(lat);
             coordinates.add(lon);
         } catch (org.json.JSONException e) {

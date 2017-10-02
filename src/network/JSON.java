@@ -24,14 +24,9 @@ class JSON {
     }
 
     String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city, String endOfURL) {
-//        streetAndNumber = streetAndNumber.replace(" ", "%20");
         streetAndNumber = streetAndNumber.replace(" ", "+");
-//        city = city.replace(" ", "%20");
         city = city.replace(" ", "+");
-
-//        return beginOfURL + "&street=" + streetAndNumber + "&postalcode=" + postalCode
         return beginOfURL + streetAndNumber + ",%20" + postalCode + "+" + city + endOfURL;
-//                + "&city=" + city + "&country=Polska";
     }
 
     JSONObject sendRequest(String url) throws ConnectException {
@@ -50,7 +45,6 @@ class JSON {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 while ((line = in.readLine()) != null) {
                     response += line;
-//                    response = in.readLine();
                 }
             } else {
                 logger.warn("Response error: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
@@ -67,7 +61,7 @@ class JSON {
                 connection.disconnect();
             }
         }
-        if (response != null && response.length() > 2) {
+        if (!response.equals("") && response.length() > 2) {
             if (response.startsWith("[") && response.endsWith("]")) {
                 response = response.substring(1, response.length() - 1);
             }
