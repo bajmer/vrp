@@ -1,5 +1,8 @@
 package core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.*;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -10,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Route {
+
+    private static final Logger logger = LogManager.getLogger(Route.class);
 
     private static int routeID = 0;
     private final LocalTime startTime;
@@ -206,10 +211,19 @@ public class Route {
         long minutes = totalDuration.toMinutes() % 60;
         String sMinutes;
         sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.getCustomersInRoute().size(); i++) {
+            Customer c = this.getCustomersInRoute().get(i);
+            sb.append(c.getId());
+            if (i != this.getCustomersInRoute().size() - 1) {
+                sb.append("-");
+            }
+        }
         return "Route " + id + ", "
-                + totalDistance + "km, "
+                + round(totalDistance) + "km, "
                 + totalDuration.toHours() + ":" + sMinutes + "h, "
                 + currentPackagesWeight + "kg, "
-                + currentPackagesSize + "m3";
+                + currentPackagesSize + "m3, "
+                + sb.toString();
     }
 }

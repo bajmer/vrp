@@ -1,8 +1,8 @@
 package gui;
 
 import algorithm.Algorithm;
+import algorithm.acs.ACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
-import algorithm.macs.ACSAlgorithm;
 import core.*;
 import io.FileReader;
 import network.DistanceMatrix;
@@ -47,6 +47,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JPanel bottomPanel;
     private JLabel mapLabel;
     private JButton bLoad;
+    private JButton bTest;
     private JButton bGetDistance;
     private JButton bFindSolution;
     private String algorithmName;
@@ -74,9 +75,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     private JTree treeSolutions;
     private Vector<String> customersTableColumns;
     private Vector<String> routeDetailsTableColumns;
+    private Boolean test = false;
 
     public Gui() {
         bLoad.addActionListener(this);
+        bTest.addActionListener(this);
         bGetDistance.addActionListener(this);
         bFindSolution.addActionListener(this);
         boxAlgorithms.addActionListener(this);
@@ -107,7 +110,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fSizeLimit.setText("9");
         fAcsParam_i.setText("100");
         fAcsParam_m.setText("20");
-        fAcsParam_q0.setText("0.9");
+        fAcsParam_q0.setText("0.8");
         fAcsParam_beta.setText("3");
         fAcsParam_ro.setText("0.5");
 
@@ -135,7 +138,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         bFindSolution.setEnabled(false);
         fWeightLimit.setEditable(false);
         fSizeLimit.setEditable(false);
-        fAcsParam_i.setEditable(false);
+//        fAcsParam_i.setEditable(false);
         fAcsParam_m.setEditable(false);
         fAcsParam_q0.setEditable(false);
         fAcsParam_beta.setEditable(false);
@@ -159,6 +162,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
+            test = false;
+            fWeightLimit.setEditable(false);
+            fSizeLimit.setEditable(false);
             bGetDistance.setEnabled(false);
             boxAlgorithms.setEnabled(false);
             bFindSolution.setEnabled(false);
@@ -176,6 +182,27 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             } catch (Exception ex) {
                 logger.error("Unexpected error while processing the file!", ex);
             }
+        } else if (source == bTest) {
+            test = true;
+            fWeightLimit.setEditable(true);
+            fSizeLimit.setEditable(true);
+            bGetDistance.setEnabled(false);
+            boxAlgorithms.setEnabled(false);
+            bFindSolution.setEnabled(false);
+            Customer.setCustomerID(0);
+            try {
+                FileReader fileReader = new FileReader();
+                File customersInputFile = fileReader.chooseFile(this);
+                if (customersInputFile != null) {
+                    fileReader.readTestFile(customersInputFile);
+
+                    this.fillCustomerTable();
+                    boxAlgorithms.setEnabled(true);
+                }
+            } catch (Exception ex) {
+                logger.error("Unexpected error while processing the test file!", ex);
+            }
+
         } else if (source == bGetDistance) {
             try {
                 DistanceMatrix distanceMatrix = new DistanceMatrix();
@@ -231,80 +258,86 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     @Override
     public void valueChanged(TreeSelectionEvent e) {
-        DefaultMutableTreeNode choosedNode = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
-        if (choosedNode == null)
-            return;
+        if (!test) {
+            DefaultMutableTreeNode choosedNode = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
+            if (choosedNode == null)
+                return;
 
-        if (choosedNode.getLevel() == 0) { //ROOT level
-            setEmptyTable(tRouteDetails, routeDetailsTableColumns);
-        } else if (choosedNode.getLevel() == 1) { //SOLUTION level
-            Solution s = (Solution) choosedNode.getUserObject();
-            try {
-                ImageIcon imageIcon = s.getImageIcon();
-                if (imageIcon == null) {
-                    mapImage.createSolutionImage(s);
+            if (choosedNode.getLevel() == 0) { //ROOT level
+                setEmptyTable(tRouteDetails, routeDetailsTableColumns);
+            } else if (choosedNode.getLevel() == 1) { //SOLUTION level
+                Solution s = (Solution) choosedNode.getUserObject();
+                try {
+                    ImageIcon imageIcon = s.getImageIcon();
+                    if (imageIcon == null) {
+                        mapImage.createSolutionImage(s);
+                    }
+                    mapLabel.setIcon(s.getImageIcon());
+                } catch (Exception ex) {
+                    logger.warn("Cannot create an image of the solution!");
+                    logger.debug(ex);
                 }
-                mapLabel.setIcon(s.getImageIcon());
-            } catch (Exception ex) {
-                logger.warn("Cannot create an image of the solution!");
-                logger.debug(ex);
-            }
-        } else if (choosedNode.getLevel() == 2) { //ROUTE level
-            DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
-            Solution s = (Solution) solutionNode.getUserObject();
-            Route r = (Route) choosedNode.getUserObject();
-            fillRouteDetailsTable(r);
-            try {
-                ImageIcon imageIcon = r.getImageIcon();
-                if (imageIcon == null) {
-                    mapImage.createRouteImage(s, r);
+            } else if (choosedNode.getLevel() == 2) { //ROUTE level
+                DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) choosedNode.getParent();
+                Solution s = (Solution) solutionNode.getUserObject();
+                Route r = (Route) choosedNode.getUserObject();
+                fillRouteDetailsTable(r);
+                try {
+                    ImageIcon imageIcon = r.getImageIcon();
+                    if (imageIcon == null) {
+                        mapImage.createRouteImage(s, r);
+                    }
+                    mapLabel.setIcon(r.getImageIcon());
+                } catch (Exception ex) {
+                    logger.warn("Cannot create an image of the route!");
+                    logger.debug(ex);
                 }
-                mapLabel.setIcon(r.getImageIcon());
-            } catch (Exception ex) {
-                logger.warn("Cannot create an image of the route!");
-                logger.debug(ex);
-            }
-        } else if (choosedNode.getLevel() == 3) { //ROUTE SEGMENT level
-            DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
-            DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
-            Solution s = (Solution) solutionNode.getUserObject();
-            Route r = (Route) routeNode.getUserObject();
-            fillRouteDetailsTable(r);
-            int position = choosedNode.getParent().getIndex(choosedNode);
-            tRouteDetails.getSelectionModel().setSelectionInterval(position, position);
-            RouteSegment rs = (RouteSegment) choosedNode.getUserObject();
-            try {
-                ImageIcon imageIcon = rs.getImageIcon();
-                if (imageIcon == null) {
-                    mapImage.createSegmentImage(s, r, rs);
+            } else if (choosedNode.getLevel() == 3) { //ROUTE SEGMENT level
+                DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode) choosedNode.getParent();
+                DefaultMutableTreeNode solutionNode = (DefaultMutableTreeNode) routeNode.getParent();
+                Solution s = (Solution) solutionNode.getUserObject();
+                Route r = (Route) routeNode.getUserObject();
+                fillRouteDetailsTable(r);
+                int position = choosedNode.getParent().getIndex(choosedNode);
+                tRouteDetails.getSelectionModel().setSelectionInterval(position, position);
+                RouteSegment rs = (RouteSegment) choosedNode.getUserObject();
+                try {
+                    ImageIcon imageIcon = rs.getImageIcon();
+                    if (imageIcon == null) {
+                        mapImage.createSegmentImage(s, r, rs);
+                    }
+                    mapLabel.setIcon(rs.getImageIcon());
+                } catch (Exception ex) {
+                    logger.warn("Cannot create an image of the route segment!");
+                    logger.debug(ex);
                 }
-                mapLabel.setIcon(rs.getImageIcon());
-            } catch (Exception ex) {
-                logger.warn("Cannot create an image of the route segment!");
-                logger.debug(ex);
             }
         }
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        Object source = e.getSource();
-        if (source == tCustomers.getSelectionModel()) {
-            String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
-            int index = Integer.parseInt(id);
-            Customer c = Database.getCustomerList().get(index);
-            try {
-                if (c.getImageIcon() == null) {
-                    mapImage.createCustomerImage(c);
+        if (!test) {
+            Object source = e.getSource();
+            if (source == tCustomers.getSelectionModel()) {
+                if (tCustomers.getSelectedRow() >= 0) {
+                    String id = (String) tCustomers.getValueAt(tCustomers.getSelectedRow(), 0);
+                    int index = Integer.parseInt(id);
+                    Customer c = Database.getCustomerList().get(index);
+                    try {
+                        if (c.getImageIcon() == null) {
+                            mapImage.createCustomerImage(c);
+                        }
+                        if (c.getImageIcon() != null) {
+                            mapLabel.setIcon(c.getImageIcon());
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception ex) {
+                        logger.warn("Cannot create an image of customers!");
+                        logger.debug(ex);
+                    }
                 }
-                if (c.getImageIcon() != null) {
-                    mapLabel.setIcon(c.getImageIcon());
-                } else {
-                    throw new Exception();
-                }
-            } catch (Exception ex) {
-                logger.warn("Cannot create an image of customers!");
-                logger.debug(ex);
             }
         }
     }

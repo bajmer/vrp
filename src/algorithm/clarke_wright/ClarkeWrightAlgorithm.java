@@ -292,20 +292,11 @@ public class ClarkeWrightAlgorithm extends Algorithm {
             totalDistance += route.getTotalDistance();
             totalDuration = totalDuration.plus(route.getTotalDuration());
             logger.info(route.toString());
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < route.getCustomersInRoute().size(); i++) {
-                Customer c = route.getCustomersInRoute().get(i);
-                sb.append(c.getId());
-                if (i != route.getCustomersInRoute().size() - 1) {
-                    sb.append("->");
-                }
-            }
-            logger.info(route.toString() + ", (" + sb.toString() + ")");
         }
-        logger.info("Total distance cost: " + totalDistance + "km. Total duration cost: " + totalDuration.toHours() + ":" + totalDuration.toMinutes() % 60 + "h");
         super.getSolution().setTotalDistanceCost(totalDistance);
         super.getSolution().setTotalDurationCost(totalDuration);
         Database.getSolutionsList().add(super.getSolution());
+        logger.info(super.getSolution().toString());
         logger.info("Saving solution has been completed.");
     }
 }
