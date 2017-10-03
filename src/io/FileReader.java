@@ -68,73 +68,76 @@ public class FileReader {
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 String[] fields = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, FIELDS_SEPARATOR);
+                if (fields.length == 5) {
+                    String address = fields[0];
+                    String[] addressFields = splitFullAddress(address);
 
-                String address = fields[0];
-                String[] addressFields = splitFullAddress(address);
+                    String streetAndNumber = addressFields[0];
+                    String postalCode = addressFields[1];
+                    String city = addressFields[2];
 
-                String streetAndNumber = addressFields[0];
-                String postalCode = addressFields[1];
-                String city = addressFields[2];
+                    double latitude;
+                    double longitude;
 
-                double latitude;
-                double longitude;
-
-                try {
-                    List<Double> coordinates = geolocator.downloadCoordinates(streetAndNumber, postalCode, city, lineNumber);
-                    if (coordinates != null) {
-                        latitude = coordinates.get(0);
-                        longitude = coordinates.get(1);
-                    } else {
+                    try {
+                        List<Double> coordinates = geolocator.downloadCoordinates(streetAndNumber, postalCode, city, lineNumber);
+                        if (coordinates != null) {
+                            latitude = coordinates.get(0);
+                            longitude = coordinates.get(1);
+                        } else {
+                            logger.warn("Coordinates for customer in line " + lineNumber + " are null!");
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        logger.error("Unexpected error while address geolocating!");
                         logger.warn("Cannot create customer in line " + lineNumber);
                         continue;
                     }
-                } catch (Exception e) {
-                    logger.error("Unexpected error while address geolocating!");
-                    logger.warn("Cannot create customer in line " + lineNumber);
-                    continue;
-                }
 
-                double weight = DEFAULT_PACKAGE_WEIGHT;
-                if (NumberUtils.isParsable(fields[1])) {
-                    weight = Double.parseDouble(fields[1]);
-                }
+                    double weight = DEFAULT_PACKAGE_WEIGHT;
+                    if (NumberUtils.isParsable(fields[1])) {
+                        weight = Double.parseDouble(fields[1]);
+                    }
 
-                double capacity = DEFAULT_PACKAGE_CAPACITY;
-                if (NumberUtils.isParsable(fields[2])) {
-                    capacity = Double.parseDouble(fields[2]);
-                }
+                    double capacity = DEFAULT_PACKAGE_CAPACITY;
+                    if (NumberUtils.isParsable(fields[2])) {
+                        capacity = Double.parseDouble(fields[2]);
+                    }
 
-                String minDeliveryHour = fields[3];
-                String maxDeliveryHour = fields[4];
-                LocalTime begin;
-                LocalTime end;
-                try {
-                    begin = LocalTime.parse(minDeliveryHour);
-                    end = LocalTime.parse(maxDeliveryHour);
-                } catch (DateTimeParseException e) {
-                    begin = defaultMinDeliveryHour;
-                    end = defaultMaxDeliveryHour;
-                    logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
-                }
+                    String minDeliveryHour = fields[3];
+                    String maxDeliveryHour = fields[4];
+                    LocalTime begin;
+                    LocalTime end;
+                    try {
+                        begin = LocalTime.parse(minDeliveryHour);
+                        end = LocalTime.parse(maxDeliveryHour);
+                    } catch (DateTimeParseException e) {
+                        begin = defaultMinDeliveryHour;
+                        end = defaultMaxDeliveryHour;
+                        logger.warn("Cannot parse delivery hours in line " + lineNumber + "! Delivery hours set for 08:00-18:00.");
+                    }
 
-                if (begin.isBefore(defaultMinDeliveryHour)) {
-                    begin = defaultMinDeliveryHour;
-                    logger.warn("Min delivery hour is before 08:00 in line " + lineNumber + "! Min delivery hour set for 08:00.");
-                }
-                if (end.isAfter(defaultMaxDeliveryHour)) {
-                    end = defaultMaxDeliveryHour;
-                    logger.warn("Max delivery hour is after 18:00 in line " + lineNumber + "! Max delivery hour set for 18:00.");
-                }
+                    if (begin.isBefore(defaultMinDeliveryHour)) {
+                        begin = defaultMinDeliveryHour;
+                        logger.warn("Min delivery hour is before 08:00 in line " + lineNumber + "! Min delivery hour set for 08:00.");
+                    }
+                    if (end.isAfter(defaultMaxDeliveryHour)) {
+                        end = defaultMaxDeliveryHour;
+                        logger.warn("Max delivery hour is after 18:00 in line " + lineNumber + "! Max delivery hour set for 18:00.");
+                    }
 
-                Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
-                Database.getCustomerList().add(customer);
-                logger.debug("ID: " + customer.getId()
-                        + ", Address: " + customer.getFullAddress()
-                        + ", Latitude: " + customer.getLatitude()
-                        + ", Longitude: " + customer.getLongitude()
-                        + ", Package weight: " + customer.getPackageWeight()
-                        + ", Package size: " + customer.getPackageSize()
-                        + ", Time window: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
+                    Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
+                    Database.getCustomerList().add(customer);
+                    logger.debug("ID: " + customer.getId()
+                            + ", Address: " + customer.getFullAddress()
+                            + ", Latitude: " + customer.getLatitude()
+                            + ", Longitude: " + customer.getLongitude()
+                            + ", Package weight: " + customer.getPackageWeight()
+                            + ", Package size: " + customer.getPackageSize()
+                            + ", Time window: " + customer.getMinDeliveryHour().toString() + "-" + customer.getMaxDeliveryHour().toString());
+                } else {
+                    logger.warn("Line " + lineNumber + " has incorrect number of fields!");
+                }
             }
         } catch (IOException e) {
             logger.error("Unexpected error while reading the file!");
