@@ -46,7 +46,7 @@ public class FileReader {
     public File chooseFile(Gui gui) {
         logger.info("Choosing file with customers data...");
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir") + "/input"));
         int result = fileChooser.showOpenDialog(gui);
         File selectedFile = null;
         if (result == JFileChooser.APPROVE_OPTION) {
