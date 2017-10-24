@@ -12,19 +12,65 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/**
+ * Klasa implementujaca algorytm mrowkowy
+ */
 public class ACSAlgorithm extends Algorithm {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(ACSAlgorithm.class);
 
+    /**
+     * Nazwa algorytmu
+     */
     private static final String ACS = "Ant Colony System";
+
+    /**
+     * Poczatkowa wartosc feromonu
+     */
     private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
-    private final int i; //ilość iteracji algorytmu
+
+    /**
+     * Ilosc iteracji algorytmu
+     */
+    private final int i;
+
+    /**
+     * ilosc mrowek
+     */
     private final int m; //ilość mrówek, preferowana wartość = n (ilość miast)
+
+    /**
+     * parametr okreslajacy ilosc parujacego feromonu w zakresie <0-1>
+     */
     private final double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
+
+    /**
+     * Lista rozwiazan mrowek
+     */
     private final List<Solution> antsSolutions;
+
+    /**
+     * Lista odcinkow tras
+     */
     private final List<RouteSegment> acsRouteSegments;
+
+    /**
+     * Najlepsze dotychczasowe rozwiazanie
+     */
     private Solution tmpBestAcsSolution;
 
+    /**
+     * Tworzy algorytm mrowkowy na podstawie parametrow ustawionych przez uzytkownika
+     * @param problem Instancja problemu
+     * @param i Ilosc iteracji algorytmu
+     * @param m Ilosc mrowek
+     * @param q0 Parametr okreslajacy proporcje między eksploatacja najlepszej krawedzi i eksploracja nowej
+     * @param beta Parametr regulujacy wpływ ni (odwrotnosc odległosci)
+     * @param ro Parametr określający ilość wyparowanego feromonu
+     */
     public ACSAlgorithm(Problem problem, int i, int m, double q0, double beta, double ro) {
         super(problem, "Ant Colony System");
         this.i = i;
@@ -48,6 +94,9 @@ public class ACSAlgorithm extends Algorithm {
         acsRouteSegments.addAll(swappedSegments);
     }
 
+    /**
+     * Uruchamia dzialanie algorytmu
+     */
     @Override
     public void runAlgorithm() {
         logger.info("Running the Ant Colony System algorithm...");
@@ -55,6 +104,9 @@ public class ACSAlgorithm extends Algorithm {
         saveSolution();
     }
 
+    /**
+     * Zarzadza mrowkami i aktualizuje poziom feromonu
+     */
     private void ACS_Procedure() {
         for (RouteSegment rs : acsRouteSegments) {
             for (Customer c : super.getCustomers()) {
@@ -93,6 +145,11 @@ public class ACSAlgorithm extends Algorithm {
         }
     }
 
+    /**
+     * Symuluje tworzenie rozwiazania przez pojedyncza mrowke
+     * @param ant Pojedyncza mrowka
+     * @return Zwraca pojedyncze rozwiazanie uzyskane przez mrowke
+     */
     private Solution constructNewAntSolution(Ant ant) {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
@@ -180,6 +237,10 @@ public class ACSAlgorithm extends Algorithm {
         return antSolution;
     }
 
+    /**
+     * Aktualizuje lokalny poziom feromonu
+     * @param antSolution Rozwiazanie uzyskane przez mrowke
+     */
     private void localPheromoneUpdate(Solution antSolution) {
         for (Route r : antSolution.getListOfRoutes()) {
             for (RouteSegment rs : r.getRouteSegments()) {
@@ -193,6 +254,10 @@ public class ACSAlgorithm extends Algorithm {
         }
     }
 
+    /**
+     * Aktualizuje globalny poziom feromonu
+     * @param bestSolution Dotychczasowe najlepsze rozwiazanie znalezione przez mrowke
+     */
     private void globalPheromoneUpdate(Solution bestSolution) {
         for (RouteSegment rs : acsRouteSegments) {
             double tau = rs.getAcsPheromoneLevel();
@@ -211,6 +276,10 @@ public class ACSAlgorithm extends Algorithm {
         }
     }
 
+    /**
+     * Zapisuje rozwiazanie uzyskane przez mrowke, oblicza calkowita dlugosc i czas rozwiazania oblicza czasy przyjazdu i odjazdu do kazdego klienta
+     * @param solution Znalezione rozwiazanie
+     */
     private void saveAntSolution(Solution solution) {
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
@@ -224,6 +293,9 @@ public class ACSAlgorithm extends Algorithm {
         antsSolutions.add(solution);
     }
 
+    /**
+     * Zapisuje najlepsze rozwiazanie znalezione przez algorytm mrowkowy
+     */
     @Override
     protected void saveSolution() {
         logger.info("Saving solution...");

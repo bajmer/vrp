@@ -8,27 +8,114 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Klasa reprezentujaca klienta lub magazyn
+ */
 public class Customer {
 
-    private static final Duration serviceTime = Duration.ofMinutes(10); //czas obsługi klienta w minutach
+    /**
+     * Czas obslugi klienta w minutach
+     */
+    private static final Duration serviceTime = Duration.ofMinutes(10);
+
+    /**
+     * Numer ID
+     */
     private static int customerID;
+
+    /**
+     * Numer ID klienta
+     */
     private int id;
+
+    /**
+     * Pelny adres
+     */
     private String fullAddress;
+
+    /**
+     * Nazwa ulicy i numer domu
+     */
     private String streetAndNumber;
+
+    /**
+     * Kod pocztowy
+     */
     private String postalCode;
+
+    /**
+     * Miasto
+     */
     private String city;
+
+    /**
+     * Szerokosc geograficzna adresu
+     */
     private double latitude;
+
+    /**
+     * Dlugosc geograficzna adresu
+     */
     private double longitude;
+
+    /**
+     * Masa zamowionej przesylki
+     */
     private double packageWeight;
+
+    /**
+     * Objetosc zamowionej przesylki
+     */
     private double packageSize;
+
+    /**
+     * Najwczesniejsza mozliwa godzina odbioru przesylki
+     */
     private LocalTime minDeliveryHour;
+
+    /**
+     * Najpozniejsza mozliwa godzina odbioru przesylki
+     */
     private LocalTime maxDeliveryHour;
+
+    /**
+     * Mapa odleglosci do innych klientow
+     */
     private Map<Integer, Double> distances = new HashMap<>();
+
+    /**
+     * Mapa czasu przejazdow do innych klientow
+     */
     private Map<Integer, Duration> durations = new HashMap<>();
+
+    /**
+     * Lista odcinkow wychodzacych od klienta
+     */
     private List<RouteSegment> routeSegmentsFromCustomer = new ArrayList<>();
+
+    /**
+     * Obraz mapy z wyroznionym znacznikiem klienta
+     */
     private ImageIcon imageIcon;
+
+    /**
+     * Prawdopodobienstwo wyboru klienta w algorytmie mrowkowym
+     */
     private double acsChoiceProbability;
 
+    /**
+     * Tworzy obiekt klienta na podstawie rzeczywistych danych pobranych z pliku tekstowego
+     * @param fullAddress Pelny adres
+     * @param streetAndNumber Nazwa ulicy i numer domu
+     * @param postalCode Kod pocztowy
+     * @param city Miasto
+     * @param latitude Szerokosc geograficzna adresu
+     * @param longitude Dlugosc geograficzna adresu
+     * @param packageWeight Masa zamowionej przesylki
+     * @param packageSize Objetosc zamowionej przesylki
+     * @param minDeliveryHour Najwczesniejsza mozliwa godzina odbioru przesylki
+     * @param maxDeliveryHour Najpozniejsza mozliwa godzina odbioru przesylki
+     */
     public Customer(String fullAddress, String streetAndNumber, String postalCode, String city, double latitude, double longitude,
                     double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
         this.id = customerID;
@@ -46,6 +133,12 @@ public class Customer {
         this.imageIcon = null;
     }
 
+    /**
+     * Tworzy obiekt klienta na podstawie danych testowych
+     * @param x Polozenie klienta na osi X
+     * @param y Polozenie klienta na osi Y
+     * @param demand Masa zamowionej przesylki
+     */
     public Customer(double x, double y, double demand) {
         this.id = customerID;
         customerID++;

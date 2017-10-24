@@ -8,14 +8,27 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.Comparator;
 
+/**
+ * Klasa implementujaca algorytm oszczednosciowy Clarka i Wrighta
+ */
 public class ClarkeWrightAlgorithm extends Algorithm {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(ClarkeWrightAlgorithm.class);
 
+    /**
+     * Tworzy obiekt algorytmu Clarka i Wrighta
+     * @param problem instancja problemu
+     */
     public ClarkeWrightAlgorithm(Problem problem) {
         super(problem, "Clarke-Wright");
     }
 
+    /**
+     * Uruchamia dzialanie algorytmu
+     */
     @Override
     public void runAlgorithm() {
         logger.info("Running the Clarke-Wright algorithm...");
@@ -25,6 +38,9 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         saveSolution();
     }
 
+    /**
+     * Dla kazdego odcinka trasy tworzy oszczednosc jaka uzyska sie poprzez dolaczenie tego odcinka do rozwiazania
+     */
     private void createSavings() {
         logger.info("Creating savings...");
         Customer depot = super.getProblem().getDepot();
@@ -53,12 +69,18 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         logger.info("Creating savings has been completed.");
     }
 
+    /**
+     * Sortuje liste odcinkow w kolejnosci od najwiekszej oszczednosci do najmniejszej
+     */
     private void sortSavings() {
         logger.info("Sorting route segments by savings...");
         super.getRouteSegments().sort(Comparator.comparingDouble(RouteSegment::getClarkWrightSaving).reversed());
         logger.info("Sorting route segments by savings has been completed.");
     }
 
+    /**
+     * Wyznacza najoptymalniejsza trase w oparciu o wyliczone oszczednosci
+     */
     private void searchSolution() {
         logger.info("Calculating the solution...");
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
@@ -241,6 +263,11 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         logger.info("Calculating the solution has been completed.");
     }
 
+    /**
+     * Sprawdza, czy klient nalezy do trasy
+     * @param customer Klient
+     * @return Zwraca false, jesli klient nie nalezy do trasy lub obiekt klienta jest magazynem, zas true, gdy klient nalezy do trasy
+     */
     private boolean isCustomerInRoute(Customer customer) {
         if (customer.equals(getProblem().getDepot())) {
             return false;
@@ -255,6 +282,9 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         return false;
     }
 
+    /**
+     * Dodaje odcinek z magazynu na poczatku trasy i do magazynu na koncu trasy
+     */
     private void addDepotNodeAsFirstAndLast() {
         Customer depot = super.getProblem().getDepot();
         for (Route route : super.getRoutes()) {
@@ -282,6 +312,9 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         }
     }
 
+    /**
+     * Zapisuje uzyskane rozwiazanie, oblicza calkowita dlugosc i czas rozwiazania oblicza czasy przyjazdu i odjazdu do kazdego klienta
+     */
     @Override
     protected void saveSolution() {
         logger.info("Saving solution...");

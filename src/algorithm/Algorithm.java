@@ -6,16 +6,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Klasa abstrakcyjna algorytmu
+ */
 public abstract class Algorithm {
 
+    /**
+     * Nazwa algorytmu
+     */
     private String algorithmName;
+
+    /**
+     * Instacja problemu
+     */
     private Problem problem;
+
+    /**
+     * Rozwiazanie
+     */
     private Solution solution;
 
+    /**
+     * Lista klientow
+     */
     private List<Customer> customers;
+
+    /**
+     * Lista odcinkow trasy
+     */
     private List<RouteSegment> routeSegments;
+
+    /**
+     * Lista tras
+     */
     private List<Route> routes;
 
+    /**
+     * Ustawia wartosc pol algorytmu
+     * @param problem Instancja problemu
+     * @param name Nazwa algorytmu
+     */
     protected Algorithm(Problem problem, String name) {
         this.problem = problem;
         this.algorithmName = name;
@@ -76,7 +106,13 @@ public abstract class Algorithm {
         this.routes = routes;
     }
 
+    /**
+     * Metoda abstrakcyjna uruchamiajaca działanie algorytmu
+     */
     public abstract void runAlgorithm();
 
+    /**
+     * Metoda abstrakcyjna zapisujaca uzyskane rozwiazanie
+     */
     protected abstract void saveSolution();
 }

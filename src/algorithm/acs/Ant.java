@@ -8,12 +8,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Klasa reprezentujaca pojedyncza mrowke w algorytmie mrowkowym
+ */
 class Ant {
-    private static double q0; //parametr określający proporcję między eksploatacją najlepszej krawędzi i eksploracją nowej
-    private static double beta; //parametr regulujący wpływ ni (odwrotność odległości), preferowana wartość to 2-5
+
+    /**
+     * Parametr okreslajacy proporcje miedzy eksploatacja najlepszej krawedzi i eksploracja nowej
+     */
+    private static double q0;
+
+    /**
+     * Parametr regulujacy wpływ ni (odwrotnosc odległosci)
+     */
+    private static double beta; //preferowana wartość to 2-5
+
+    /**
+     * Lista nieodwiedzonych jeszcze klientow
+     */
     private List<Integer> unvisitedCustomers;
+
+    /**
+     * Lista dostepnych klientow, do ktorych moze isc mrowka w najblizszym kroku
+     */
     private List<Customer> feasibleNodes;
 
+    /**
+     * Tworzy mrowke
+     * @param customers Lista klientow
+     */
     Ant(List<Customer> customers) {
         feasibleNodes = new ArrayList<>();
         unvisitedCustomers = new ArrayList<>();
@@ -56,6 +79,14 @@ class Ant {
         this.feasibleNodes = feasibleNodes;
     }
 
+    /**
+     * Aktualizuje liste mozliwych do odwiedzenia klientow
+     * @param tmpNode Klient, u ktorego obecnie znajduje sie mrowka
+     * @param route Trasa tworzona przez mrowke
+     * @param weightLimit Maksymalna dopuszczalna masa ladunku
+     * @param sizeLimit Maksymalna dopuszczalna objetosc ladunku
+     * @return Zwraca "true" jesli sa klienci, ktorych mozna w danym kroku
+     */
     boolean updateFeasibleCustomers(Customer tmpNode, Route route, double weightLimit, double sizeLimit) {
         feasibleNodes.clear();
         for (RouteSegment rsFromCustomer : tmpNode.getRouteSegmentsFromCustomer()) {
@@ -69,6 +100,10 @@ class Ant {
         return feasibleNodes.size() != 0;
     }
 
+    /**
+     * Usuwa klienta z listy nieodwiedzonych klientow
+     * @param idToRemove Id klienta, ktorego nalezy usunac
+     */
     void removeFromUnvisitedCustomers(int idToRemove) {
         for (int i = 0; i < unvisitedCustomers.size(); i++) {
             int id = unvisitedCustomers.get(i);
@@ -79,6 +114,11 @@ class Ant {
         }
     }
 
+    /**
+     * Wybiera klienta, ktory zostanie obecnie odwiedzony
+     * @param currentNode Klient, u ktorego obecnie znajduje sie mrowka
+     * @return Zwraca kolejnego do odwiedzenia klienta
+     */
     Customer chooseNextNode(Customer currentNode) {
         Customer nextNode = null;
         if (currentNode.getId() == 0) {
@@ -110,6 +150,11 @@ class Ant {
         return nextNode;
     }
 
+    /**
+     * Oblicza prawdopodobienstwo wybrania dostepnego klienta jako kolejnego do odwiedzenia
+     * @param currentNode Klient, u ktorego obecnie znajduje sie mrowka
+     * @return Zwraca klienta, który jest najlepszy do odwiedzenia
+     */
     private Customer calculateProbabilityForAllFeasibleNodes(Customer currentNode) {
         double downNumber = 0;
         double bestUpNumber = 0;

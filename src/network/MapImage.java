@@ -22,7 +22,7 @@ public class MapImage {
     private static final String DEFAULT_BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
     private static final String BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&language=pl";
     private static final String END_OF_URL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
-    private static final String IMAGE_PATH = "solution_images/";
+    private static final String IMAGE_PATH = "img/";
 
     private static final String DEFAULT_DEPOT_MARKER = "&markers=size:small|color:yellow|";
     private static final String DEFAULT_CUSTOMER_MARKER = "&markers=size:small|color:blue";
