@@ -39,7 +39,7 @@ public class DistanceMatrix extends JSON {
 
     /**
      * Pobiera odległości i czasy przejazdu między wszystkimi klientami z lokalnego serwera OSRM
-     * @throws Exception Rzuca wyjatek bledu pobierania
+     * @throws Exception Wyjatek bledu pobierania
      */
     public void downloadDistanceMatrix() throws Exception {
         logger.info("Downloading distance matrix...");

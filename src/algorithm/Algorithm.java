@@ -43,7 +43,7 @@ public abstract class Algorithm {
 
     /**
      * Ustawia wartosc pol algorytmu
-     * @param problem Instancja problemu
+     * @param problem Obiekt problemu
      * @param name Nazwa algorytmu
      */
     protected Algorithm(Problem problem, String name) {

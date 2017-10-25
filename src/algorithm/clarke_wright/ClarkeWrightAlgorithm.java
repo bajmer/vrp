@@ -19,8 +19,8 @@ public class ClarkeWrightAlgorithm extends Algorithm {
     private static final Logger logger = LogManager.getLogger(ClarkeWrightAlgorithm.class);
 
     /**
-     * Tworzy obiekt algorytmu Clarka i Wrighta
-     * @param problem instancja problemu
+     * Tworzy obiekt klasy
+     * @param problem Obiekt problemu
      */
     public ClarkeWrightAlgorithm(Problem problem) {
         super(problem, "Clarke-Wright");

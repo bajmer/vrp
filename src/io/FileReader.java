@@ -105,7 +105,7 @@ public class FileReader {
     /**
      * Czyta wybrany plik z danymi klientow
      * @param file Wybrany plik z danymi klientow
-     * @throws IOException Rzuca wyjatek blednego wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void readFile(File file) throws IOException {
         logger.info("Reading file...");
@@ -224,7 +224,7 @@ public class FileReader {
     /**
      * Czyta wybrany plik testowy
      * @param file Wybrany plik testowy
-     * @throws IOException Rzuca wyjatek blednego wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void readTestFile(File file) throws IOException {
         logger.info("Reading test file...");

@@ -43,7 +43,7 @@ public class ACSAlgorithm extends Algorithm {
     private final int m; //ilość mrówek, preferowana wartość = n (ilość miast)
 
     /**
-     * parametr okreslajacy ilosc parujacego feromonu w zakresie <0-1>
+     * parametr okreslajacy ilosc parujacego feromonu w zakresie 0-1
      */
     private final double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
 
@@ -64,7 +64,7 @@ public class ACSAlgorithm extends Algorithm {
 
     /**
      * Tworzy algorytm mrowkowy na podstawie parametrow ustawionych przez uzytkownika
-     * @param problem Instancja problemu
+     * @param problem Obiekt problemu
      * @param i Ilosc iteracji algorytmu
      * @param m Ilosc mrowek
      * @param q0 Parametr okreslajacy proporcje między eksploatacja najlepszej krawedzi i eksploracja nowej

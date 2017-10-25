@@ -61,7 +61,7 @@ class JSON {
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
      * @param url Adres URL, na ktory bedzie wyslane zapytanie
      * @return Zwraca obiekt JSON zawierajacy odpowiedz serwera
-     * @throws ConnectException Rzuca wyjatek bledu polaczenia
+     * @throws ConnectException Wyjatek bledu polaczenia
      */
     JSONObject sendRequest(String url) throws ConnectException {
         logger.debug("Sending a request to URL: " + url + " ...");

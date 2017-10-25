@@ -9,8 +9,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Klasa reprezentujaca trase jednego pojazdu, rozpoczynajaca sie i konczaca w magazynie

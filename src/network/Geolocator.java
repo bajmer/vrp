@@ -40,7 +40,7 @@ public class Geolocator extends JSON {
      * @param city Miasto
      * @param lineNumber Numer wiersza pliku z danymi klientow
      * @return Zwraca wspolrzedne adresu klienta
-     * @throws Exception Rzuca wyjatek bledu pobierania wspolrzednych
+     * @throws Exception Wyjatek bledu pobierania wspolrzednych
      */
     public List<Double> downloadCoordinates(String streetAndNumber, String postalCode, String city, int lineNumber) throws Exception {
         logger.debug("Downloading coordinates for customer in line " + lineNumber + "...");

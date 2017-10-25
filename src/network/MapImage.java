@@ -116,7 +116,7 @@ public class MapImage {
     /**
      * Pobiera obraz mapy z narysowanym rozwiazaniem
      * @param s Rozwiazanie, ktore zostanie naniesione na mape
-     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSolutionImage(Solution s) throws IOException {
         String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
@@ -140,7 +140,7 @@ public class MapImage {
      * Pobiera obraz mapy z narysowana trasa
      * @param s Rozwiazanie
      * @param r Trasa, ktora zostanie naniesiona na mape
-     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
@@ -158,7 +158,7 @@ public class MapImage {
      * @param s Rozwiazanie
      * @param r Trasa
      * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
-     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
@@ -174,7 +174,7 @@ public class MapImage {
     /**
      * Pobiera obraz mapy zawierajacej magazyn i wszystkich klientow, z wyroznionym aktualnie wybranym klientem
      * @param c Aktualnie wybrany klient
-     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = IMAGE_PATH + "C" + c.getId();
@@ -318,7 +318,7 @@ public class MapImage {
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
      * @param url Adres URL, na ktory bedzie wyslane zapytanie
      * @param imageName Nazwa obrazu mapy jaki zostanie utworzony
-     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     private void sendRequestToGoogleMaps(String url, String imageName) throws IOException {
         logger.debug("Sending request to Google Maps...");
