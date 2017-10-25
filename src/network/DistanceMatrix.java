@@ -10,16 +10,37 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.time.Duration;
 
+/**
+ * Klasa pobierajaca odległości i czasy przejazdu między klientami z lokalnego serwera OSRM
+ */
 public class DistanceMatrix extends JSON {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(DistanceMatrix.class);
+
+    /**
+     * Poczatek adresu URL
+     */
     private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
+
+    /**
+     * Koncowka adresu URL
+     */
     private static final String END_OF_URL = "?generate_hints=false";
 //    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
 
+    /**
+     * Tworzy instancje klasy
+     */
     public DistanceMatrix() {
     }
 
+    /**
+     * Pobiera odległości i czasy przejazdu między wszystkimi klientami z lokalnego serwera OSRM
+     * @throws Exception Rzuca wyjatek bledu pobierania
+     */
     public void downloadDistanceMatrix() throws Exception {
         logger.info("Downloading distance matrix...");
         try {
@@ -71,6 +92,11 @@ public class DistanceMatrix extends JSON {
         logger.info("Downloading distance matrix has been completed.");
     }
 
+    /**
+     * Odczytuje odleglosc miedzy klientami z obiektu JSON
+     * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
+     * @return Zwraca odleglosc miedzy klientami w kilometrach
+     */
     private double getDistanceFromJSON(JSONObject jsonObject) {
         double distance = -1; //jeżeli odległość jest ujemna, wówczas algorytm vrp będzie ją pomijał
         try {
@@ -86,6 +112,11 @@ public class DistanceMatrix extends JSON {
         }
     }
 
+    /**
+     * Odczytuje czas przejazdu miedzy klientami z obiektu JSON
+     * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
+     * @return Zwraca czas przejazdu miedzy klientami w sekundach
+     */
     private Duration getDurationFromJSON(JSONObject jsonObject) {
         Duration duration = Duration.ZERO;
         try {
@@ -98,6 +129,11 @@ public class DistanceMatrix extends JSON {
 
     }
 
+    /**
+     * Odczytuje ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII z obiektu JSON
+     * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
+     * @return Zwraca ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
+     */
     private String getGeometryFromJSON(JSONObject jsonObject) {
         String geometry = "";
         try {

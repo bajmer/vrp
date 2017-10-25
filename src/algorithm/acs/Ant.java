@@ -85,7 +85,7 @@ class Ant {
      * @param route Trasa tworzona przez mrowke
      * @param weightLimit Maksymalna dopuszczalna masa ladunku
      * @param sizeLimit Maksymalna dopuszczalna objetosc ladunku
-     * @return Zwraca "true" jesli sa klienci, ktorych mozna w danym kroku
+     * @return Zwraca "true" jesli sa klienci, ktorych mozna w danym kroku, w przeciwnym razie "false"
      */
     boolean updateFeasibleCustomers(Customer tmpNode, Route route, double weightLimit, double sizeLimit) {
         feasibleNodes.clear();

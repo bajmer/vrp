@@ -266,7 +266,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
     /**
      * Sprawdza, czy klient nalezy do trasy
      * @param customer Klient
-     * @return Zwraca false, jesli klient nie nalezy do trasy lub obiekt klienta jest magazynem, zas true, gdy klient nalezy do trasy
+     * @return Zwraca "false", jesli klient nie nalezy do trasy lub obiekt klienta jest magazynem, zas "true", gdy klient nalezy do trasy
      */
     private boolean isCustomerInRoute(Customer customer) {
         if (customer.equals(getProblem().getDepot())) {

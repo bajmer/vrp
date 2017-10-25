@@ -1,18 +1,44 @@
 package core;
 
+/**
+ * Klasa reprezentujaca problem marszrutyzacji do rozwiazania
+ */
 public class Problem {
+
+    /**
+     * Numer ID
+     */
     private static int ID = 0;
+
+    /**
+     * Numer ID problemu
+     */
     private int problemID;
+
+    /**
+     * Magazyn
+     */
     private Customer depot;
-    private int numberOfCustomers;
+
+    /**
+     * Maksymalna masa ladunku jaka mozna zaladowac do pojazdu
+     */
     private double weightLimitPerVehicle;
+
+    /**
+     * Maksymalna objetosc ladunku jaka mozna zaladowac do pojazdu
+     */
     private double sizeLimitPerVehicle;
 
+    /**
+     * Tworzy obiekt klasy
+     * @param weightLimitPerVehicle Maksymalna masa ladunku jaka mozna zaladowac do pojazdu
+     * @param sizeLimitPerVehicle Maksymalna objetosc ladunku jaka mozna zaladowac do pojazdu
+     */
     public Problem(double weightLimitPerVehicle, double sizeLimitPerVehicle) {
         ID++;
         this.problemID = ID;
         this.depot = Database.getCustomerList().get(0);
-        this.numberOfCustomers = Database.getCustomerList().size() - 1;
         this.weightLimitPerVehicle = weightLimitPerVehicle;
         this.sizeLimitPerVehicle = sizeLimitPerVehicle;
     }
@@ -31,14 +57,6 @@ public class Problem {
 
     public void setDepot(Customer depot) {
         this.depot = depot;
-    }
-
-    public int getNumberOfCustomers() {
-        return numberOfCustomers;
-    }
-
-    public void setNumberOfCustomers(int numberOfCustomers) {
-        this.numberOfCustomers = numberOfCustomers;
     }
 
     public double getWeightLimitPerVehicle() {

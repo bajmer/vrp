@@ -22,27 +22,71 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * Klasa odpowiadajaca za wczytywanie plikow tekstowych
+ */
 public class FileReader {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(FileReader.class);
 
+    /**
+     * Separator pol w pliku tekstowym
+     */
     private static final String FIELDS_SEPARATOR = ";";
+
+    /**
+     * Separator elementow adresu
+     */
     private static final String ADDRESS_SEPARATOR = ",";
+
+    /**
+     * Domyslna masa paczki
+     */
     private static final double DEFAULT_PACKAGE_WEIGHT = 0.0;
+
+    /**
+     * Domyslna objetosc paczki
+     */
     private static final double DEFAULT_PACKAGE_CAPACITY = 0.0;
+
+    /**
+     * Domyslna najwczesniejsza mozliwa godzina odbioru paczki
+     */
     private final LocalTime defaultMinDeliveryHour = LocalTime.of(8, 0);
+
+    /**
+     * Domyslna najpozniejsza mozliwa godzina odbioru paczki
+     */
     private final LocalTime defaultMaxDeliveryHour = LocalTime.of(18, 0);
+
+    /**
+     * Obiekt klasy geolocator
+     */
     private Geolocator geolocator;
 
+    /**
+     * Tworzy instancje klasy
+     */
     public FileReader() {
 
     }
 
+    /**
+     * Tworzy instancje klasy
+     * @param geolocator Obiekt klasy geolocator
+     */
     public FileReader(Geolocator geolocator) {
         this.geolocator = geolocator;
     }
 
+    /**
+     * Otwiera okno modalne umozliwajace wybor pliku tekstowego
+     * @param gui Interfejs uzytkownika
+     * @return Zwraca wybrany plik
+     */
     public File chooseFile(Gui gui) {
         logger.info("Choosing file with customers data...");
         JFileChooser fileChooser = new JFileChooser();
@@ -58,6 +102,11 @@ public class FileReader {
         return selectedFile;
     }
 
+    /**
+     * Czyta wybrany plik z danymi klientow
+     * @param file Wybrany plik z danymi klientow
+     * @throws IOException Rzuca wyjatek blednego wejscia/wyjscia
+     */
     public void readFile(File file) throws IOException {
         logger.info("Reading file...");
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
@@ -146,6 +195,11 @@ public class FileReader {
         logger.info("Reading file has been completed.");
     }
 
+    /**
+     * Dzieli pole adresu na poszczegolne komponenty
+     * @param fullAddress Pelny adres
+     * @return Zwraca tablice napisow okreslajacych ulice i numer domu, kod pocztowy oraz miasto
+     */
     private String[] splitFullAddress(String fullAddress) {
         ArrayList<String> fields = new ArrayList<>();
         String[] tmpFields = StringUtils.splitByWholeSeparatorPreserveAllTokens(fullAddress, ADDRESS_SEPARATOR);
@@ -167,6 +221,11 @@ public class FileReader {
         return fields.toArray(new String[fields.size()]);
     }
 
+    /**
+     * Czyta wybrany plik testowy
+     * @param file Wybrany plik testowy
+     * @throws IOException Rzuca wyjatek blednego wejscia/wyjscia
+     */
     public void readTestFile(File file) throws IOException {
         logger.info("Reading test file...");
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {

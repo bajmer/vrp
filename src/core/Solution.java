@@ -5,16 +5,52 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
 
+/**
+ * Klasa reprezentujaca rozwiazanie problemu marszrutyzacji
+ */
 public class Solution {
-    private int solutionID;
-    private String usedAlgorithm;
-    private ArrayList<Route> listOfRoutes;
-    private Customer depot;
-    private double totalDistanceCost;
-    private Duration totalDurationCost;
-    private ImageIcon imageIcon;
-    private boolean feasible;
 
+    /**
+     * Numer ID rozwiazania
+     */
+    private int solutionID;
+
+    /**
+     * Algorytm, ktory zostal uzyty do uzyskania rozwiazania
+     */
+    private String usedAlgorithm;
+
+    /**
+     * Lista tras nalezacych do rozwiazania
+     */
+    private ArrayList<Route> listOfRoutes;
+
+    /**
+     * Magazyn
+     */
+    private Customer depot;
+
+    /**
+     * Calkowita dlugosc rozwiazania
+     */
+    private double totalDistanceCost;
+
+    /**
+     * Calkowity czas rozwiazania
+     */
+    private Duration totalDurationCost;
+
+    /**
+     * Obraz mapy z narysowanym na niej rozwiazaniem
+     */
+    private ImageIcon imageIcon;
+
+    /**
+     * Tworzy rozwiazanie
+     * @param problemID Numer ID problemu
+     * @param usedAlgorithm Uzyty algorytm
+     * @param depot Magazyn
+     */
     public Solution(int problemID, String usedAlgorithm, Customer depot) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
@@ -80,18 +116,19 @@ public class Solution {
         this.imageIcon = imageIcon;
     }
 
-    public boolean isFeasible() {
-        return feasible;
-    }
-
-    public void setFeasible(boolean feasible) {
-        this.feasible = feasible;
-    }
-
+    /**
+     * Zaokroagla liczbe double do jednego miejsca po przecinku
+     * @param x Liczba do zaokraglenia
+     * @return Zwraca zaokraglana liczbe
+     */
     private double round(double x) {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    /**
+     * Wypisuje informacje o rozwiazaniu
+     * @return Zwraca opis rozwiazania
+     */
     @Override
     public String toString() {
         long minutes = totalDurationCost.toMinutes() % 60;

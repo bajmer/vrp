@@ -15,27 +15,86 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Klasa pobierajaca mapy statyczne z serwera Google
+ */
 public class MapImage {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(MapImage.class);
 
+    /**
+     * Domyslny poczatek adresu URL
+     */
     private static final String DEFAULT_BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
+
+    /**
+     * Poczatek adresu URL
+     */
     private static final String BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&language=pl";
+
+    /**
+     * Koncowka adresu URL
+     */
     private static final String END_OF_URL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
+
+    /**
+     * Sciezka do folderu, w ktorym beda zapisywane mapy
+     */
     private static final String IMAGE_PATH = "img/";
 
+    /**
+     * Fragment adresu URL odpowiadajacy domyslnemu znacznikowi magazynu
+     */
     private static final String DEFAULT_DEPOT_MARKER = "&markers=size:small|color:yellow|";
+
+    /**
+     * Fragment adresu URL odpowiadajacy domyslnemu znacznikowi klienta
+     */
     private static final String DEFAULT_CUSTOMER_MARKER = "&markers=size:small|color:blue";
+
+    /**
+     * Fragment adresu URL odpowiadajacy wiekszemu znacznikowi magazynu
+     */
     private static final String BIGGER_DEPOT_MARKER = "&markers=size:normal|color:yellow|";
+
+    /**
+     * Fragment adresu URL odpowiadajacy wiekszemu znacznikowi klienta
+     */
     private static final String BIGGER_CUSTOMER_MARKER = "&markers=size:normal|color:blue";
+
+    /**
+     * Fragment adresu URL odpowiadajacy wybranemu aktualnie klientowi
+     */
     private static final String CHOOSEN_MARKER = "&markers=size:normal|color:red|";
+
+    /**
+     * Fragment adresu URL odpowiadajacy poczatkowemu klientowi odcinka
+     */
     private static final String FROM_MARKER = "&markers=size:normal|color:green|";
+
+    /**
+     * Fragment adresu URL odpowiadajacy docelowemu klientowi odcinka
+     */
     private static final String TO_MARKER = "&markers=size:normal|color:red|";
+
+    /**
+     * Mapa kolorow
+     */
     private static final Map<String, String> COLOURS = fillColours();
 
+    /**
+     * Tworzy obiekt klasy
+     */
     public MapImage() {
     }
 
+    /**
+     * Tworzy nowa mape kolorow
+     * @return Zwraca wypelniona mape kolorow
+     */
     private static Map<String, String> fillColours() {
         Map<String, String> colours = new LinkedHashMap<>();
         colours.put("red", "0xFF0000FF");
@@ -54,6 +113,11 @@ public class MapImage {
         return colours;
     }
 
+    /**
+     * Pobiera obraz mapy z narysowanym rozwiazaniem
+     * @param s Rozwiazanie, ktore zostanie naniesione na mape
+     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     */
     public void createSolutionImage(Solution s) throws IOException {
         String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
         logger.debug("Creating an images of solution " + solutionImageName + "...");
@@ -72,6 +136,12 @@ public class MapImage {
         logger.debug("Creating an image of solution " + solutionImageName + " has been completed.");
     }
 
+    /**
+     * Pobiera obraz mapy z narysowana trasa
+     * @param s Rozwiazanie
+     * @param r Trasa, ktora zostanie naniesiona na mape
+     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     */
     public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
         logger.debug("Creating images of route" + routeImageName + "...");
@@ -83,6 +153,13 @@ public class MapImage {
         logger.debug("Creating images of route" + routeImageName + " has been completed.");
     }
 
+    /**
+     * Pobiera obraz mapy z narysowanym odcinkiem trasy
+     * @param s Rozwiazanie
+     * @param r Trasa
+     * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
+     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     */
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
         logger.debug("Creating images of route segment" + routeSegmentImageName + "...");
@@ -94,6 +171,11 @@ public class MapImage {
         logger.debug("Creating images of route segment " + routeSegmentImageName + " has been completed.");
     }
 
+    /**
+     * Pobiera obraz mapy zawierajacej magazyn i wszystkich klientow, z wyroznionym aktualnie wybranym klientem
+     * @param c Aktualnie wybrany klient
+     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     */
     public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = IMAGE_PATH + "C" + c.getId();
         logger.debug("Creating images of customer" + customerImageName + "...");
@@ -105,6 +187,12 @@ public class MapImage {
         logger.debug("Creating images of customer has been completed.");
     }
 
+    /**
+     * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     * @param s Rozwiazanie, ktore zostanie naniesione na mape
+     * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostuch linii
+     * @return Zwraca sparsowany adres URL
+     */
     private String parseURL(Solution s, boolean simpleURL) {
         StringBuilder paths = new StringBuilder();
         StringBuilder markers = new StringBuilder();
@@ -149,6 +237,11 @@ public class MapImage {
         return DEFAULT_BEGIN_OF_URL + markers.toString() + paths.toString() + END_OF_URL;
     }
 
+    /**
+     * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     * @param r Trasa, ktora zostanie naniesiona na mape
+     * @return Zwraca sparsowany adres URL
+     */
     private String parseURL(Route r) {
         StringBuilder path = new StringBuilder();
         StringBuilder markers = new StringBuilder();
@@ -174,6 +267,11 @@ public class MapImage {
         return BEGIN_OF_URL + markers.toString() + path.toString() + END_OF_URL;
     }
 
+    /**
+     * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
+     * @return Zwraca sparsowany adres URL
+     */
     private String parseURL(RouteSegment rs) {
         String srcMarker = FROM_MARKER + rs.getSrc().getLatitude() + "," + rs.getSrc().getLongitude();
         String dstMarker = TO_MARKER + rs.getDst().getLatitude() + "," + rs.getDst().getLongitude();
@@ -182,9 +280,13 @@ public class MapImage {
         return BEGIN_OF_URL + srcMarker + dstMarker + path + END_OF_URL;
     }
 
+    /**
+     * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     * @param c Aktualnie wybrany klient, ktory zostanie naniesiony na mape w postaci wiekszego znacznika
+     * @return Zwraca sparsowany adres URL
+     */
     private String parseURL(Customer c) {
         StringBuilder markers = new StringBuilder();
-        Database.getCustomerList().get(0);
         markers.append(CHOOSEN_MARKER).append(c.getLatitude()).append(",").append(c.getLongitude());
         for (Customer customer : Database.getCustomerList()) {
             if (!customer.equals(c)) {
@@ -212,6 +314,12 @@ public class MapImage {
         return DEFAULT_BEGIN_OF_URL + markers + END_OF_URL;
     }
 
+    /**
+     * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
+     * @param url Adres URL, na ktory bedzie wyslane zapytanie
+     * @param imageName Nazwa obrazu mapy jaki zostanie utworzony
+     * @throws IOException Rzuca wyjatek bledu wejscia/wyjscia
+     */
     private void sendRequestToGoogleMaps(String url, String imageName) throws IOException {
         logger.debug("Sending request to Google Maps...");
         try {

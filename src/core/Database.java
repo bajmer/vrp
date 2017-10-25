@@ -3,11 +3,29 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa przechowująca listę klientow, liste odcinkow i liste rozwiazan
+ */
 public class Database {
+
+    /**
+     * Lista klientów
+     */
     private static List<Customer> customerList = new ArrayList<>();
+
+    /**
+     * Lista odcinkow trasy
+     */
     private static List<RouteSegment> routeSegmentsList = new ArrayList<>();
+
+    /**
+     * Lista rozwiazan
+     */
     private static List<Solution> solutionsList = new ArrayList<>();
 
+    /**
+     * Domyslny konstruktor klasy
+     */
     public Database() {
     }
 

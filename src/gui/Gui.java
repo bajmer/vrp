@@ -34,49 +34,214 @@ import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Vector;
 
+/**
+ * Klasa odpowiadajaca za tworzenie interfejsu uzytkownika oraz wywyolywanie odpowiednich funkcji przy klikaniu w rozne elementy
+ */
 public class Gui extends JFrame implements ActionListener, TreeSelectionListener, ListSelectionListener {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(Gui.class);
+
+    /**
+     * Stala okreslajaca nazwe algorytmu
+     */
     private static final String CW_ALG = "Clarke-Wright";
+
+    /**
+     * Stala okreslajaca nazwe algorytmu
+     */
     private static final String ACS_ALG = "Ant Colony System";
+
+    /**
+     * Instancja klasy mapImage
+     */
     private final MapImage mapImage;
+
+    /**
+     * Panel glowny
+     */
     private JPanel mainPanel;
+
+    /**
+     * Panel mapy
+     */
     private JPanel mapPanel;
+
+    /**
+     * Panel lewy
+     */
     private JPanel leftPanel;
+
+    /**
+     * Panel prawy
+     */
     private JPanel rightPanel;
+
+    /**
+     * Panel dolny
+     */
     private JPanel bottomPanel;
+
+    /**
+     * Etykieta mapy
+     */
     private JLabel mapLabel;
+
+    /**
+     * Przycisk "Load customers"
+     */
     private JButton bLoad;
+
+    /**
+     * Przycisk "Load test"
+     */
     private JButton bTest;
+
+    /**
+     * Przycisk "Get distance matrix"
+     */
     private JButton bGetDistance;
+
+    /**
+     * Przycisk "Find solution"
+     */
     private JButton bFindSolution;
+
+    /**
+     * Nazwa algorytmu
+     */
     private String algorithmName;
+
+    /**
+     * Lista algorytmow
+     */
     private JComboBox<String> boxAlgorithms;
+
+    /**
+     * Obszar wyswietlania logow
+     */
     private JTextArea appLog;
+
+    /**
+     * Suwak przewijajacy tabele klientow
+     */
     private JScrollPane jspCustomers;
+
+    /**
+     * Suwak przewijajacy tabele szczegolow trasy
+     */
     private JScrollPane jspRouteDetails;
+
+    /**
+     * Suwak przewijajacy okno rozwiazan
+     */
     private JScrollPane jspSolutions;
+
+    /**
+     * Pole tekstowe maksymalnego dopuszczalnego obciazenia pojazdu
+     */
     private JFormattedTextField fWeightLimit;
+
+    /**
+     * Pole tekstowe maksymalnej objetosci pojazdu
+     */
     private JFormattedTextField fSizeLimit;
+
+    /**
+     * Pole tekstowe liczby iteracji algorytmu mrowkowego
+     */
     private JFormattedTextField fAcsParam_i;
+
+    /**
+     * Pole tekstowe liczby mrowek w algorytmie mrowkowym
+     */
     private JFormattedTextField fAcsParam_m;
+
+    /**
+     * Pole tekstowe parametru okreslajacego proporcje miedzy eksploatacja najlepszej krawedzi i eksploracja nowej
+     */
     private JFormattedTextField fAcsParam_q0;
+
+    /**
+     * Pole tekstowe okreslajace wpływ odwrotnosci odleglosci
+     */
     private JFormattedTextField fAcsParam_beta;
+
+    /**
+     * Pole tekstowe parametru określającego ilość wyparowanego feromonu
+     */
     private JFormattedTextField fAcsParam_ro;
+
+    /**
+     * Suwak wyboru maksymalnego dopuszczalnego obciazenia pojazdu
+     */
     private JSlider sWeightLimit;
+
+    /**
+     * Suwak wyboru maksymalnej objetosci pojazdu
+     */
     private JSlider sSizeLimit;
+
+    /**
+     * Suwak wyboru liczby iteracji algorytmu mrowkowego
+     */
     private JSlider sAcsParam_i;
+
+    /**
+     * Suwak wyboru liczby mrowek w algorytmie mrowkowym
+     */
     private JSlider sAcsParam_m;
+
+    /**
+     * Suwak wyboru parametru okreslajacego proporcje miedzy eksploatacja najlepszej krawedzi i eksploracja nowej
+     */
     private JSlider sAcsParam_q0;
+
+    /**
+     * Suwak wyboru parametru okreslajacego wpływ odwrotnosci odleglosci
+     */
     private JSlider sAcsParam_beta;
+
+    /**
+     * Suwak wyboru parametru określającego ilość wyparowanego feromonu
+     */
     private JSlider sAcsParam_ro;
+
+    /**
+     * Tabela klientow
+     */
     private JTable tCustomers;
+
+    /**
+     * Tabela szczegolow trasy
+     */
     private JTable tRouteDetails;
+
+    /**
+     * Drzewo rozwiazan
+     */
     private JTree treeSolutions;
+
+    /**
+     * Wektor nazw kolumn tabeli klientow
+     */
     private Vector<String> customersTableColumns;
+
+    /**
+     * Wektor nazw kolumn tabeli szczegolow trasy
+     */
     private Vector<String> routeDetailsTableColumns;
+
+    /**
+     * Flaga oznaczajaca, czy do aplikacji wczytano zestawy testowe
+     */
     private Boolean test = false;
 
+    /**
+     * Tworzy interfejs uzytkownika
+     */
     public Gui() {
         bLoad.addActionListener(this);
         bTest.addActionListener(this);
@@ -158,6 +323,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         mapImage = new MapImage();
     }
 
+    /**
+     * Obsluguje wciskanie przyciskow
+     * @param e Zdarzenie klikniecia przycisku
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -256,6 +425,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         }
     }
 
+    /**
+     * Obsluguje klikanie wezlow drzewa rozwiazan
+     * @param e Zdarzenie wyboru wezla drzewa
+     */
     @Override
     public void valueChanged(TreeSelectionEvent e) {
         if (!test) {
@@ -315,6 +488,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         }
     }
 
+    /**
+     * Obsluguje wybieranie wierszy w tabeli klientow
+     * @param e Zdarzenie wyboru wiersza w tabeli
+     */
     @Override
     public void valueChanged(ListSelectionEvent e) {
         if (!test) {
@@ -342,6 +519,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         }
     }
 
+    /**
+     * Tworzy tabele klientow
+     */
     private void createCustomerTable() {
         customersTableColumns = new Vector<>();
         customersTableColumns.add("ID");
@@ -360,6 +540,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         jspCustomers.setViewportView(tCustomers);
     }
 
+    /**
+     * Wypelnia tabele klientow danymi
+     */
     private void fillCustomerTable() {
         Vector<Vector<String>> data = new Vector<>();
         for (Customer c : Database.getCustomerList()) {
@@ -401,6 +584,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tCustomers.changeSelection(0, 0, false, false);
     }
 
+    /**
+     * Tworzy tabele szczegolow trasy
+     */
     private void createRouteDetailsTable() {
         routeDetailsTableColumns = new Vector<>();
         routeDetailsTableColumns.add("From");
@@ -415,6 +601,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         jspRouteDetails.setViewportView(tRouteDetails);
     }
 
+    /**
+     * Wypelnia tabele szczegolow trasy danymi
+     * @param route Trasa, ktorej szczegoly maja zostac wyswietlone
+     */
     private void fillRouteDetailsTable(Route route) {
         Vector<Vector<String>> data = new Vector<>();
         for (RouteSegment rs : route.getRouteSegments()) {
@@ -463,12 +653,20 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(80);
     }
 
+    /**
+     * Czysci tabele
+     * @param table Tabela do wyczyszczenia
+     * @param columns Nazwy kolumn czyszczonej tabeli
+     */
     private void setEmptyTable(JTable table, Vector<String> columns) {
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.setDataVector(null, columns);
         table.setModel(tableModel);
     }
 
+    /**
+     * Tworzy drzewo rozwiazan
+     */
     private void createSolutionsTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Solutions");
         treeSolutions = new JTree(root);
@@ -478,6 +676,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         jspSolutions.setViewportView(treeSolutions);
     }
 
+    /**
+     * Dodaje wezel rozwiazania do drzewa rozwiazan
+     */
     private void addNodeToSolutionsTree() {
         Solution newestSolution = Database.getSolutionsList().get(Database.getSolutionsList().size() - 1);
 

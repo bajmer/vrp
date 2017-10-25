@@ -8,26 +8,99 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalTime;
 
+/**
+ * Klasa reprezentujaca pojedynczy odcinek trasy
+ */
 public class RouteSegment implements Cloneable {
 
+    /**
+     * Logger klasy
+     */
     private static final Logger logger = LogManager.getLogger(RouteSegment.class);
 
+    /**
+     * Numer ID
+     */
     private static int routeSegmentID = 1;
+
+    /**
+     * Numer ID odcinka
+     */
     private int id;
+
+    /**
+     * Klient poczatkowy
+     */
     private Customer src;
+
+    /**
+     * Klient docelowy
+     */
     private Customer dst;
+
+    /**
+     * Godzina odjazdu od klienta poczatkowego
+     */
     private LocalTime departure = LocalTime.MIDNIGHT;
+
+    /**
+     * Godzina przyjazdu do klienta docelowego
+     */
     private LocalTime arrival = LocalTime.MIDNIGHT;
+
+    /**
+     * Dlugosc odcinka w kilometrach
+     */
     private double distance;
+
+    /**
+     * Czas przejazdu odcinka
+     */
     private Duration duration;
+
+    /**
+     * Oszczednosc obliczona dla odcinka w alogrytmie Clarka i Wrighta
+     */
     private double clarkWrightSaving;
+
+    /**
+     * Ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
+     */
     private String geometry;
+
+    /**
+     * Obraz mapy z narysowanym na niej odcinkiem trasy
+     */
     private ImageIcon imageIcon;
+
+    /**
+     * Poziom feromonu na odcinku wykorzystywany przez algorytm mrowkowy
+     */
     private double acsPheromoneLevel;
+
+    /**
+     * Wspolczynnik okreslajacy jak bardzo korzystne jest wybranie tego odcinka w algorytmie mrowkowym
+     */
     private double acsUpNumber;
+
+    /**
+     * Flaga okreslajaca czy odcinek nalezy do najlepszego rozwiazania w algorytmie mrowkowym
+     */
     private boolean partOfBestAcsSolution = false;
+
+    /**
+     * Flaga okreslajaca czy odcinek nalezy do rozwiazania uzyskanego przez mrowke w algorytmie mrowkowym
+     */
     private boolean partOfAntAcsSolution = false;
 
+    /**
+     * Tworzy odcinek trasy
+     * @param src Klient poczatkowy
+     * @param dst Klient docelowy
+     * @param distance Dlugosc odcinka
+     * @param duration Czas przejazdu odcinka
+     * @param geometry Ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
+     */
     public RouteSegment(Customer src, Customer dst, double distance, Duration duration, String geometry) {
         this.id = routeSegmentID;
         routeSegmentID++;
@@ -150,20 +223,28 @@ public class RouteSegment implements Cloneable {
         this.partOfAntAcsSolution = partOfAntAcsSolution;
     }
 
+    /**
+     * Obraca odcinek, tzn. klient poczatkowy staje sie klientem docelowym
+     */
     public void swapSrcDst() {
         Customer tmp = this.src;
         this.src = this.dst;
         this.dst = tmp;
     }
 
-    public boolean isSegmentExist(int a, int b) {
-        return (a == src.getId() && b == dst.getId()) /*|| (b == src.getId() && a == dst.getId())*/;
-    }
-
+    /**
+     * Zaokroagla liczbe double do jednego miejsca po przecinku
+     * @param x Liczba do zaokraglenia
+     * @return Zwraca zaokraglana liczbe
+     */
     private double round(double x) {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    /**
+     * Wypisuje informacje o odcinku trasy
+     * @return Zwraca opis odcinka trasy
+     */
     @Override
     public String toString() {
         long minutes = duration.toMinutes() % 60;
@@ -175,6 +256,10 @@ public class RouteSegment implements Cloneable {
                 + "km, " + duration.toHours() + ":" + sMinutes + "h";
     }
 
+    /**
+     * Klonuje odcinek trasy
+     * @return Zwraca sklonowany odcinek trasy
+     */
     @Override
     public RouteSegment clone() {
         RouteSegment clone = null;
