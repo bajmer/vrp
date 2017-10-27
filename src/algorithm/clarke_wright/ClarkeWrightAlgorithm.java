@@ -45,7 +45,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         logger.info("Creating savings...");
         Customer depot = super.getProblem().getDepot();
         for (int i = 1; i < super.getCustomers().size(); i++) {
-            for (int j = i; j < super.getCustomers().size(); j++) {
+            for (int j = 1; j < super.getCustomers().size(); j++) {
                 if (i != j) {
                     Customer first = super.getCustomers().get(i);
                     int firstID = super.getCustomers().get(i).getId();
