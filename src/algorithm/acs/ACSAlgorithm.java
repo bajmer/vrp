@@ -105,8 +105,9 @@ public class ACSAlgorithm extends Algorithm {
             rs.setAcsPheromoneLevel(INITIAL_PHEROMONE_LEVEL); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
         }
 
+        int bestIteration = 1;
         int iteration = 1;
-        while (iteration <= i) {
+        while (i > 0 ? iteration <= i : iteration - bestIteration < 100) {
             antsSolutions.clear();
             for (int k = 0; k < m; k++) {
                 Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
@@ -118,6 +119,7 @@ public class ACSAlgorithm extends Algorithm {
                 double distanceCost = s.getTotalDistanceCost();
                 if (distanceCost < tmpBestAcsSolution.getTotalDistanceCost()) {
                     tmpBestAcsSolution = s; //gdy koszt rozwiązania jest mniejszy niż w najlepszym rozwiązaniu
+                    bestIteration = iteration;
                 }
             }
             logger.trace("The best solution after iteration " + iteration + ": " + tmpBestAcsSolution.toString());
