@@ -45,7 +45,7 @@ public class DistanceMatrix extends JSON {
         logger.info("Downloading distance matrix...");
         try {
             for (int i = 0; i < Database.getCustomerList().size(); i++) {
-                for (int j = i; j < Database.getCustomerList().size(); j++) {
+                for (int j = 0; j < Database.getCustomerList().size(); j++) {
                     Customer src = Database.getCustomerList().get(i);
                     Customer dst = Database.getCustomerList().get(j);
                     logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");

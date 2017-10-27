@@ -53,11 +53,6 @@ public class ACSAlgorithm extends Algorithm {
     private final List<Solution> antsSolutions;
 
     /**
-     * Lista odcinkow tras
-     */
-    private final List<RouteSegment> acsRouteSegments;
-
-    /**
      * Najlepsze dotychczasowe rozwiazanie
      */
     private Solution tmpBestAcsSolution;
@@ -80,18 +75,6 @@ public class ACSAlgorithm extends Algorithm {
         this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
         Ant.setQ0(q0);
         Ant.setBeta(beta);
-
-//        utworzenie tablicy odcinków trasy, zawierającej również obrócone odcinki
-        List<RouteSegment> notSwappedSegments = new ArrayList<>(super.getRouteSegments().size());
-        notSwappedSegments.addAll(Database.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
-        List<RouteSegment> swappedSegments = new ArrayList<>(super.getRouteSegments().size());
-        swappedSegments.addAll(Database.getRouteSegmentsList().stream().map(RouteSegment::clone).collect(Collectors.toList()));
-        for (RouteSegment rs : swappedSegments) {
-            rs.swapSrcDst();
-        }
-        this.acsRouteSegments = new LinkedList<>();
-        acsRouteSegments.addAll(notSwappedSegments);
-        acsRouteSegments.addAll(swappedSegments);
     }
 
     /**
@@ -108,7 +91,11 @@ public class ACSAlgorithm extends Algorithm {
      * Zarzadza mrowkami i aktualizuje poziom feromonu
      */
     private void ACS_Procedure() {
-        for (RouteSegment rs : acsRouteSegments) {
+        for (Customer c : super.getCustomers()) {
+            c.getRouteSegmentsFromCustomer().clear();
+        }
+
+        for (RouteSegment rs : super.getRouteSegments()) {
             for (Customer c : super.getCustomers()) {
                 if (c.equals(rs.getSrc())) {
                     c.getRouteSegmentsFromCustomer().add(rs); //przypisanie każdemu klientowi listy wychodzących z niego odcinków trasy
@@ -259,7 +246,7 @@ public class ACSAlgorithm extends Algorithm {
      * @param bestSolution Dotychczasowe najlepsze rozwiazanie znalezione przez mrowke
      */
     private void globalPheromoneUpdate(Solution bestSolution) {
-        for (RouteSegment rs : acsRouteSegments) {
+        for (RouteSegment rs : super.getRouteSegments()) {
             double tau = rs.getAcsPheromoneLevel();
             if (rs.isPartOfBestAcsSolution()) {
                 tau = (1 - ro) * tau + 1 / bestSolution.getTotalDistanceCost();
