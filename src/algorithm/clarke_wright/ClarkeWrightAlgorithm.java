@@ -125,17 +125,18 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                             logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
                             break;
 
-                        } else if (route.isCustomerLast(dst)) {
-                            route.addCustomerAsLast(src);
-                            segment.swapSrcDst();
-                            route.addSegmentAsLast(segment);
-
-                            logger.debug("Customer with id " + src.getId() + " added on the LAST position in route " + route.getId());
-                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-                            break;
                         }
+//                        else if (route.isCustomerLast(dst)) {
+//                            route.addCustomerAsLast(src);
+//                            segment.swapSrcDst();
+//                            route.addSegmentAsLast(segment);
+//
+//                            logger.debug("Customer with id " + src.getId() + " added on the LAST position in route " + route.getId());
+//                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+//                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+//                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+//                            break;
+//                        }
                     }
                 }
             }
@@ -143,18 +144,19 @@ public class ClarkeWrightAlgorithm extends Algorithm {
             else if (!isCustomerInRoute(dst)) {
                 for (Route route : super.getRoutes()) {
                     if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
-                        if (route.isCustomerFirst(src)) {
-                            route.addCustomerAsFirst(dst);
-                            segment.swapSrcDst();
-                            route.addSegmentAsFirst(segment);
-
-                            logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
-                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-                            break;
-
-                        } else if (route.isCustomerLast(src)) {
+//                        if (route.isCustomerFirst(src)) {
+//                            route.addCustomerAsFirst(dst);
+//                            segment.swapSrcDst();
+//                            route.addSegmentAsFirst(segment);
+//
+//                            logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
+//                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
+//                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
+//                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
+//                            break;
+//
+//                        } else
+                        if (route.isCustomerLast(src)) {
                             route.addCustomerAsLast(dst);
                             route.addSegmentAsLast(segment);
 
