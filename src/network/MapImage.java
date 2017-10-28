@@ -28,7 +28,7 @@ public class MapImage {
     /**
      * Domyslny poczatek adresu URL
      */
-    private static final String DEFAULT_BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?center=52.23,21.2&zoom=8&size=640x640&maptype=roadmap&language=pl";
+    private static final String DEFAULT_BEGIN_OF_URL = "https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&language=pl";
 
     /**
      * Poczatek adresu URL
@@ -177,7 +177,7 @@ public class MapImage {
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createCustomerImage(Customer c) throws IOException {
-        String customerImageName = IMAGE_PATH + "C" + c.getId();
+        String customerImageName = IMAGE_PATH + "C" + c.getMapId();
         logger.debug("Creating images of customer" + customerImageName + "...");
 
         String url = parseURL(c);

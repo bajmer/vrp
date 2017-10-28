@@ -27,7 +27,6 @@ public class Main {
         gui.setExtendedState(JFrame.MAXIMIZED_BOTH);
         gui.setTitle("VRP System");
         gui.setVisible(true);
-        logger.info("*********************************************************************************************************************************************");
         logger.info("Application started.");
     }
 }

@@ -237,7 +237,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     /**
      * Flaga oznaczajaca, czy do aplikacji wczytano zestawy testowe
      */
-    private Boolean test = false;
+    private Boolean TEST = false;
 
     /**
      * Tworzy interfejs uzytkownika
@@ -331,7 +331,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
-            test = false;
+            TEST = false;
             fWeightLimit.setEditable(false);
             fSizeLimit.setEditable(false);
             bGetDistance.setEnabled(false);
@@ -352,7 +352,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.error("Unexpected error while processing the file!", ex);
             }
         } else if (source == bTest) {
-            test = true;
+            TEST = true;
             fWeightLimit.setEditable(true);
             fSizeLimit.setEditable(true);
             bGetDistance.setEnabled(false);
@@ -431,7 +431,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
      */
     @Override
     public void valueChanged(TreeSelectionEvent e) {
-        if (!test) {
+        if (!TEST) {
             DefaultMutableTreeNode choosedNode = (DefaultMutableTreeNode) treeSolutions.getLastSelectedPathComponent();
             if (choosedNode == null)
                 return;
@@ -494,7 +494,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
      */
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        if (!test) {
+        if (!TEST) {
             Object source = e.getSource();
             if (source == tCustomers.getSelectionModel()) {
                 if (tCustomers.getSelectedRow() >= 0) {
@@ -502,14 +502,11 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                     int index = Integer.parseInt(id);
                     Customer c = Database.getCustomerList().get(index);
                     try {
-                        if (c.getImageIcon() == null) {
+                        ImageIcon imageIcon = c.getImageIcon();
+                        if (imageIcon == null) {
                             mapImage.createCustomerImage(c);
                         }
-                        if (c.getImageIcon() != null) {
-                            mapLabel.setIcon(c.getImageIcon());
-                        } else {
-                            throw new Exception();
-                        }
+                        mapLabel.setIcon(c.getImageIcon());
                     } catch (Exception ex) {
                         logger.warn("Cannot create an image of customers!");
                         logger.debug(ex);

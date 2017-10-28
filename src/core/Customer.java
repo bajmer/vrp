@@ -24,9 +24,19 @@ public class Customer {
     private static int customerID;
 
     /**
+     * Numer ID na mapie
+     */
+    private static int customerMapID = 0;
+
+    /**
      * Numer ID klienta
      */
     private int id;
+
+    /**
+     * Numer ID klienta na mapie
+     */
+    private int mapId;
 
     /**
      * Pelny adres
@@ -119,7 +129,9 @@ public class Customer {
     public Customer(String fullAddress, String streetAndNumber, String postalCode, String city, double latitude, double longitude,
                     double packageWeight, double packageSize, LocalTime minDeliveryHour, LocalTime maxDeliveryHour) {
         this.id = customerID;
+        this.mapId = customerMapID;
         customerID++;
+        customerMapID++;
         this.fullAddress = fullAddress;
         this.streetAndNumber = streetAndNumber;
         this.postalCode = postalCode;
@@ -163,8 +175,24 @@ public class Customer {
         Customer.customerID = customerID;
     }
 
+    public static int getCustomerMapID() {
+        return customerMapID;
+    }
+
+    public static void setCustomerMapID(int customerMapID) {
+        Customer.customerMapID = customerMapID;
+    }
+
     static Duration getServiceTime() {
         return serviceTime;
+    }
+
+    public int getMapId() {
+        return mapId;
+    }
+
+    public void setMapId(int mapId) {
+        this.mapId = mapId;
     }
 
     public String getFullAddress() {

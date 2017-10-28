@@ -54,33 +54,27 @@ public class DistanceMatrix extends JSON {
                         double srcLon = src.getLongitude();
                         double dstLat = dst.getLatitude();
                         double dstLon = dst.getLongitude();
-                        if (srcLat != 0 && srcLon != 0) {
-                            if (dstLat != 0 && dstLon != 0) {
-                                String routeURL = parseURL(BEGIN_OF_URL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), END_OF_URL);
-                                JSONObject jsonObject = sendRequest(routeURL);
-                                if (jsonObject != null) {
-                                    double distanceInKm = getDistanceFromJSON(jsonObject);
-                                    Duration duration = getDurationFromJSON(jsonObject);
-                                    String geometry = getGeometryFromJSON(jsonObject);
+                        if (srcLat != 0 && srcLon != 0 && dstLat != 0 && dstLon != 0) {
+                            String routeURL = parseURL(BEGIN_OF_URL, src.getLongitude(), src.getLatitude(), dst.getLongitude(), dst.getLatitude(), END_OF_URL);
+                            JSONObject jsonObject = sendRequest(routeURL);
+                            if (jsonObject != null) {
+                                double distanceInKm = getDistanceFromJSON(jsonObject);
+                                Duration duration = getDurationFromJSON(jsonObject);
+                                String geometry = getGeometryFromJSON(jsonObject);
 //                            zawsze srcID < dstID!!!
-                                    if (distanceInKm > 0) {
-                                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
-                                        src.getDistances().put(dst.getId(), distanceInKm);
-                                        src.getDurations().put(dst.getId(), duration);
-                                        dst.getDistances().put(src.getId(), distanceInKm);
-                                        dst.getDurations().put(src.getId(), duration);
-                                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km, " + duration.toMinutes() + " min.");
-                                    } else {
-                                        logger.warn("There is incorrect distance for customers " + src.getId() + " and " + dst.getId() + ". New route segment is not created!");
-                                    }
+                                if (distanceInKm > 0) {
+                                    Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
+                                    src.getDistances().put(dst.getId(), distanceInKm);
+                                    src.getDurations().put(dst.getId(), duration);
+                                    logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distanceInKm + " km, " + duration.toMinutes() + " min.");
                                 } else {
-                                    logger.warn("Response from server for customers " + src.getId() + " and " + dst.getId() + " contain NULL JSON object!");
+                                    logger.warn("There is incorrect distance for customers " + src.getId() + " and " + dst.getId() + ". New route segment is not created!");
                                 }
                             } else {
-                                logger.warn("Customer " + dst.getId() + " has got incorrect coordinates!");
+                                logger.warn("Response from server for customers " + src.getId() + " and " + dst.getId() + " contain NULL JSON object!");
                             }
                         } else {
-                            logger.warn("Customer " + src.getId() + " has got incorrect coordinates!");
+                            logger.warn("Customers have got incorrect coordinates!");
                         }
                     }
                 }
