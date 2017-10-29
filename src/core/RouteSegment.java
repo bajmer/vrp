@@ -224,15 +224,6 @@ public class RouteSegment implements Cloneable {
     }
 
     /**
-     * Obraca odcinek, tzn. klient poczatkowy staje sie klientem docelowym
-     */
-    public void swapSrcDst() {
-        Customer tmp = this.src;
-        this.src = this.dst;
-        this.dst = tmp;
-    }
-
-    /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku
      * @param x Liczba do zaokraglenia
      * @return Zwraca zaokraglana liczbe

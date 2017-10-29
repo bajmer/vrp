@@ -61,7 +61,6 @@ public class DistanceMatrix extends JSON {
                                 double distanceInKm = getDistanceFromJSON(jsonObject);
                                 Duration duration = getDurationFromJSON(jsonObject);
                                 String geometry = getGeometryFromJSON(jsonObject);
-//                            zawsze srcID < dstID!!!
                                 if (distanceInKm > 0) {
                                     Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distanceInKm, duration, geometry));
                                     src.getDistances().put(dst.getId(), distanceInKm);

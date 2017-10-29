@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -111,7 +112,8 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                     }
                 }
             }
-//            pierwszy klient nie należy do trasy, a drugi jest brzegowym węzłem trasy
+//            gdy klient początkowy odcinka (src) nie należy do żadnej trasy, zaś klient końcowy jest początkiem dowolnej trasy
+//            i spełnione sa warunki na dodanie klienta, wówczas dodajemy klienta src oraz odcinek na początku danej trasy
             else if (!isCustomerInRoute(src)) {
                 for (Route route : super.getRoutes()) {
                     if (route.canAdd(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
@@ -126,36 +128,15 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                             break;
 
                         }
-//                        else if (route.isCustomerLast(dst)) {
-//                            route.addCustomerAsLast(src);
-//                            segment.swapSrcDst();
-//                            route.addSegmentAsLast(segment);
-//
-//                            logger.debug("Customer with id " + src.getId() + " added on the LAST position in route " + route.getId());
-//                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-//                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-//                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-//                            break;
-//                        }
                     }
                 }
             }
-//            drugi klient nie należy do trasy, a pierwszy jest brzegowym węzłem trasy
+
+//            gdy klient docelowy odcinka (dst) nie należy do żadnej trasy, zaś klient początkowy jest końcem dowolnej trasy
+//            i spełnione sa warunki na dodanie klienta, wówczas dodajemy klienta dst oraz odcinek na końcu danej trasy
             else if (!isCustomerInRoute(dst)) {
                 for (Route route : super.getRoutes()) {
                     if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
-//                        if (route.isCustomerFirst(src)) {
-//                            route.addCustomerAsFirst(dst);
-//                            segment.swapSrcDst();
-//                            route.addSegmentAsFirst(segment);
-//
-//                            logger.debug("Customer with id " + dst.getId() + " added as FIRST node to route " + route.getId());
-//                            logger.debug("Route \"" + route.getId() + "\" includes the following customers: ");
-//                            route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
-//                            logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
-//                            break;
-//
-//                        } else
                         if (route.isCustomerLast(src)) {
                             route.addCustomerAsLast(dst);
                             route.addSegmentAsLast(segment);
@@ -170,80 +151,40 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                 }
             }
 
-//            obaj klienci należą do różnych tras, łączenie 2 tras w jedną
+//            łączenie dwóch tras w jedną, jeśli klient początkowy i docelowy odcinka należą do różnych tras i spełnione są warunki na połączenie tras
             Route merged = null;
             Route saved = null;
             for (Route routeA : super.getRoutes()) {
                 for (Route routeB : super.getRoutes()) {
                     if (routeA != routeB) {
+                        boolean canMerge = false;
                         if (routeA.canAdd(routeB.getCurrentPackagesWeight(), weightLimit, routeB.getCurrentPackagesSize(), sizeLimit)) {
-//                            węzły można połączyć na 8 sposobów:
-                            if (routeA.isCustomerLast(src) && routeB.isCustomerFirst(dst)) { // (1) .....s   d.....
-                                //routeA jest 1 trasą, do niej doklejamy routeB
+//                            przypadek 1 (...,...,src + dst,...,...) - klient src odcinka jest ostatnim klientem trasy A
+//                            oraz klient dst jest pierwszym klientem trasy B: łączymy dwie trasy bez zmian
+                            if (routeA.isCustomerLast(src) && routeB.isCustomerFirst(dst)) {
+                                canMerge = true;
+                            }
+
+//                            przypadek 2 (src,...,... + dst,...,...) - klient src odcinka jest pierwszym klientem trasy A
+//                            oraz klient dst jest pierwszym klientem trasy B: obracamy trasę A i łączymy dwie trasy
+                            else if (routeA.isCustomerFirst(src) && routeB.isCustomerFirst(dst)) {
+                                rotateRoute(routeA);
+                                canMerge = true;
+                            }
+
+//                            przypadek 3 (...,...,src + ...,...,dst) - klient src odcinka jest ostatnim klientem trasy A
+//                            oraz klient dst jest ostatnim klientem trasy B: obracamy trasę B i łączymy dwie trasy
+                            else if (routeA.isCustomerLast(src) && routeB.isCustomerLast(dst)) { // (7) .....s   .....d
+                                rotateRoute(routeB);
+                                canMerge = true;
+                            }
+
+//                            łączenie tras: dodajemy do trasy A odcinek src - dst i dołączamy do trasy A trasę B
+                            if (canMerge) {
                                 routeA.addSegmentAsLast(segment);
                                 routeA.mergeRoute(routeB);
                                 saved = routeA;
                                 merged = routeB;
-                                break;
-
-                            } else if (routeA.isCustomerLast(dst) && routeB.isCustomerFirst(src)) { // (2) .....d   s.....
-                                routeA.rotate();
-                                routeB.rotate();
-                                routeB.addSegmentAsLast(segment);
-                                routeB.mergeRoute(routeA);
-                                saved = routeB;
-                                merged = routeA;
-                                break;
-
-                            } else if (routeA.isCustomerFirst(src) && routeB.isCustomerLast(dst)) { // (3) s.....   .....d
-                                //routeB jest 1 trasą, do niej doklejamy routeA
-                                routeA.rotate();
-                                routeB.rotate();
-                                routeA.addSegmentAsLast(segment);
-                                routeA.mergeRoute(routeB);
-                                saved = routeA;
-                                merged = routeB;
-                                break;
-
-                            } else if (routeA.isCustomerFirst(dst) && routeB.isCustomerLast(src)) { // (4) d.....   .....s
-                                routeB.addSegmentAsLast(segment);
-                                routeB.mergeRoute(routeA);
-                                saved = routeB;
-                                merged = routeA;
-                                break;
-
-                            } else if (routeA.isCustomerFirst(src) && routeB.isCustomerFirst(dst)) { // (5) s.....   d.....
-                                //routeA jest 1 trasą (obróconą), do niej doklejamy routeB
-                                routeA.rotate();
-                                routeA.addSegmentAsLast(segment);
-                                routeA.mergeRoute(routeB);
-                                saved = routeA;
-                                merged = routeB;
-                                break;
-
-                            } else if (routeA.isCustomerFirst(dst) && routeB.isCustomerFirst(src)) { // (6) d.....   s.....
-                                routeB.rotate();
-                                routeB.addSegmentAsLast(segment);
-                                routeB.mergeRoute(routeA);
-                                saved = routeB;
-                                merged = routeA;
-                                break;
-
-                            } else if (routeA.isCustomerLast(src) && routeB.isCustomerLast(dst)) { // (7) .....s   .....d
-                                //routeB jest 1 trasą, do niej doklejamy route A (obróconą)
-                                routeB.rotate();
-                                routeA.addSegmentAsLast(segment);
-                                routeA.mergeRoute(routeB);
-                                saved = routeA;
-                                merged = routeB;
-                                break;
-
-                            } else if (routeA.isCustomerLast(dst) && routeB.isCustomerLast(src)) { // (8) .....d   .....s
-                                routeA.rotate();
-                                routeB.addSegmentAsLast(segment);
-                                routeB.mergeRoute(routeA);
-                                saved = routeB;
-                                merged = routeA;
                                 break;
                             }
                         }
@@ -263,6 +204,26 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 
         addDepotNodeAsFirstAndLast();
         logger.info("Calculating the solution has been completed.");
+    }
+
+    /**
+     * Obraca trasę, czyli odwraca listę klientów należących do trasy, czyści listę odcinków i dodaje odwrotne odcinki
+     *
+     * @param route Obracana trasa
+     */
+    private void rotateRoute(Route route) {
+        Collections.reverse(route.getCustomersInRoute());
+        route.getRouteSegments().clear();
+        for (int i = 0; i < route.getCustomersInRoute().size() - 1; i++) {
+            Customer source = route.getCustomersInRoute().get(i);
+            Customer destination = route.getCustomersInRoute().get(i + 1);
+            for (RouteSegment rs : super.getRouteSegments()) {
+                if (rs.getSrc().equals(source) && rs.getDst().equals(destination)) {
+                    route.getRouteSegments().add(rs);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -290,24 +251,16 @@ public class ClarkeWrightAlgorithm extends Algorithm {
     private void addDepotNodeAsFirstAndLast() {
         Customer depot = super.getProblem().getDepot();
         for (Route route : super.getRoutes()) {
-            int firstCustomerID = route.getCustomersInRoute().get(0).getId();
-            int lastCustomerID = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1).getId();
+            Customer firstCustomer = route.getCustomersInRoute().get(0);
+            Customer lastCustomer = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1);
             for (RouteSegment rs : super.getRouteSegments()) {
-                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == firstCustomerID) {
+                if (rs.getSrc().equals(depot) && rs.getDst().equals(firstCustomer)) {
                     route.addCustomerAsFirst(depot);
                     route.addSegmentAsFirst(rs);
                     break;
-                }
-            }
-            for (RouteSegment rs : super.getRouteSegments()) {
-                if (rs.getSrc().getId() == 0 && rs.getDst().getId() == lastCustomerID) {
+                } else if (rs.getSrc().equals(lastCustomer) && rs.getDst().equals(depot)) {
                     route.addCustomerAsLast(depot);
-                    if (route.getRouteSegments().size() > 1) {
-                        rs.swapSrcDst();
-                        route.addSegmentAsLast(rs);
-                    } else {
-                        route.addSegmentAsLast(new RouteSegment(rs.getDst(), rs.getSrc(), rs.getDistance(), rs.getDuration(), rs.getGeometry()));
-                    }
+                    route.addSegmentAsLast(rs);
                     break;
                 }
             }

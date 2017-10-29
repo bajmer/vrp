@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Klasa reprezentujaca trase jednego pojazdu, rozpoczynajaca sie i konczaca w magazynie
@@ -273,17 +272,6 @@ public class Route {
      */
     private double round(double x) {
         return new BigDecimal(x).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-    }
-
-    /**
-     * Odwraca trase, tzn. zamienia kolejnosc klientow i odcinkow, ostatni klient staje sie pierwszym, itd.
-     */
-    public void rotate() {
-        Collections.reverse(customersInRoute);
-        Collections.reverse(routeSegments);
-        for (RouteSegment rs : routeSegments) {
-            rs.swapSrcDst();
-        }
     }
 
     /**
