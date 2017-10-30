@@ -201,8 +201,6 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                 super.getRoutes().remove(merged);
             }
         }
-
-        addDepotNodeAsFirstAndLast();
         logger.info("Calculating the solution has been completed.");
     }
 
@@ -243,28 +241,6 @@ public class ClarkeWrightAlgorithm extends Algorithm {
             }
         }
         return false;
-    }
-
-    /**
-     * Dodaje odcinek z magazynu na poczatku trasy i do magazynu na koncu trasy
-     */
-    private void addDepotNodeAsFirstAndLast() {
-        Customer depot = super.getProblem().getDepot();
-        for (Route route : super.getRoutes()) {
-            Customer firstCustomer = route.getCustomersInRoute().get(0);
-            Customer lastCustomer = route.getCustomersInRoute().get(route.getCustomersInRoute().size() - 1);
-            for (RouteSegment rs : super.getRouteSegments()) {
-                if (rs.getSrc().equals(depot) && rs.getDst().equals(firstCustomer)) {
-                    route.addCustomerAsFirst(depot);
-                    route.addSegmentAsFirst(rs);
-                    break;
-                } else if (rs.getSrc().equals(lastCustomer) && rs.getDst().equals(depot)) {
-                    route.addCustomerAsLast(depot);
-                    route.addSegmentAsLast(rs);
-                    break;
-                }
-            }
-        }
     }
 
     /**
