@@ -46,18 +46,24 @@ public class Solution {
     private ImageIcon imageIcon;
 
     /**
+     * Flaga określajaca czy to jest rozwiazanie zestawu testowego
+     */
+    private boolean test;
+
+    /**
      * Tworzy rozwiazanie
      * @param problemID Numer ID problemu
      * @param usedAlgorithm Uzyty algorytm
      * @param depot Magazyn
      */
-    public Solution(int problemID, String usedAlgorithm, Customer depot) {
+    public Solution(int problemID, String usedAlgorithm, Customer depot, boolean test) {
         this.solutionID = problemID;
         this.usedAlgorithm = usedAlgorithm;
         this.depot = depot;
         this.listOfRoutes = new ArrayList<>();
         this.totalDistanceCost = 100000.0;
         this.totalDurationCost = Duration.ofSeconds(1000000);
+        this.test = test;
     }
 
     public int getSolutionID() {
@@ -116,6 +122,14 @@ public class Solution {
         this.imageIcon = imageIcon;
     }
 
+    public boolean isTest() {
+        return test;
+    }
+
+    public void setTest(boolean test) {
+        this.test = test;
+    }
+
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku
      * @param x Liczba do zaokraglenia
@@ -134,7 +148,7 @@ public class Solution {
         long minutes = totalDurationCost.toMinutes() % 60;
         String sMinutes;
         sMinutes = minutes < 10 ? "0" + Long.toString(minutes) : Long.toString(minutes);
-        return "S" + solutionID + ", "
+        return "S" + solutionID + (test ? "Test, " : ", ")
                 + usedAlgorithm + ", "
                 + round(totalDistanceCost) + "km, "
                 + totalDurationCost.toHours() + ":" + sMinutes + "h";

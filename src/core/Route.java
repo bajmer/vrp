@@ -181,9 +181,7 @@ public class Route {
         totalDuration = totalDuration.plus(route.getTotalDuration());
         totalDistance = round(totalDistance);
 
-        for (RouteSegment rs : route.getRouteSegments()) {
-            routeSegments.add(rs);
-        }
+        routeSegments.addAll(route.getRouteSegments());
     }
 
     /**
@@ -194,7 +192,7 @@ public class Route {
         int firstPosition = 0;
         routeSegments.add(firstPosition, routeSegment);
         totalDistance += routeSegment.getDistance();
-        totalDuration = totalDuration.plus(routeSegment.getDuration());
+        totalDuration = totalDuration.plus(routeSegment.getDuration()).plus(Customer.getServiceTime());
     }
 
     /**
@@ -204,7 +202,11 @@ public class Route {
     public void addSegmentAsLast(RouteSegment routeSegment) {
         routeSegments.add(routeSegment);
         totalDistance += routeSegment.getDistance();
-        totalDuration = totalDuration.plus(routeSegment.getDuration());
+        if (routeSegment.getDst().getId() == 0) {
+            totalDuration = totalDuration.plus(routeSegment.getDuration());
+        } else {
+            totalDuration = totalDuration.plus(routeSegment.getDuration()).plus(Customer.getServiceTime());
+        }
     }
 
     /**
@@ -277,20 +279,22 @@ public class Route {
     /**
      * Ustawia czasy przyjazdu i odjazdu dla klientow nalezacych do trasy
      */
-    public void setArrivalAndDepartureTimeForCustomers() {
-        LocalTime departute = startTime;
-        LocalTime arrival = startTime;
-        for (RouteSegment rs : routeSegments) {
-            Duration duration = rs.getDuration();
-            if (rs.getSrc().getId() == 0) {
-                rs.setDeparture(departute);
-                arrival = arrival.plus(duration);
-                rs.setArrival(arrival);
-            } else {
-                departute = arrival.plus(Customer.getServiceTime());
-                rs.setDeparture(departute);
-                arrival = departute.plus(duration);
-                rs.setArrival(arrival);
+    public void setArrivalAndDepartureTimeForCustomers(boolean isTest) {
+        if (!isTest) {
+            LocalTime departute = startTime;
+            LocalTime arrival = startTime;
+            for (RouteSegment rs : routeSegments) {
+                Duration duration = rs.getDuration();
+                if (rs.getSrc().getId() == 0) {
+                    rs.setDeparture(departute);
+                    arrival = arrival.plus(duration);
+                    rs.setArrival(arrival);
+                } else {
+                    departute = arrival.plus(Customer.getServiceTime());
+                    rs.setDeparture(departute);
+                    arrival = departute.plus(duration);
+                    rs.setArrival(arrival);
+                }
             }
         }
     }

@@ -23,13 +23,13 @@ public class DistanceMatrix extends JSON {
     /**
      * Poczatek adresu URL
      */
-//    private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
+    private static final String BEGIN_OF_URL = "http://127.0.0.1:5000/route/v1/driving/";
 
     /**
      * Koncowka adresu URL
      */
     private static final String END_OF_URL = "?generate_hints=false";
-    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
+//    private static final String BEGIN_OF_URL = "http://192.168.56.101:5000/route/v1/driving/";
 
     /**
      * Tworzy instancje klasy
@@ -135,5 +135,37 @@ public class DistanceMatrix extends JSON {
             logger.info("Error while getting geometry from JSON object!");
         }
         return geometry;
+    }
+
+    public void calculateEuc2DDistanceMatrix() throws Exception {
+        logger.info("Calculating distance matrix for test file...");
+        try {
+            for (int i = 0; i < Database.getCustomerList().size(); i++) {
+                for (int j = 0; j < Database.getCustomerList().size(); j++) {
+                    Customer src = Database.getCustomerList().get(i);
+                    Customer dst = Database.getCustomerList().get(j);
+                    logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
+                    if (j != i) {
+                        double srcLat = src.getLatitude();
+                        double srcLon = src.getLongitude();
+                        double dstLat = dst.getLatitude();
+                        double dstLon = dst.getLongitude();
+
+                        double xd = srcLat - dstLat;
+                        double yd = srcLon - dstLon;
+                        double distance = (double) Math.round(Math.sqrt(xd * xd + yd * yd));
+
+                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distance, Duration.ZERO, null));
+                        src.getDistances().put(dst.getId(), distance);
+                        src.getDurations().put(dst.getId(), Duration.ZERO);
+                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distance + " km");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while calculating distance matrix for test file!");
+            throw e;
+        }
+        logger.info("Calculating distance matrix for test file has been completed.");
     }
 }

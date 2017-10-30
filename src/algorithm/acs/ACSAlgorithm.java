@@ -72,7 +72,7 @@ public class ACSAlgorithm extends Algorithm {
         this.m = m;
         this.ro = ro;
         this.antsSolutions = new ArrayList<>();
-        this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
+        this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
         Ant.setQ0(q0);
         Ant.setBeta(beta);
     }
@@ -142,7 +142,7 @@ public class ACSAlgorithm extends Algorithm {
     private Solution constructNewAntSolution(Ant ant) {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
-        Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot());
+        Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
 
         Route route = new Route();
         route.addCustomerAsLast(super.getProblem().getDepot());
@@ -273,7 +273,7 @@ public class ACSAlgorithm extends Algorithm {
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
         for (Route route : solution.getListOfRoutes()) {
-            route.setArrivalAndDepartureTimeForCustomers();
+            route.setArrivalAndDepartureTimeForCustomers(solution.isTest());
             totalDistance += route.getTotalDistance();
             totalDuration = totalDuration.plus(route.getTotalDuration());
         }

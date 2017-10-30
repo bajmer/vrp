@@ -7,6 +7,7 @@ import gui.Gui;
 import network.Geolocator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -121,9 +122,9 @@ public class FileReader {
                     String address = fields[0];
                     String[] addressFields = splitFullAddress(address);
 
-                    String streetAndNumber = addressFields[0];
+                    String streetAndNumber = StringUtils.capitalize(addressFields[0].toLowerCase());
                     String postalCode = addressFields[1];
-                    String city = addressFields[2];
+                    String city = addressFields[2].toUpperCase();
 
                     double latitude;
                     double longitude;
@@ -175,7 +176,7 @@ public class FileReader {
                         logger.warn("Max delivery hour is after 18:00 in line " + lineNumber + "! Max delivery hour set for 18:00.");
                     }
 
-                    Customer customer = new Customer(address, addressFields[0], addressFields[1], addressFields[2], latitude, longitude, weight, capacity, begin, end);
+                    Customer customer = new Customer(address, streetAndNumber, postalCode, city, latitude, longitude, weight, capacity, begin, end);
                     Database.getCustomerList().add(customer);
                     logger.debug("ID: " + customer.getId()
                             + ", Address: " + customer.getFullAddress()
@@ -243,41 +244,9 @@ public class FileReader {
                 Database.getCustomerList().add(customer);
             }
         } catch (IOException e) {
-            logger.error("Unexpected error while reading the file!");
+            logger.error("Unexpected error while reading the test file!");
             throw e;
         }
-        logger.info("Reading file has been completed.");
-
-        logger.info("Calculating distance matrix for test file...");
-        try {
-            for (int i = 0; i < Database.getCustomerList().size(); i++) {
-                for (int j = i; j < Database.getCustomerList().size(); j++) {
-                    Customer src = Database.getCustomerList().get(i);
-                    Customer dst = Database.getCustomerList().get(j);
-                    logger.debug("Calculating distance for " + src.getId() + " and " + dst.getId() + "...");
-                    if (j != i) {
-                        double srcLat = src.getLatitude();
-                        double srcLon = src.getLongitude();
-                        double dstLat = dst.getLatitude();
-                        double dstLon = dst.getLongitude();
-
-                        double xd = srcLat - dstLat;
-                        double yd = srcLon - dstLon;
-                        double distance = (double) Math.round(Math.sqrt(xd * xd + yd * yd));
-
-                        Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distance, Duration.ZERO, null));
-                        src.getDistances().put(dst.getId(), distance);
-                        src.getDurations().put(dst.getId(), Duration.ZERO);
-                        dst.getDistances().put(src.getId(), distance);
-                        dst.getDurations().put(src.getId(), Duration.ZERO);
-                        logger.debug("New route segment " + src.getId() + "-" + dst.getId() + ": " + distance + " km");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Error while calculating distance matrix for test file!");
-            throw e;
-        }
-        logger.info("Calculating distance matrix for test file has been completed.");
+        logger.info("Reading test file has been completed.");
     }
 }

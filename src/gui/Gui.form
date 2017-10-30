@@ -148,7 +148,8 @@
             <properties>
               <maximumSize width="220" height="32767"/>
               <minimumSize width="220" height="43"/>
-              <preferredSize width="220" height="441"/>
+              <preferredSize width="462" height="440"/>
+              <verifyInputWhenFocusTarget value="false"/>
             </properties>
             <border type="etched" title="Route details">
               <font name="DejaVu Sans Mono" size="11" style="0"/>

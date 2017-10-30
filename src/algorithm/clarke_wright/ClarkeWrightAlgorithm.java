@@ -276,7 +276,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
         for (Route route : super.getRoutes()) {
-            route.setArrivalAndDepartureTimeForCustomers();
+            route.setArrivalAndDepartureTimeForCustomers(super.getSolution().isTest());
             totalDistance += route.getTotalDistance();
             totalDuration = totalDuration.plus(route.getTotalDuration());
             logger.info(route.toString());

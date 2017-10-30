@@ -183,7 +183,7 @@ public class Customer {
         Customer.customerMapID = customerMapID;
     }
 
-    static Duration getServiceTime() {
+    public static Duration getServiceTime() {
         return serviceTime;
     }
 

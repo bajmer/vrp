@@ -31,16 +31,22 @@ public class Problem {
     private double sizeLimitPerVehicle;
 
     /**
+     * Flaga określajaca czy wczytany jest zestaw testowy
+     */
+    private boolean test;
+
+    /**
      * Tworzy obiekt klasy
      * @param weightLimitPerVehicle Maksymalna masa ladunku jaka mozna zaladowac do pojazdu
      * @param sizeLimitPerVehicle Maksymalna objetosc ladunku jaka mozna zaladowac do pojazdu
      */
-    public Problem(double weightLimitPerVehicle, double sizeLimitPerVehicle) {
+    public Problem(double weightLimitPerVehicle, double sizeLimitPerVehicle, boolean test) {
         ID++;
         this.problemID = ID;
         this.depot = Database.getCustomerList().get(0);
         this.weightLimitPerVehicle = weightLimitPerVehicle;
         this.sizeLimitPerVehicle = sizeLimitPerVehicle;
+        this.test = test;
     }
 
     public int getProblemID() {
@@ -73,5 +79,13 @@ public class Problem {
 
     public void setSizeLimitPerVehicle(double sizeLimitPerVehicle) {
         this.sizeLimitPerVehicle = sizeLimitPerVehicle;
+    }
+
+    public boolean isTest() {
+        return test;
+    }
+
+    public void setTest(boolean test) {
+        this.test = test;
     }
 }

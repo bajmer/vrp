@@ -49,7 +49,7 @@ public abstract class Algorithm {
     protected Algorithm(Problem problem, String name) {
         this.problem = problem;
         this.algorithmName = name;
-        this.solution = new Solution(problem.getProblemID(), name, problem.getDepot());
+        this.solution = new Solution(problem.getProblemID(), name, problem.getDepot(), problem.isTest());
 
         this.customers = Database.getCustomerList();
         this.routeSegments = new ArrayList<>(Database.getRouteSegmentsList().size());
