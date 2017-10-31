@@ -4,6 +4,7 @@ import core.Customer;
 import core.Route;
 import core.RouteSegment;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -132,15 +133,15 @@ class Ant {
                 nextNode = bestExploitationCustomer; //eksploatacja klienta, dla którego wartość  licznika "tau*(1/distance)^beta" jest największa
             } else {
                 //wylosowanie klienta uwzględniając prawdopodobieństwo
-                double weightSum = 0;
+                BigDecimal weightSum = BigDecimal.ZERO;
                 for (Customer c : feasibleNodes) {
-                    weightSum += c.getAcsChoiceProbability();
+                    weightSum = weightSum.add(c.getAcsChoiceProbability());
                 }
-                double value = new Random().nextDouble() * weightSum; //zakres 0-1 * suma wag
+                BigDecimal value = BigDecimal.valueOf(new Random().nextDouble()).multiply(weightSum); //zakres 0-1 * suma wag
 
                 for (Customer c : feasibleNodes) {
-                    value -= c.getAcsChoiceProbability();
-                    if (value <= 0) {
+                    value = value.subtract(c.getAcsChoiceProbability());
+                    if (value.compareTo(BigDecimal.ZERO) <= 0) {
                         nextNode = c;
                         break;
                     }
@@ -156,23 +157,23 @@ class Ant {
      * @return Zwraca klienta, który jest najlepszy do odwiedzenia
      */
     private Customer calculateProbabilityForAllFeasibleNodes(Customer currentNode) {
-        double downNumber = 0;
-        double bestUpNumber = 0;
+        BigDecimal downNumber = BigDecimal.ZERO;
+        BigDecimal bestUpNumber = BigDecimal.ZERO;
         Customer bestExploitationNode = null;
 
         for (RouteSegment rs : currentNode.getRouteSegmentsFromCustomer()) {
             if (feasibleNodes.contains(rs.getDst())) {
                 double distance = rs.getDistance();
                 double ni = 1 / distance;
-                double tau = rs.getAcsPheromoneLevel(); //pheromone level on segment
-                double upNumber = tau * Math.pow(ni, beta); //licznik
+                BigDecimal tau = rs.getAcsPheromoneLevel(); //pheromone level on segment
+                BigDecimal upNumber = tau.multiply(BigDecimal.valueOf(Math.pow(ni, beta))); //licznik
                 rs.setAcsUpNumber(upNumber);
-                if (upNumber > bestUpNumber) {
+                if (upNumber.compareTo(bestUpNumber) > 0) {
                     bestUpNumber = upNumber;
                     bestExploitationNode = rs.getDst();
                 }
-                downNumber += upNumber; //mianownik
-                if (downNumber == 0) {
+                downNumber = downNumber.add(upNumber); //mianownik
+                if (downNumber.compareTo(BigDecimal.ZERO) == 0) {
                     break;
                 }
             }
@@ -180,7 +181,7 @@ class Ant {
 
         for (RouteSegment rs : currentNode.getRouteSegmentsFromCustomer()) {
             if (feasibleNodes.contains(rs.getDst())) {
-                double probability = rs.getAcsUpNumber() / downNumber; //obliczanie prawdopodobieństwa wyboru danego odcinka trasy
+                BigDecimal probability = rs.getAcsUpNumber().divide(downNumber, BigDecimal.ROUND_HALF_UP); //obliczanie prawdopodobieństwa wyboru danego odcinka trasy
                 rs.getDst().setAcsChoiceProbability(probability);
             }
         }

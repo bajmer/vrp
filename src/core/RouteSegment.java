@@ -76,12 +76,12 @@ public class RouteSegment implements Cloneable {
     /**
      * Poziom feromonu na odcinku wykorzystywany przez algorytm mrowkowy
      */
-    private double acsPheromoneLevel;
+    private BigDecimal acsPheromoneLevel;
 
     /**
      * Wspolczynnik okreslajacy jak bardzo korzystne jest wybranie tego odcinka w algorytmie mrowkowym
      */
-    private double acsUpNumber;
+    private BigDecimal acsUpNumber;
 
     /**
      * Flaga okreslajaca czy odcinek nalezy do najlepszego rozwiazania w algorytmie mrowkowym
@@ -191,19 +191,19 @@ public class RouteSegment implements Cloneable {
         this.imageIcon = imageIcon;
     }
 
-    public double getAcsPheromoneLevel() {
+    public BigDecimal getAcsPheromoneLevel() {
         return acsPheromoneLevel;
     }
 
-    public void setAcsPheromoneLevel(double acsPheromoneLevel) {
+    public void setAcsPheromoneLevel(BigDecimal acsPheromoneLevel) {
         this.acsPheromoneLevel = acsPheromoneLevel;
     }
 
-    public double getAcsUpNumber() {
+    public BigDecimal getAcsUpNumber() {
         return acsUpNumber;
     }
 
-    public void setAcsUpNumber(double acsUpNumber) {
+    public void setAcsUpNumber(BigDecimal acsUpNumber) {
         this.acsUpNumber = acsUpNumber;
     }
 

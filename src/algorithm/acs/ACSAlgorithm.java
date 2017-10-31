@@ -5,12 +5,11 @@ import core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * Klasa implementujaca algorytm mrowkowy
@@ -102,7 +101,7 @@ public class ACSAlgorithm extends Algorithm {
                     break;
                 }
             }
-            rs.setAcsPheromoneLevel(INITIAL_PHEROMONE_LEVEL); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
+            rs.setAcsPheromoneLevel(BigDecimal.valueOf(INITIAL_PHEROMONE_LEVEL)); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
         }
 
         int bestIteration = 1;
@@ -110,12 +109,17 @@ public class ACSAlgorithm extends Algorithm {
         while (i > 0 ? iteration <= i : iteration - bestIteration < 100) {
             antsSolutions.clear();
             for (int k = 0; k < m; k++) {
+                for (Customer c : super.getCustomers()) {
+                    c.setAcsChoiceProbability(BigDecimal.ZERO);
+                }
+
                 Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
                 saveAntSolution(antSolution);
                 localPheromoneUpdate(antSolution); //lokalne aktualizowanie feromonu
             }
 
             for (Solution s : antsSolutions) {
+                logger.info("Cost: " + (int) s.getTotalDistanceCost());
                 double distanceCost = s.getTotalDistanceCost();
                 if (distanceCost < tmpBestAcsSolution.getTotalDistanceCost()) {
                     tmpBestAcsSolution = s; //gdy koszt rozwiązania jest mniejszy niż w najlepszym rozwiązaniu
@@ -150,58 +154,26 @@ public class ACSAlgorithm extends Algorithm {
 
         while (true) {
             ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
-            if (ant.updateFeasibleCustomers(tmpNode, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
-                if (route.getCurrentPackagesWeight() < 0.8 * weightLimit) {
-                    Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
+            if (ant.updateFeasibleCustomers(tmpNode, route, weightLimit, sizeLimit) //jeżeli lista dostępnych klientów nie jest pusta
+                    && (route.getCurrentPackagesWeight() < 0.9 * weightLimit //oraz pojazd jest załadowany w mniej niż 80%
+                    || (route.getCurrentPackagesWeight() > 0.9 * weightLimit && new Random().nextDouble() > 0.5))) { //lub pojazd jest załadowany w ponad 80%,
+//                ale losowa liczba jest większa niż 0.5
 
-                    route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
-
-                    for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
-                        if (rs.getDst().equals(nextNode)) {
-                            route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
-                            if (tmpNode.getId() != 0) {
-                                rs.setPartOfAntAcsSolution(true);
-                            }
-                            break;
+                Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
+                if (nextNode == null) {
+                    logger.info("TU JEST NULL! Tmp: " + tmpNode.getId() + ", Route: " + route.toString());
+                }
+                route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
+                for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
+                    if (rs.getDst().equals(nextNode)) {
+                        route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
+                        if (tmpNode.getId() != 0) {
+                            rs.setPartOfAntAcsSolution(true);
                         }
-                    }
-                    tmpNode = nextNode;
-                } else {
-                    if (new Random().nextDouble() > 0.5) {
-                        Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
-
-                        route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
-
-                        for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
-                            if (rs.getDst().equals(nextNode)) {
-                                route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
-                                if (tmpNode.getId() != 0) {
-                                    rs.setPartOfAntAcsSolution(true);
-                                }
-                                break;
-                            }
-                        }
-                        tmpNode = nextNode;
-                    } else {
-                        ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
-                        route.addCustomerAsLast(super.getProblem().getDepot()); //dodanie magazynu do listy klienów trasy
-                        for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
-                            if (rs.getDst().equals(super.getProblem().getDepot())) {
-                                route.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
-                                break;
-                            }
-                        }
-                        antSolution.getListOfRoutes().add(route); //dodanie trasy 0-..-i-..-0 do listy tras
-
-                        if (ant.getUnvisitedCustomers().size() == 0) {
-                            break; //jeżeli nie ma więcej nieodwiedzonych klientów przerywamy pętlę (dodać warunek na nieodwiedzonych niedostępnych klientów!!)
-                        } else {
-                            route = new Route();
-                            route.addCustomerAsLast(super.getProblem().getDepot());
-                            tmpNode = route.getLastCustomer();
-                        }
+                        break;
                     }
                 }
+                tmpNode = nextNode;
 
             } else { //jeżeli lista dostępnych klientów jest pusta
                 ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie ostatniego klienta z listy nieodwiedzonych klientów
@@ -234,8 +206,8 @@ public class ACSAlgorithm extends Algorithm {
         for (Route r : antSolution.getListOfRoutes()) {
             for (RouteSegment rs : r.getRouteSegments()) {
                 if (rs.isPartOfAntAcsSolution()) {
-                    double tau = rs.getAcsPheromoneLevel(); //poziom feromonu
-                    tau = (1 - ro) * tau + ro * INITIAL_PHEROMONE_LEVEL;
+                    BigDecimal tau = rs.getAcsPheromoneLevel(); //poziom feromonu
+                    tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(ro * INITIAL_PHEROMONE_LEVEL));
                     rs.setAcsPheromoneLevel(tau);
                     rs.setPartOfAntAcsSolution(false);
                 }
@@ -249,19 +221,14 @@ public class ACSAlgorithm extends Algorithm {
      */
     private void globalPheromoneUpdate(Solution bestSolution) {
         for (RouteSegment rs : super.getRouteSegments()) {
-            double tau = rs.getAcsPheromoneLevel();
+            BigDecimal tau = rs.getAcsPheromoneLevel();
             if (rs.isPartOfBestAcsSolution()) {
-                tau = (1 - ro) * tau + 1 / bestSolution.getTotalDistanceCost();
+                tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(1 / bestSolution.getTotalDistanceCost()));
                 rs.setPartOfBestAcsSolution(false);
             } else {
-                tau = (1 - ro) * tau;
+                tau = BigDecimal.valueOf(1 - ro).multiply(tau);
             }
-
-            if (tau > 1E-320) {
-                rs.setAcsPheromoneLevel(tau);
-            } else {
-                return;
-            }
+            rs.setAcsPheromoneLevel(tau);
         }
     }
 
