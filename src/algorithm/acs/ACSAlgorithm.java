@@ -7,9 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Klasa implementujaca algorytm mrowkowy
@@ -29,7 +27,7 @@ public class ACSAlgorithm extends Algorithm {
     /**
      * Poczatkowa wartosc feromonu
      */
-    private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
+    private static final BigDecimal INITIAL_PHEROMONE_LEVEL = BigDecimal.valueOf(0.001);
 
     /**
      * Ilosc iteracji algorytmu
@@ -47,7 +45,7 @@ public class ACSAlgorithm extends Algorithm {
     private final double ro; //parametr określający ilość wyparowanego feromonu, zakres <0-1>, preferowana wartość to 0.5
 
     /**
-     * Lista rozwiazan mrowek
+     * Lista rozwiazan znalezionych przez mrowki w czasie jednej iteracji
      */
     private final List<Solution> antsSolutions;
 
@@ -55,6 +53,8 @@ public class ACSAlgorithm extends Algorithm {
      * Najlepsze dotychczasowe rozwiazanie
      */
     private Solution tmpBestAcsSolution;
+
+    private Map<Integer, BigDecimal> globalPheromoneLevel;
 
     /**
      * Tworzy algorytm mrowkowy na podstawie parametrow ustawionych przez uzytkownika
@@ -74,6 +74,8 @@ public class ACSAlgorithm extends Algorithm {
         this.tmpBestAcsSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
         Ant.setQ0(q0);
         Ant.setBeta(beta);
+
+        globalPheromoneLevel = new HashMap<>();
     }
 
     /**
@@ -92,6 +94,7 @@ public class ACSAlgorithm extends Algorithm {
     private void ACS_Procedure() {
         for (Customer c : super.getCustomers()) {
             c.getRouteSegmentsFromCustomer().clear();
+//            customersChoiceProbability.put(c.getId(), BigDecimal.ZERO);
         }
 
         for (RouteSegment rs : super.getRouteSegments()) {
@@ -101,21 +104,26 @@ public class ACSAlgorithm extends Algorithm {
                     break;
                 }
             }
-            rs.setAcsPheromoneLevel(BigDecimal.valueOf(INITIAL_PHEROMONE_LEVEL)); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
+//            rs.setAcsPheromoneLevel(BigDecimal.valueOf(INITIAL_PHEROMONE_LEVEL)); //ustawienie początkowej ilości feromonu dla każdego odcinka trasy
+            globalPheromoneLevel.put(rs.getId(), INITIAL_PHEROMONE_LEVEL);
         }
 
         int bestIteration = 1;
         int iteration = 1;
         while (i > 0 ? iteration <= i : iteration - bestIteration < 100) {
-            antsSolutions.clear();
-            for (int k = 0; k < m; k++) {
-                for (Customer c : super.getCustomers()) {
-                    c.setAcsChoiceProbability(BigDecimal.ZERO);
-                }
+            antsSolutions.clear(); //wyczyszczenie listy rozwiązań znalezionych przez mrówki w czasie jednej iteracji
 
-                Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers())); //wyznaczenie rozwiąznia przez każdą mrówkę
+            Map<Integer, BigDecimal> localPheromoneLevel = new HashMap<>(globalPheromoneLevel);
+
+            for (int k = 0; k < m; k++) {
+//                for (Customer c : super.getCustomers()) {
+//                    c.setAcsChoiceProbability(BigDecimal.ZERO);
+//                }
+//                customersChoiceProbability.replaceAll((K, V) -> BigDecimal.ZERO); //wyzerowanie prawdopodobieństwa wyboru klienta
+
+                Solution antSolution = constructNewAntSolution(new Ant(super.getCustomers(), localPheromoneLevel)); //wyznaczenie rozwiąznia przez każdą mrówkę
                 saveAntSolution(antSolution);
-                localPheromoneUpdate(antSolution); //lokalne aktualizowanie feromonu
+                localPheromoneUpdate(antSolution, localPheromoneLevel); //lokalne aktualizowanie feromonu
             }
 
             for (Solution s : antsSolutions) {
@@ -154,16 +162,19 @@ public class ACSAlgorithm extends Algorithm {
 
         while (true) {
             ant.removeFromUnvisitedCustomers(tmpNode.getId()); //usunięcie bieżącego klienta z listy nieodwiedzonych klientów
-            if (ant.updateFeasibleCustomers(tmpNode, route, weightLimit, sizeLimit) //jeżeli lista dostępnych klientów nie jest pusta
-                    && (route.getCurrentPackagesWeight() < 0.9 * weightLimit //oraz pojazd jest załadowany w mniej niż 80%
-                    || (route.getCurrentPackagesWeight() > 0.9 * weightLimit && new Random().nextDouble() > 0.5))) { //lub pojazd jest załadowany w ponad 80%,
+            if (ant.updateFeasibleCustomers(tmpNode, route, weightLimit, sizeLimit)) { //jeżeli lista dostępnych klientów nie jest pusta
+//                    && (route.getCurrentPackagesWeight() < 0.9 * weightLimit //oraz pojazd jest załadowany w mniej niż 80%
+//                    || (route.getCurrentPackagesWeight() > 0.9 * weightLimit && new Random().nextDouble() > 0.5))) { //lub pojazd jest załadowany w ponad 80%,
 //                ale losowa liczba jest większa niż 0.5
 
+//                zmienic nextNode na nextRouteSegment!!!!
                 Customer nextNode = ant.chooseNextNode(tmpNode); //wybór kolejnego klienta
                 if (nextNode == null) {
                     logger.info("TU JEST NULL! Tmp: " + tmpNode.getId() + ", Route: " + route.toString());
                 }
+
                 route.addCustomerAsLast(super.getCustomers().get(nextNode.getId())); //dodanie wybranego klienta do budowanej trasy
+
                 for (RouteSegment rs : tmpNode.getRouteSegmentsFromCustomer()) {
                     if (rs.getDst().equals(nextNode)) {
                         route.addSegmentAsLast(rs); //dodanie kolejnego odcinka do budowanej trasy
@@ -202,13 +213,24 @@ public class ACSAlgorithm extends Algorithm {
      * Aktualizuje lokalny poziom feromonu
      * @param antSolution Rozwiazanie uzyskane przez mrowke
      */
-    private void localPheromoneUpdate(Solution antSolution) {
+    private void localPheromoneUpdate(Solution antSolution, Map<Integer, BigDecimal> localPheromoneLevel) {
+//        for (Route r : antSolution.getListOfRoutes()) {
+//            for (RouteSegment rs : r.getRouteSegments()) {
+//                if (rs.isPartOfAntAcsSolution()) {
+//                    BigDecimal tau = rs.getAcsPheromoneLevel(); //poziom feromonu
+//                    tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(ro * INITIAL_PHEROMONE_LEVEL));
+//                    rs.setAcsPheromoneLevel(tau);
+//                    rs.setPartOfAntAcsSolution(false);
+//                }
+//            }
+//        }
+
         for (Route r : antSolution.getListOfRoutes()) {
             for (RouteSegment rs : r.getRouteSegments()) {
                 if (rs.isPartOfAntAcsSolution()) {
-                    BigDecimal tau = rs.getAcsPheromoneLevel(); //poziom feromonu
-                    tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(ro * INITIAL_PHEROMONE_LEVEL));
-                    rs.setAcsPheromoneLevel(tau);
+                    BigDecimal tau = localPheromoneLevel.get(rs.getId()); //poziom feromonu
+                    tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(INITIAL_PHEROMONE_LEVEL.multiply(BigDecimal.valueOf(ro)));
+                    localPheromoneLevel.put(rs.getId(), tau);
                     rs.setPartOfAntAcsSolution(false);
                 }
             }
@@ -220,15 +242,26 @@ public class ACSAlgorithm extends Algorithm {
      * @param bestSolution Dotychczasowe najlepsze rozwiazanie znalezione przez mrowke
      */
     private void globalPheromoneUpdate(Solution bestSolution) {
+//        for (RouteSegment rs : super.getRouteSegments()) {
+//            BigDecimal tau = rs.getAcsPheromoneLevel();
+//            if (rs.isPartOfBestAcsSolution()) {
+//                tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(1 / bestSolution.getTotalDistanceCost()));
+//                rs.setPartOfBestAcsSolution(false);
+//            } else {
+//                tau = BigDecimal.valueOf(1 - ro).multiply(tau);
+//            }
+//            rs.setAcsPheromoneLevel(tau);
+//        }
+
         for (RouteSegment rs : super.getRouteSegments()) {
-            BigDecimal tau = rs.getAcsPheromoneLevel();
+            BigDecimal tau = globalPheromoneLevel.get(rs.getId());
             if (rs.isPartOfBestAcsSolution()) {
                 tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(1 / bestSolution.getTotalDistanceCost()));
                 rs.setPartOfBestAcsSolution(false);
             } else {
                 tau = BigDecimal.valueOf(1 - ro).multiply(tau);
             }
-            rs.setAcsPheromoneLevel(tau);
+            globalPheromoneLevel.put(rs.getId(), tau);
         }
     }
 
