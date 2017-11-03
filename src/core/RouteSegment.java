@@ -83,15 +83,15 @@ public class RouteSegment implements Cloneable {
      */
 //    private BigDecimal acsUpNumber;
 
-    /**
-     * Flaga okreslajaca czy odcinek nalezy do najlepszego rozwiazania w algorytmie mrowkowym
-     */
-    private boolean partOfBestAcsSolution = false;
-
-    /**
-     * Flaga okreslajaca czy odcinek nalezy do rozwiazania uzyskanego przez mrowke w algorytmie mrowkowym
-     */
-    private boolean partOfAntAcsSolution = false;
+//    /**
+//     * Flaga okreslajaca czy odcinek nalezy do najlepszego rozwiazania w algorytmie mrowkowym
+//     */
+//    private boolean partOfBestAcsSolution = false;
+//
+//    /**
+//     * Flaga okreslajaca czy odcinek nalezy do rozwiazania uzyskanego przez mrowke w algorytmie mrowkowym
+//     */
+//    private boolean partOfAntAcsSolution = false;
 
     /**
      * Tworzy odcinek trasy
@@ -207,21 +207,21 @@ public class RouteSegment implements Cloneable {
 //        this.acsUpNumber = acsUpNumber;
 //    }
 
-    public boolean isPartOfBestAcsSolution() {
-        return partOfBestAcsSolution;
-    }
-
-    public void setPartOfBestAcsSolution(boolean partOfBestAcsSolution) {
-        this.partOfBestAcsSolution = partOfBestAcsSolution;
-    }
-
-    public boolean isPartOfAntAcsSolution() {
-        return partOfAntAcsSolution;
-    }
-
-    public void setPartOfAntAcsSolution(boolean partOfAntAcsSolution) {
-        this.partOfAntAcsSolution = partOfAntAcsSolution;
-    }
+//    public boolean isPartOfBestAcsSolution() {
+//        return partOfBestAcsSolution;
+//    }
+//
+//    public void setPartOfBestAcsSolution(boolean partOfBestAcsSolution) {
+//        this.partOfBestAcsSolution = partOfBestAcsSolution;
+//    }
+//
+//    public boolean isPartOfAntAcsSolution() {
+//        return partOfAntAcsSolution;
+//    }
+//
+//    public void setPartOfAntAcsSolution(boolean partOfAntAcsSolution) {
+//        this.partOfAntAcsSolution = partOfAntAcsSolution;
+//    }
 
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku

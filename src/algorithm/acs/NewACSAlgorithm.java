@@ -118,7 +118,12 @@ public class NewACSAlgorithm extends Algorithm {
 
             for (NewAnt ant : ants) {
                 resetAnt(ant);
-                Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());//findAntSolution();
+                Solution antSolution = findAntSolution(ant, localPheromoneLevel);
+//                Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());//findAntSolution();
+//                antSolution.getListOfRoutes().add(new Route());
+//                antSolution.getListOfRoutes().get(0).addSegmentAsLast(super.getRouteSegments().get(0));
+//                antSolution.getListOfRoutes().get(0).addSegmentAsLast(super.getRouteSegments().get(1));
+
                 saveAntSolution(antSolution);
                 localPheromoneUpdate(antSolution, localPheromoneLevel); //lokalna aktualizacja feromonu
 
@@ -141,12 +146,61 @@ public class NewACSAlgorithm extends Algorithm {
     private void resetAnt(NewAnt ant) {
         ant.getExploitationRates().clear();
         ant.getExplorationProbabilities().clear();
-        ant.getFeasibleNodes().clear();
-        ant.getUnvisitedCustomers().clear();
+        ant.getFeasibleRouteSegments().clear();
+        ant.getUnvisitedCustomersID().clear();
 
         for (Customer c : super.getCustomers()) {
             if (c.getId() != 0) {
-                ant.getUnvisitedCustomers().add(c.getId()); //utworzenie listy nieodwiedzonych klientów (bez magazynu)
+                ant.getUnvisitedCustomersID().add(c.getId()); //utworzenie listy nieodwiedzonych klientów (bez magazynu)
+            }
+        }
+    }
+
+    private Solution findAntSolution(NewAnt ant, Map<Integer, BigDecimal> localPhermoneLevel) {
+        double weightLimit = super.getProblem().getWeightLimitPerVehicle();
+        double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
+        Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
+
+        while (ant.getUnvisitedCustomersID().size() != 0) {
+            Route tmpRoute = initializeNewRoute();
+            Customer tmpCustomer = tmpRoute.getLastCustomer();
+            ant.updateFeasibleRouteSegments(tmpCustomer, tmpRoute, weightLimit, sizeLimit);
+            while (ant.getFeasibleRouteSegments().size() != 0) {
+                RouteSegment nextRouteSegment = ant.chooseNextRouteSegment(tmpCustomer, localPhermoneLevel);
+                Customer nextCustomer = nextRouteSegment.getDst();
+
+                tmpRoute.addCustomerAsLast(nextCustomer); //dodanie wybranego klienta do budowanej trasy
+                tmpRoute.addSegmentAsLast(nextRouteSegment); //dodanie następnego odcinka do trasy
+
+                ant.removeFromUnvisitedCustomers(nextCustomer.getId());
+                ant.updateFeasibleRouteSegments(nextCustomer, tmpRoute, weightLimit, sizeLimit);
+                tmpCustomer = nextCustomer;
+            }
+
+            if (tmpRoute.getTotalDistance() != 0) {
+                endRoute(tmpCustomer, tmpRoute); //powrót do magazynu
+                antSolution.getListOfRoutes().add(tmpRoute); //dodanie trasy do listy tras
+            } else {
+                break;
+            }
+        }
+
+        return antSolution;
+    }
+
+    private Route initializeNewRoute() {
+        Route route = new Route();
+        route.addCustomerAsLast(super.getProblem().getDepot());
+        return route; //umieszczenie mrówki w magazynie
+    }
+
+    private void endRoute(Customer tmpCustomer, Route tmpRoute) {
+        Customer depot = super.getProblem().getDepot();
+        tmpRoute.addCustomerAsLast(depot); //dodanie magazynu do listy klienów trasy
+        for (RouteSegment rs : tmpCustomer.getRouteSegmentsFromCustomer()) {
+            if (rs.getDst().equals(depot)) {
+                tmpRoute.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
+                break;
             }
         }
     }
@@ -203,6 +257,5 @@ public class NewACSAlgorithm extends Algorithm {
         logger.info(bestAcsSolution.toString());
         logger.info("Saving solution has been completed.");
     }
-
 
 }
