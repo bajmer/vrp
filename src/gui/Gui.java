@@ -2,6 +2,7 @@ package gui;
 
 import algorithm.Algorithm;
 import algorithm.acs.ACSAlgorithm;
+import algorithm.acs.NewACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
 import core.*;
 import io.FileReader;
@@ -418,8 +419,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         double alfa = Double.parseDouble(fAcsParam_q0.getText());
                         double beta = Double.parseDouble(fAcsParam_beta.getText());
                         double gamma = Double.parseDouble(fAcsParam_ro.getText());
-                        Algorithm macs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
-                        macs_algorithm.runAlgorithm();
+//                        Algorithm acs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
+                        Algorithm acs_algorithm = new NewACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
+                        acs_algorithm.runAlgorithm();
                         break;
                 }
                 this.addNodeToSolutionsTree();
