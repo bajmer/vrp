@@ -5,9 +5,11 @@ import core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Klasa implementujaca algorytm mrowkowy
@@ -27,7 +29,7 @@ public class NewACSAlgorithm extends Algorithm {
     /**
      * Poczatkowa wartosc feromonu
      */
-    private static final double INITIAL_PHEROMONE_LEVEL = 0.001;
+    private static double initial_pheromone_level;
 
     /**
      * Ilosc iteracji algorytmu
@@ -49,11 +51,13 @@ public class NewACSAlgorithm extends Algorithm {
      */
     private Solution bestAcsSolution;
 
-    private Map<Integer, BigDecimal> globalPheromoneLevel;
+    private Map<Integer, Double> globalPheromoneLevel;
 
     private List<NewAnt> ants;
 
     private List<Integer> segmentsInBestAcsSolution;
+
+    private boolean nearestNeighbourSearch;
 
     /**
      * Tworzy algorytm mrowkowy na podstawie parametrow ustawionych przez uzytkownika
@@ -85,22 +89,37 @@ public class NewACSAlgorithm extends Algorithm {
     @Override
     public void runAlgorithm() {
         logger.info("Running the Ant Colony System algorithm...");
+        preInitialize();
+        runNearestNeighbour();
         initializeACS();
         processACS();
         saveSolution();
     }
 
-    //    Inicjalizacja
-    private void initializeACS() {
+    private void preInitialize() {
         for (RouteSegment rs : super.getRouteSegments()) {
-            globalPheromoneLevel.put(rs.getId(), BigDecimal.valueOf(INITIAL_PHEROMONE_LEVEL)); //zainicjowanie feromonu na każdym odcinku
-
             for (Customer c : super.getCustomers()) {
                 if (c.equals(rs.getSrc()) && c.getRouteSegmentsFromCustomer().size() < super.getCustomers().size() - 1) {
                     c.getRouteSegmentsFromCustomer().add(rs); //przypisanie każdemu klientowi listy wychodzących z niego odcinków trasy
                     break;
                 }
             }
+        }
+    }
+
+    private void runNearestNeighbour() {
+        nearestNeighbourSearch = true;
+        NewAnt nearestNeighbourAnt = new NewAnt();
+        resetAnt(nearestNeighbourAnt);
+        Solution nearestNeighbourSolution = findAntSolution(nearestNeighbourAnt, null);
+        saveAntSolution(nearestNeighbourSolution);
+        initial_pheromone_level = 1 / nearestNeighbourSolution.getTotalDistanceCost();
+    }
+
+    //    Inicjalizacja
+    private void initializeACS() {
+        for (RouteSegment rs : super.getRouteSegments()) {
+            globalPheromoneLevel.put(rs.getId(), initial_pheromone_level); //zainicjowanie feromonu na każdym odcinku
         }
 
         for (int i = 0; i < m; i++) {
@@ -110,22 +129,18 @@ public class NewACSAlgorithm extends Algorithm {
 
     //    Pętla główna ACS
     private void processACS() {
-
+        nearestNeighbourSearch = false;
         int bestIteration = 1;
         int iteration = 1;
         while (i > 0 ? iteration <= i : iteration - bestIteration < 100) {
-            Map<Integer, BigDecimal> localPheromoneLevel = new HashMap<>(globalPheromoneLevel); //feromon lokalny
+//            Map<Integer, Double> localPheromoneLevel = new HashMap<>(globalPheromoneLevel); //feromon lokalny
+//            Map<Integer, Double> localPheromoneLevel = globalPheromoneLevel; //feromon lokalny
 
             for (NewAnt ant : ants) {
                 resetAnt(ant);
-                Solution antSolution = findAntSolution(ant, localPheromoneLevel);
-//                Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());//findAntSolution();
-//                antSolution.getListOfRoutes().add(new Route());
-//                antSolution.getListOfRoutes().get(0).addSegmentAsLast(super.getRouteSegments().get(0));
-//                antSolution.getListOfRoutes().get(0).addSegmentAsLast(super.getRouteSegments().get(1));
-
+                Solution antSolution = findAntSolution(ant, globalPheromoneLevel);
                 saveAntSolution(antSolution);
-                localPheromoneUpdate(antSolution, localPheromoneLevel); //lokalna aktualizacja feromonu
+                localPheromoneUpdate(antSolution, globalPheromoneLevel); //lokalna aktualizacja feromonu
 
                 if (bestAcsSolution == null || antSolution.getTotalDistanceCost() < bestAcsSolution.getTotalDistanceCost()) {
                     bestAcsSolution = antSolution;
@@ -156,17 +171,17 @@ public class NewACSAlgorithm extends Algorithm {
         }
     }
 
-    private Solution findAntSolution(NewAnt ant, Map<Integer, BigDecimal> localPhermoneLevel) {
+    private Solution findAntSolution(NewAnt ant, Map<Integer, Double> localPhermoneLevel) {
         double weightLimit = super.getProblem().getWeightLimitPerVehicle();
         double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
         Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
 
-        while (ant.getUnvisitedCustomersID().size() != 0) {
+        while (ant.getUnvisitedCustomersID().size() > 0) {
             Route tmpRoute = initializeNewRoute();
             Customer tmpCustomer = tmpRoute.getLastCustomer();
             ant.updateFeasibleRouteSegments(tmpCustomer, tmpRoute, weightLimit, sizeLimit);
-            while (ant.getFeasibleRouteSegments().size() != 0) {
-                RouteSegment nextRouteSegment = ant.chooseNextRouteSegment(tmpCustomer, localPhermoneLevel);
+            while (ant.getFeasibleRouteSegments().size() > 0) {
+                RouteSegment nextRouteSegment = ant.chooseNextRouteSegment(tmpCustomer, localPhermoneLevel, nearestNeighbourSearch);
                 Customer nextCustomer = nextRouteSegment.getDst();
 
                 tmpRoute.addCustomerAsLast(nextCustomer); //dodanie wybranego klienta do budowanej trasy
@@ -175,6 +190,12 @@ public class NewACSAlgorithm extends Algorithm {
                 ant.removeFromUnvisitedCustomers(nextCustomer.getId());
                 ant.updateFeasibleRouteSegments(nextCustomer, tmpRoute, weightLimit, sizeLimit);
                 tmpCustomer = nextCustomer;
+
+//                if (tmpRoute.getCurrentPackagesWeight() > weightLimit * 0.7) {
+//                    if (new Random().nextBoolean()) {
+//                        break;
+//                    }
+//                }
             }
 
             if (tmpRoute.getTotalDistance() != 0) {
@@ -205,23 +226,27 @@ public class NewACSAlgorithm extends Algorithm {
         }
     }
 
-    private void localPheromoneUpdate(Solution solution, Map<Integer, BigDecimal> localPheromoneLevel) {
+    private void localPheromoneUpdate(Solution solution, Map<Integer, Double> localPheromoneLevel) {
         for (Route r : solution.getListOfRoutes()) {
             for (RouteSegment rs : r.getRouteSegments()) {
-                BigDecimal tau = localPheromoneLevel.get(rs.getId());
-                tau = BigDecimal.valueOf(1 - ro).multiply(tau).add(BigDecimal.valueOf(ro * INITIAL_PHEROMONE_LEVEL));
+                double tau = localPheromoneLevel.get(rs.getId());
+                tau = (1 - ro) * tau + (ro * initial_pheromone_level);
                 localPheromoneLevel.put(rs.getId(), tau);
             }
         }
     }
 
     private void globalPheromoneUpdate() {
-        for (Map.Entry<Integer, BigDecimal> segment : globalPheromoneLevel.entrySet()) {
-            BigDecimal tau = segment.getValue();
-            tau = BigDecimal.valueOf(1 - ro).multiply(tau);
+        for (Map.Entry<Integer, Double> segment : globalPheromoneLevel.entrySet()) {
+            double tau = segment.getValue();
+            tau = (1 - ro) * tau;
 
             if (segmentsInBestAcsSolution.contains(segment.getKey())) {
-                tau = tau.add(BigDecimal.valueOf(1 / bestAcsSolution.getTotalDistanceCost()));
+                tau = tau + (1 / bestAcsSolution.getTotalDistanceCost());
+            }
+
+            if (tau < initial_pheromone_level) {
+                tau = initial_pheromone_level;
             }
             globalPheromoneLevel.put(segment.getKey(), tau);
         }

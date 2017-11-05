@@ -1,7 +1,6 @@
 package gui;
 
 import algorithm.Algorithm;
-import algorithm.acs.ACSAlgorithm;
 import algorithm.acs.NewACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
 import core.*;
@@ -34,6 +33,8 @@ import java.text.NumberFormat;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Vector;
+
+//import algorithm.acs.ACSAlgorithm;
 
 /**
  * Klasa odpowiadajaca za tworzenie interfejsu uzytkownika oraz wywyolywanie odpowiednich funkcji przy klikaniu w rozne elementy

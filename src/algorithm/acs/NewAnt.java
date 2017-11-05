@@ -4,7 +4,6 @@ import core.Customer;
 import core.Route;
 import core.RouteSegment;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 public class NewAnt {
@@ -28,11 +27,11 @@ public class NewAnt {
      */
     private List<RouteSegment> feasibleRouteSegments;
 
-    private Map<Integer, BigDecimal> explorationProbabilities;
+    private Map<Integer, Double> explorationProbabilities;
 
-    private Map<Integer, BigDecimal> exploitationRates;
+    private Map<Integer, Double> exploitationRates;
 
-    private BigDecimal exploitationRateSum;
+    private double exploitationRateSum;
 
     /**
      * Tworzy mrowke
@@ -42,7 +41,7 @@ public class NewAnt {
         unvisitedCustomersID = new ArrayList<>();
         explorationProbabilities = new HashMap<>();
         exploitationRates = new HashMap<>();
-        exploitationRateSum = BigDecimal.ZERO;
+        exploitationRateSum = 0.0;
     }
 
     public static double getQ0() {
@@ -77,19 +76,19 @@ public class NewAnt {
         this.feasibleRouteSegments = feasibleRouteSegments;
     }
 
-    public Map<Integer, BigDecimal> getExplorationProbabilities() {
+    public Map<Integer, Double> getExplorationProbabilities() {
         return explorationProbabilities;
     }
 
-    public void setExplorationProbabilities(Map<Integer, BigDecimal> explorationProbabilities) {
+    public void setExplorationProbabilities(Map<Integer, Double> explorationProbabilities) {
         this.explorationProbabilities = explorationProbabilities;
     }
 
-    public Map<Integer, BigDecimal> getExploitationRates() {
+    public Map<Integer, Double> getExploitationRates() {
         return exploitationRates;
     }
 
-    public void setExploitationRates(Map<Integer, BigDecimal> exploitationRates) {
+    public void setExploitationRates(Map<Integer, Double> exploitationRates) {
         this.exploitationRates = exploitationRates;
     }
 
@@ -115,45 +114,61 @@ public class NewAnt {
         unvisitedCustomersID.remove(id);
     }
 
-    public RouteSegment chooseNextRouteSegment(Customer tmpCustomer, Map<Integer, BigDecimal> localPheromoneLevel) {
-        exploitationRateSum = BigDecimal.ZERO;
+    public RouteSegment chooseNextRouteSegment(Customer tmpCustomer, Map<Integer, Double> localPheromoneLevel, boolean isNearestNeighbourSearch) {
+        exploitationRateSum = 0.0;
         exploitationRates.clear();
         explorationProbabilities.clear();
 
         RouteSegment nextRouteSegment;
 
-        if (tmpCustomer.getId() == 0) { //jeżeli mrówka znajduje się w magazynie wybiera losowo miasto z listy dostępnych miast
-            nextRouteSegment = chooseRandomRouteSegment();
-        } else { //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
-            RouteSegment bestRouteSegment = chooseBestRouteSegment(localPheromoneLevel);
-            if (new Random().nextDouble() <= q0) {
-                nextRouteSegment = bestRouteSegment; //eksploatacja najlepszego odcinka
-            } else {
-                nextRouteSegment = chooseProbabilityRandomRouteSegment(); //losowy wybór odcinka uwzględniając prawdopodobieństwo
+        if (isNearestNeighbourSearch) {
+            nextRouteSegment = chooseNearestNeighbour();
+        } else {
+            if (tmpCustomer.getId() == 0) { //jeżeli mrówka znajduje się w magazynie wybiera losowo miasto z listy dostępnych miast
+                nextRouteSegment = chooseRandomRouteSegment();
+            } else { //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
+                RouteSegment bestRouteSegment = chooseBestRouteSegment(localPheromoneLevel);
+                if (new Random().nextDouble() <= q0) {
+                    nextRouteSegment = bestRouteSegment; //eksploatacja najlepszego odcinka
+                } else {
+                    nextRouteSegment = chooseProbabilityRandomRouteSegment(); //losowy wybór odcinka uwzględniając prawdopodobieństwo
+                }
             }
         }
         return nextRouteSegment;
     }
 
-    private RouteSegment chooseRandomRouteSegment() {
-        RouteSegment nextRouteSegment;
-
-        int randomValue = new Random().nextInt(feasibleRouteSegments.size());
-        nextRouteSegment = feasibleRouteSegments.get(randomValue);
-
-        return nextRouteSegment;
+    private RouteSegment chooseNearestNeighbour() {
+        RouteSegment nearestRouteSegment = null;
+        double minDistance = 0;
+        for (RouteSegment rs : feasibleRouteSegments) {
+            if (minDistance == 0 || rs.getDistance() < minDistance) {
+                minDistance = rs.getDistance();
+                nearestRouteSegment = rs;
+            }
+        }
+        return nearestRouteSegment;
     }
 
-    private RouteSegment chooseBestRouteSegment(Map<Integer, BigDecimal> localPheromoneLevel) {
+    private RouteSegment chooseRandomRouteSegment() {
+        RouteSegment randomRouteSegment;
+
+        int randomValue = new Random().nextInt(feasibleRouteSegments.size());
+        randomRouteSegment = feasibleRouteSegments.get(randomValue);
+
+        return randomRouteSegment;
+    }
+
+    private RouteSegment chooseBestRouteSegment(Map<Integer, Double> localPheromoneLevel) {
         RouteSegment bestRouteSegment = null;
-        BigDecimal bestExploitationRate = BigDecimal.ZERO;
+        double bestExploitationRate = 0.0;
         for (RouteSegment rs : feasibleRouteSegments) {
             double ni = 1 / rs.getDistance();
-            BigDecimal tau = localPheromoneLevel.get(rs.getId());
-            BigDecimal exploitationRate = tau.multiply(BigDecimal.valueOf(Math.pow(ni, beta))); //licznik
+            double tau = localPheromoneLevel.get(rs.getId());
+            double exploitationRate = tau * (Math.pow(ni, beta)); //licznik
             exploitationRates.put(rs.getId(), exploitationRate);
-            exploitationRateSum = exploitationRateSum.add(exploitationRate); //mianownik
-            if (exploitationRate.compareTo(bestExploitationRate) > 0) {
+            exploitationRateSum = exploitationRateSum + exploitationRate; //mianownik
+            if (exploitationRate > bestExploitationRate) {
                 bestExploitationRate = exploitationRate;
                 bestRouteSegment = rs;
             }
@@ -162,14 +177,14 @@ public class NewAnt {
     }
 
     private RouteSegment chooseProbabilityRandomRouteSegment() {
-        BigDecimal weightSum = calculateProbabilitiesForAllFeasibleRouteSegments();
+        double weightSum = calculateProbabilitiesForAllFeasibleRouteSegments();
 
         RouteSegment choosedRouteSegment = null;
-        BigDecimal value = BigDecimal.valueOf(new Random().nextDouble()).multiply(weightSum); //zakres 0-1 * suma wag
+        double value = new Random().nextDouble() * weightSum; //zakres 0-1 * suma wag
         for (RouteSegment rs : feasibleRouteSegments) {
             if (explorationProbabilities.containsKey(rs.getId())) {
-                value = value.subtract(explorationProbabilities.get(rs.getId()));
-                if (value.compareTo(BigDecimal.ZERO) <= 0) {
+                value = value - explorationProbabilities.get(rs.getId());
+                if (value <= 0) {
                     choosedRouteSegment = rs;
                     break;
                 }
@@ -178,14 +193,13 @@ public class NewAnt {
         return choosedRouteSegment;
     }
 
-    private BigDecimal calculateProbabilitiesForAllFeasibleRouteSegments() {
-        BigDecimal probabilitiesSum = BigDecimal.ZERO;
-        for (Map.Entry<Integer, BigDecimal> entry : exploitationRates.entrySet()) {
-            BigDecimal probability = entry.getValue().divide(exploitationRateSum, BigDecimal.ROUND_HALF_UP);
+    private double calculateProbabilitiesForAllFeasibleRouteSegments() {
+        double probabilitiesSum = 0.0;
+        for (Map.Entry<Integer, Double> entry : exploitationRates.entrySet()) {
+            double probability = entry.getValue() / exploitationRateSum;
             explorationProbabilities.put(entry.getKey(), probability);
-            probabilitiesSum = probabilitiesSum.add(probability);
+            probabilitiesSum = probabilitiesSum + probability;
         }
-
         return probabilitiesSum;
     }
 }
