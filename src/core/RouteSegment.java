@@ -74,26 +74,6 @@ public class RouteSegment implements Cloneable {
     private ImageIcon imageIcon;
 
     /**
-     * Poziom feromonu na odcinku wykorzystywany przez algorytm mrowkowy
-     */
-//    private BigDecimal acsPheromoneLevel;
-
-    /**
-     * Wspolczynnik okreslajacy jak bardzo korzystne jest wybranie tego odcinka w algorytmie mrowkowym
-     */
-//    private BigDecimal acsUpNumber;
-
-//    /**
-//     * Flaga okreslajaca czy odcinek nalezy do najlepszego rozwiazania w algorytmie mrowkowym
-//     */
-//    private boolean partOfBestAcsSolution = false;
-//
-//    /**
-//     * Flaga okreslajaca czy odcinek nalezy do rozwiazania uzyskanego przez mrowke w algorytmie mrowkowym
-//     */
-//    private boolean partOfAntAcsSolution = false;
-
-    /**
      * Tworzy odcinek trasy
      * @param src Klient poczatkowy
      * @param dst Klient docelowy
@@ -190,38 +170,6 @@ public class RouteSegment implements Cloneable {
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
     }
-
-//    public BigDecimal getAcsPheromoneLevel() {
-//        return acsPheromoneLevel;
-//    }
-//
-//    public void setAcsPheromoneLevel(BigDecimal acsPheromoneLevel) {
-//        this.acsPheromoneLevel = acsPheromoneLevel;
-//    }
-//
-//    public BigDecimal getAcsUpNumber() {
-//        return acsUpNumber;
-//    }
-//
-//    public void setAcsUpNumber(BigDecimal acsUpNumber) {
-//        this.acsUpNumber = acsUpNumber;
-//    }
-
-//    public boolean isPartOfBestAcsSolution() {
-//        return partOfBestAcsSolution;
-//    }
-//
-//    public void setPartOfBestAcsSolution(boolean partOfBestAcsSolution) {
-//        this.partOfBestAcsSolution = partOfBestAcsSolution;
-//    }
-//
-//    public boolean isPartOfAntAcsSolution() {
-//        return partOfAntAcsSolution;
-//    }
-//
-//    public void setPartOfAntAcsSolution(boolean partOfAntAcsSolution) {
-//        this.partOfAntAcsSolution = partOfAntAcsSolution;
-//    }
 
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku

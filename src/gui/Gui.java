@@ -1,7 +1,7 @@
 package gui;
 
 import algorithm.Algorithm;
-import algorithm.acs.NewACSAlgorithm;
+import algorithm.acs.ACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
 import core.*;
 import io.FileReader;
@@ -33,8 +33,6 @@ import java.text.NumberFormat;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Vector;
-
-//import algorithm.acs.ACSAlgorithm;
 
 /**
  * Klasa odpowiadajaca za tworzenie interfejsu uzytkownika oraz wywyolywanie odpowiednich funkcji przy klikaniu w rozne elementy
@@ -262,6 +260,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fAcsParam_i.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fAcsParam_m.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
+        fAcsParam_beta.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
 
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
@@ -270,7 +269,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
         doubleFormatter.setValueClass(Double.class);
         fAcsParam_q0.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
-        fAcsParam_beta.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fAcsParam_ro.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
         fWeightLimit.setText("1500");
@@ -418,10 +416,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                         int numberOfIterations = Integer.parseInt(fAcsParam_i.getText());
                         int numberOfAnts = Integer.parseInt(fAcsParam_m.getText());
                         double alfa = Double.parseDouble(fAcsParam_q0.getText());
-                        double beta = Double.parseDouble(fAcsParam_beta.getText());
+                        int beta = Integer.parseInt(fAcsParam_beta.getText());
                         double gamma = Double.parseDouble(fAcsParam_ro.getText());
-//                        Algorithm acs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
-                        Algorithm acs_algorithm = new NewACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
+                        Algorithm acs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
                         acs_algorithm.runAlgorithm();
                         break;
                 }

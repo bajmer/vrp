@@ -1,7 +1,6 @@
 package core;
 
 import javax.swing.*;
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -110,11 +109,6 @@ public class Customer {
     private ImageIcon imageIcon;
 
     /**
-     * Prawdopodobienstwo wyboru klienta w algorytmie mrowkowym
-     */
-//    private BigDecimal acsChoiceProbability;
-
-    /**
      * Tworzy obiekt klienta na podstawie rzeczywistych danych pobranych z pliku tekstowego
      * @param fullAddress Pelny adres
      * @param streetAndNumber Nazwa ulicy i numer domu
@@ -144,7 +138,6 @@ public class Customer {
         this.minDeliveryHour = minDeliveryHour;
         this.maxDeliveryHour = maxDeliveryHour;
         this.imageIcon = null;
-//        this.acsChoiceProbability = BigDecimal.ZERO;
     }
 
     /**
@@ -167,7 +160,6 @@ public class Customer {
         this.minDeliveryHour = LocalTime.of(8, 0);
         this.maxDeliveryHour = LocalTime.of(18, 0);
         this.imageIcon = null;
-//        this.acsChoiceProbability = BigDecimal.ZERO;
     }
 
     public static int getCustomerID() {
@@ -317,12 +309,4 @@ public class Customer {
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
     }
-
-//    public BigDecimal getAcsChoiceProbability() {
-//        return acsChoiceProbability;
-//    }
-//
-//    public void setAcsChoiceProbability(BigDecimal acsChoiceProbability) {
-//        this.acsChoiceProbability = acsChoiceProbability;
-//    }
 }
