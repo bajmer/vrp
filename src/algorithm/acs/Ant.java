@@ -15,23 +15,32 @@ public class Ant {
     /**
      * Parametr regulujacy wpływ ni (odwrotnosc odległosci)
      */
-    private static int beta; //preferowana wartość to 2-5
+    private static int beta;
 
     /**
-     * Lista nieodwiedzonych jeszcze klientow
+     * Lista numerow ID nieodwiedzonych jeszcze przez mrowke klientow
      */
     private List<Integer> unvisitedCustomersID;
 
     /**
-     * Lista dostepnych klientow, do ktorych moze isc mrowka w najblizszym kroku
+     * Lista dostepnych odcinkow, ktore moze wybrac mrowka w najblizszym kroku
      */
     private List<RouteSegment> feasibleRouteSegments;
 
+    /**
+     * Mapa okreslajaca prawdopodobienstwo eksploracji dostepnych odcinkow, klucz: ID odcinka, wartosc: prawdopodobienstwo wylosowania tego odcinka
+     */
     private Map<Integer, Double> explorationProbabilities;
 
+    /**
+     * Mapa okreslajaca wspolczynniki eksploatacji dostepnych odcinkow, klucz: ID odcinka, wartosc: wspolczynnik okreslajacy jak dobry jest odcinek do eksploatacji zalezny od ilosci feromonu i dlugosci odcinka
+     */
     private Map<Integer, Double> exploitationRates;
 
-    private double exploitationRateSum;
+    /**
+     * Suma wspolczynnikow eksploatacji odcinkow wykorzystywana do obliczenia pradopodobienstwa eksploracji odcinkow
+     */
+    private double exploitationRatesSum;
 
     /**
      * Tworzy mrowke
@@ -41,7 +50,7 @@ public class Ant {
         unvisitedCustomersID = new ArrayList<>();
         explorationProbabilities = new HashMap<>();
         exploitationRates = new HashMap<>();
-        exploitationRateSum = 0.0;
+        exploitationRatesSum = 0.0;
     }
 
     public static double getQ0() {
@@ -92,12 +101,20 @@ public class Ant {
         this.exploitationRates = exploitationRates;
     }
 
+    /**
+     * Aktualizuje dostepne odcinki, ktorymi moze poruszac sie mrowka w kolejnym kroku
+     *
+     * @param tmpCustomer Biezacy klient, u ktorego znajduje sie mrowka
+     * @param tmpRoute    Biezaca trasa
+     * @param weightLimit Maksymalna dopuszczalna masa ladunku
+     * @param sizeLimit   Maksymalna dopuszczalna objetosc ladunku
+     */
     void updateFeasibleRouteSegments(Customer tmpCustomer, Route tmpRoute, double weightLimit, double sizeLimit) {
         feasibleRouteSegments.clear();
         for (RouteSegment rs : tmpCustomer.getRouteSegmentsFromCustomer()) {
             Customer dst = rs.getDst();
-            if (unvisitedCustomersID.contains(dst.getId())) { //jeśli klient jest na liście nieodwiedzonych klientów
-                if (tmpRoute.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) { //jeśli klient może zostać dodany do trasy (dopisać warunki czasowe dla VRPTW)
+            if (unvisitedCustomersID.contains(dst.getId())) {
+                if (tmpRoute.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
                     feasibleRouteSegments.add(rs);
                 }
             }
@@ -105,17 +122,24 @@ public class Ant {
     }
 
     /**
-     * Usuwa klienta z listy nieodwiedzonych klientow
+     * Usuwa ID klienta z listy numerow ID nieodwiedzonych jeszcze przez mrowke klientow
      *
-     * @param idToRemove Id klienta, ktorego nalezy usunac
+     * @param idToRemove Numer ID klienta, ktory nalezy usunac
      */
     void removeFromUnvisitedCustomers(int idToRemove) {
         Integer id = idToRemove;
         unvisitedCustomersID.remove(id);
     }
 
+    /**
+     * Wybiera kolejny odcinek, ktory zostanie dodany przez mrowke do trasy
+     * @param tmpCustomer Biezacy klient
+     * @param pheromoneLevel Mapa okreslajaca poziom feromonu na odcinkach
+     * @param isNearestNeighbourSearch Flaga okreslajaca, czy obecnie trwa budowanie trasy przez mrowke w trybie najblizszego klienta
+     * @return Zwraca kolejny odcinek, ktory zostanie dodany przez mrowke do trasy
+     */
     RouteSegment chooseNextRouteSegment(Customer tmpCustomer, Map<Integer, Double> pheromoneLevel, boolean isNearestNeighbourSearch) {
-        exploitationRateSum = 0.0;
+        exploitationRatesSum = 0.0;
         exploitationRates.clear();
         explorationProbabilities.clear();
 
@@ -124,7 +148,7 @@ public class Ant {
         if (isNearestNeighbourSearch) {
             nextRouteSegment = chooseNearestNeighbour();
         } else {
-            if (tmpCustomer.getId() == 0) { //jeżeli mrówka znajduje się w magazynie wybiera losowo miasto z listy dostępnych miast
+            if (tmpCustomer.getId() == 0) { //jeżeli mrówka znajduje się w magazynie, wybiera losowo miasto z listy dostępnych miast
                 nextRouteSegment = chooseRandomRouteSegment();
             } else { //jeżeli mrówka jest w dowolnym węźle (ale nie w magazynie), wówczas wybiera kolejne miasto zgodnie z zasadami ACS
                 RouteSegment bestRouteSegment = chooseBestRouteSegment(pheromoneLevel);
@@ -138,6 +162,10 @@ public class Ant {
         return nextRouteSegment;
     }
 
+    /**
+     * Wybiera kolejny odcinek trasy w oparciu o najblizszego klienta
+     * @return Zwraca najkrotszy dostepny odcinek trasy
+     */
     private RouteSegment chooseNearestNeighbour() {
         RouteSegment nearestRouteSegment = null;
         double minDistance = 0;
@@ -150,22 +178,32 @@ public class Ant {
         return nearestRouteSegment;
     }
 
+    /**
+     * Wybiera losowo pierwszy odcinek trasy
+     * @return Zwraca losowy odcinek, ktory bedzie pierwszym odcinkiem trasy
+     */
     private RouteSegment chooseRandomRouteSegment() {
         RouteSegment randomRouteSegment;
         int randomValue = new Random().nextInt(feasibleRouteSegments.size());
         randomRouteSegment = feasibleRouteSegments.get(randomValue);
+
         return randomRouteSegment;
     }
 
+    /**
+     * Oblicza wspolczynniki eksploatacji dla dostepnych odcinkow i wybiera odcinek o najlepszym wspolczynniku
+     * @param pheromoneLevel Mapa okreslajaca ilosc feromonu na odcinkach
+     * @return Zwraca odcinek o najlepszym wspolczynniku eksploatacji
+     */
     private RouteSegment chooseBestRouteSegment(Map<Integer, Double> pheromoneLevel) {
         RouteSegment bestRouteSegment = null;
         double bestExploitationRate = 0.0;
         for (RouteSegment rs : feasibleRouteSegments) {
             double ni = 1 / rs.getDistance();
             double tau = pheromoneLevel.get(rs.getId());
-            double exploitationRate = tau * (Math.pow(ni, beta)); //licznik
+            double exploitationRate = tau * (Math.pow(ni, beta));
             exploitationRates.put(rs.getId(), exploitationRate);
-            exploitationRateSum = exploitationRateSum + exploitationRate; //mianownik
+            exploitationRatesSum = exploitationRatesSum + exploitationRate;
             if (exploitationRate > bestExploitationRate) {
                 bestExploitationRate = exploitationRate;
                 bestRouteSegment = rs;
@@ -174,11 +212,15 @@ public class Ant {
         return bestRouteSegment;
     }
 
+    /**
+     * Wybiera losowo kolejny odcinek trasy w oparciu o prawdopodobienstwo
+     * @return Zwraca losowy odcinek wylosowany w oparciu o prawdopodobienstwo
+     */
     private RouteSegment chooseProbabilityRandomRouteSegment() {
         calculateProbabilitiesForAllFeasibleRouteSegments();
 
         RouteSegment chosenRouteSegment = null;
-        double value = new Random().nextDouble(); //zakres 0-1
+        double value = new Random().nextDouble();
         for (RouteSegment rs : feasibleRouteSegments) {
             if (explorationProbabilities.containsKey(rs.getId())) {
                 value = value - explorationProbabilities.get(rs.getId());
@@ -191,9 +233,12 @@ public class Ant {
         return chosenRouteSegment;
     }
 
+    /**
+     * Oblicza prawdopodobienstwo eksploracji odcinkow
+     */
     private void calculateProbabilitiesForAllFeasibleRouteSegments() {
         for (Map.Entry<Integer, Double> entry : exploitationRates.entrySet()) {
-            double probability = entry.getValue() / exploitationRateSum;
+            double probability = entry.getValue() / exploitationRatesSum;
             explorationProbabilities.put(entry.getKey(), probability);
         }
     }
