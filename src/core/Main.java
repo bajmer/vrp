@@ -23,6 +23,7 @@ public class Main {
     public static void main(String[] args) {
 
         Gui gui = new Gui();
+//        Gui2 gui = new Gui2();
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gui.setExtendedState(JFrame.MAXIMIZED_BOTH);
         gui.setTitle("VRP System");
