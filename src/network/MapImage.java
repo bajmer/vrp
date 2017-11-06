@@ -120,17 +120,23 @@ public class MapImage {
      */
     public void createSolutionImage(Solution s) throws IOException {
         String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
-        logger.debug("Creating an images of solution " + solutionImageName + "...");
+        logger.debug("Creating an image of solution " + solutionImageName + "...");
 
         try {
-            String url = parseURL(s, false);
-            sendRequestToGoogleMaps(url, solutionImageName);
+            String fullURL = parseURL(s, false);
+            if (fullURL.length() <= 8192) {
+                sendRequestToGoogleMaps(fullURL, solutionImageName);
+            } else {
+                String simpleURL = parseURL(s, true);
+                if (simpleURL.length() <= 8192) {
+                    sendRequestToGoogleMaps(simpleURL, solutionImageName);
+                } else {
+                    logger.warn("Cannot create an image of the solution because of too long URL address!");
+                }
+            }
             s.setImageIcon(new ImageIcon(solutionImageName));
         } catch (Exception e) {
-            logger.debug("Cannot create full solution image! Creating simple solution image...");
-            String simpleURL = parseURL(s, true);
-            sendRequestToGoogleMaps(simpleURL, solutionImageName);
-            s.setImageIcon(new ImageIcon(solutionImageName));
+            logger.warn("Unexpected error while creating an image of solution!");
         }
 
         logger.debug("Creating an image of solution " + solutionImageName + " has been completed.");
@@ -144,13 +150,13 @@ public class MapImage {
      */
     public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
-        logger.debug("Creating images of route" + routeImageName + "...");
+        logger.debug("Creating images of routes" + routeImageName + "...");
 
         String urlForSingleRoute = parseURL(r);
         sendRequestToGoogleMaps(urlForSingleRoute, routeImageName);
         r.setImageIcon(new ImageIcon(routeImageName));
 
-        logger.debug("Creating images of route" + routeImageName + " has been completed.");
+        logger.debug("Creating images of routes" + routeImageName + " has been completed.");
     }
 
     /**
@@ -162,13 +168,13 @@ public class MapImage {
      */
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
-        logger.debug("Creating images of route segment" + routeSegmentImageName + "...");
+        logger.debug("Creating images of route segments" + routeSegmentImageName + "...");
 
         String url = parseURL(rs);
         sendRequestToGoogleMaps(url, routeSegmentImageName);
         rs.setImageIcon(new ImageIcon(routeSegmentImageName));
 
-        logger.debug("Creating images of route segment " + routeSegmentImageName + " has been completed.");
+        logger.debug("Creating images of route segments " + routeSegmentImageName + " has been completed.");
     }
 
     /**
@@ -178,13 +184,13 @@ public class MapImage {
      */
     public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = IMAGE_PATH + "C" + c.getMapId();
-        logger.debug("Creating images of customer" + customerImageName + "...");
+        logger.debug("Creating images of customers" + customerImageName + "...");
 
         String url = parseURL(c);
         sendRequestToGoogleMaps(url, customerImageName);
         c.setImageIcon(new ImageIcon(customerImageName));
 
-        logger.debug("Creating images of customer has been completed.");
+        logger.debug("Creating images of customers has been completed.");
     }
 
     /**
@@ -196,10 +202,11 @@ public class MapImage {
     private String parseURL(Solution s, boolean simpleURL) {
         StringBuilder paths = new StringBuilder();
         StringBuilder markers = new StringBuilder();
-        Database.getCustomerList().get(0);
+
         markers.append(DEFAULT_DEPOT_MARKER);
         markers.append(s.getDepot().getLatitude()).append(",").append(s.getDepot().getLongitude());
         markers.append(DEFAULT_CUSTOMER_MARKER);
+
         for (Customer c : Database.getCustomerList()) {
             if (c.getId() == 0) {
                 continue;
@@ -337,10 +344,10 @@ public class MapImage {
             outputStream.close();
 
         } catch (MalformedURLException e) {
-            logger.error("Bad URL address!");
+            logger.error("Invalid URL address!");
             throw e;
         } catch (IOException e) {
-            logger.error("Unexpected error while connecting to server!");
+            logger.error("Unexpected error while connecting to GoogleMaps server!");
             throw e;
         }
         logger.debug("Sending request to Google Maps has been completed.");

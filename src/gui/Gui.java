@@ -31,7 +31,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Hashtable;
-import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -256,7 +255,6 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         NumberFormatter intFormatter = new NumberFormatter(integerFormat);
         intFormatter.setValueClass(Integer.class);
         intFormatter.setAllowsInvalid(false);
-        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fSizeLimit.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fAcsParam_i.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
         fAcsParam_m.setFormatterFactory(new DefaultFormatterFactory(intFormatter));
@@ -268,24 +266,37 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         doubleFormat.setGroupingUsed(false);
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
         doubleFormatter.setValueClass(Double.class);
+        fWeightLimit.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fAcsParam_q0.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
         fAcsParam_ro.setFormatterFactory(new DefaultFormatterFactory(doubleFormatter));
 
-        fWeightLimit.setText("1500");
-        fSizeLimit.setText("9");
-        fAcsParam_i.setText("100");
+        fWeightLimit.setText("1.5");
+        fSizeLimit.setText("10");
+        fAcsParam_i.setText("500");
         fAcsParam_m.setText("20");
         fAcsParam_q0.setText("0.8");
         fAcsParam_beta.setText("3");
-        fAcsParam_ro.setText("0.5");
+        fAcsParam_ro.setText("0.1");
 
-        sWeightLimit.addChangeListener(e -> fWeightLimit.setText(integerFormat.format(sWeightLimit.getValue())));
+        sWeightLimit.addChangeListener(e -> fWeightLimit.setText(doubleFormat.format((double) sWeightLimit.getValue() / 2)));
         sSizeLimit.addChangeListener(e -> fSizeLimit.setText(integerFormat.format(sSizeLimit.getValue())));
         sAcsParam_i.addChangeListener(e -> fAcsParam_i.setText(integerFormat.format(sAcsParam_i.getValue())));
         sAcsParam_m.addChangeListener(e -> fAcsParam_m.setText(integerFormat.format(sAcsParam_m.getValue())));
         sAcsParam_q0.addChangeListener(e -> fAcsParam_q0.setText(doubleFormat.format((double) sAcsParam_q0.getValue() / 10)));
         sAcsParam_beta.addChangeListener(e -> fAcsParam_beta.setText(integerFormat.format(sAcsParam_beta.getValue())));
         sAcsParam_ro.addChangeListener(e -> fAcsParam_ro.setText(doubleFormat.format((double) sAcsParam_ro.getValue() / 10)));
+
+        Hashtable<Integer, JLabel> labelWeightLimitTable = new Hashtable<>();
+        labelWeightLimitTable.put(0, new JLabel("0"));
+        labelWeightLimitTable.put(6, new JLabel("3"));
+        labelWeightLimitTable.put(12, new JLabel("6"));
+        labelWeightLimitTable.put(18, new JLabel("9"));
+        labelWeightLimitTable.put(24, new JLabel("12"));
+        labelWeightLimitTable.put(30, new JLabel("15"));
+        labelWeightLimitTable.put(36, new JLabel("18"));
+        labelWeightLimitTable.put(42, new JLabel("21"));
+        labelWeightLimitTable.put(48, new JLabel("24"));
+        sWeightLimit.setLabelTable(labelWeightLimitTable);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(10, new JLabel("1.0"));
@@ -296,23 +307,18 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         boxAlgorithms.addItem(CW_ALG);
         boxAlgorithms.addItem(ACS_ALG);
-        boxAlgorithms.setSelectedIndex(0);
+        boxAlgorithms.setSelectedIndex(1);
 
         bGetDistance.setEnabled(false);
-        boxAlgorithms.setEnabled(false);
         bFindSolution.setEnabled(false);
+
         fWeightLimit.setEditable(false);
         fSizeLimit.setEditable(false);
-//        fAcsParam_i.setEditable(false);
+        fAcsParam_i.setEditable(false);
         fAcsParam_m.setEditable(false);
         fAcsParam_q0.setEditable(false);
         fAcsParam_beta.setEditable(false);
         fAcsParam_ro.setEditable(false);
-        sAcsParam_i.setEnabled(false);
-        sAcsParam_m.setEnabled(false);
-        sAcsParam_q0.setEnabled(false);
-        sAcsParam_beta.setEnabled(false);
-        sAcsParam_ro.setEnabled(false);
 
         this.createCustomerTable();
         this.createRouteDetailsTable();
@@ -331,18 +337,18 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == bLoad) {
-            TEST = false;
-            fWeightLimit.setEditable(false);
-            fSizeLimit.setEditable(false);
-            bGetDistance.setEnabled(false);
-            boxAlgorithms.setEnabled(false);
-            bFindSolution.setEnabled(false);
-            Customer.setCustomerID(0);
             try {
                 Geolocator geolocator = new Geolocator();
                 FileReader fileReader = new FileReader(geolocator);
                 File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
+                    Customer.setCustomerID(0);
+                    TEST = false;
+                    fWeightLimit.setEditable(false);
+                    fSizeLimit.setEditable(false);
+                    bGetDistance.setEnabled(false);
+                    bFindSolution.setEnabled(false);
+
                     fileReader.readFile(customersInputFile);
 
                     this.fillCustomerTable();
@@ -352,17 +358,16 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 logger.error("Unexpected error while processing the file!", ex);
             }
         } else if (source == bTest) {
-            TEST = true;
-            fWeightLimit.setEditable(true);
-            fSizeLimit.setEditable(true);
-            bGetDistance.setEnabled(false);
-            boxAlgorithms.setEnabled(false);
-            bFindSolution.setEnabled(false);
-            Customer.setCustomerID(0);
             try {
                 FileReader fileReader = new FileReader();
                 File customersInputFile = fileReader.chooseFile(this);
                 if (customersInputFile != null) {
+                    Customer.setCustomerID(0);
+                    TEST = true;
+                    fWeightLimit.setEditable(true);
+                    bGetDistance.setEnabled(false);
+                    bFindSolution.setEnabled(false);
+
                     fileReader.readTestFile(customersInputFile);
 
                     this.fillCustomerTable();
@@ -381,30 +386,16 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                     distanceMatrix.downloadDistanceMatrix();
                 }
                 bGetDistance.setEnabled(false);
-                boxAlgorithms.setEnabled(true);
+                bFindSolution.setEnabled(true);
             } catch (Exception ex) {
                 logger.error("Unexpected error while downloading the distance matrix from server!", ex);
             }
         } else if (source == boxAlgorithms) {
             algorithmName = boxAlgorithms.getSelectedItem().toString();
-            bFindSolution.setEnabled(true);
-            if (Objects.equals(algorithmName, ACS_ALG)) {
-                sAcsParam_i.setEnabled(true);
-                sAcsParam_m.setEnabled(true);
-                sAcsParam_q0.setEnabled(true);
-                sAcsParam_beta.setEnabled(true);
-                sAcsParam_ro.setEnabled(true);
-            } else {
-                sAcsParam_i.setEnabled(false);
-                sAcsParam_m.setEnabled(false);
-                sAcsParam_q0.setEnabled(false);
-                sAcsParam_beta.setEnabled(false);
-                sAcsParam_ro.setEnabled(false);
-            }
 
         } else if (source == bFindSolution) {
             try {
-                double weightLimitDouble = Double.parseDouble(fWeightLimit.getText());
+                double weightLimitDouble = Double.parseDouble(fWeightLimit.getText()) * 1000;
                 double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
                 Problem problem = new Problem(weightLimitDouble, sizeLimitDouble, TEST);
                 switch (algorithmName) {

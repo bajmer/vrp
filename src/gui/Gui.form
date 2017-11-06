@@ -208,7 +208,7 @@
                   <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <text value="Vehicle capacity [kg]"/>
+                  <text value="Vehicle capacity [t]"/>
                 </properties>
               </component>
               <component id="537e8" class="javax.swing.JFormattedTextField" binding="fWeightLimit">
@@ -257,14 +257,14 @@
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <majorTickSpacing value="500"/>
-                  <maximum value="2500"/>
-                  <minimum value="500"/>
-                  <minorTickSpacing value="100"/>
+                  <majorTickSpacing value="6"/>
+                  <maximum value="48"/>
+                  <minimum value="0"/>
+                  <minorTickSpacing value="1"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="1500"/>
+                  <value value="3"/>
                   <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>
@@ -277,14 +277,14 @@
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <majorTickSpacing value="2"/>
-                  <maximum value="10"/>
+                  <majorTickSpacing value="20"/>
+                  <maximum value="100"/>
                   <minimum value="0"/>
-                  <minorTickSpacing value="1"/>
+                  <minorTickSpacing value="2"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="9"/>
+                  <value value="10"/>
                 </properties>
                 <clientProperties>
                   <JSlider.isFilled class="java.lang.Boolean" value="true"/>
@@ -448,7 +448,7 @@
                   <paintTicks value="true"/>
                   <paintTrack value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="5"/>
+                  <value value="1"/>
                   <valueIsAdjusting value="false"/>
                 </properties>
                 <clientProperties>
@@ -481,14 +481,14 @@
                   <gridbag top="0" left="0" bottom="10" right="0" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <majorTickSpacing value="200"/>
-                  <maximum value="1000"/>
+                  <majorTickSpacing value="2000"/>
+                  <maximum value="8000"/>
                   <minimum value="0"/>
-                  <minorTickSpacing value="50"/>
+                  <minorTickSpacing value="100"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
                   <snapToTicks value="true"/>
-                  <value value="100"/>
+                  <value value="500"/>
                 </properties>
               </component>
             </children>
