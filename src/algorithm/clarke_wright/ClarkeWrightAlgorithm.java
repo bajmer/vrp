@@ -264,5 +264,6 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         Database.getSolutionsList().add(super.getSolution());
         logger.info(super.getSolution().toString());
         logger.info("Saving solution has been completed.");
+        logger.info("----------------------------------------------------------------------------------------------------------------");
     }
 }

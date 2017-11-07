@@ -561,9 +561,9 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tCustomers.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tCustomers.getColumnModel().getColumn(0).setPreferredWidth(15);
         tCustomers.getColumnModel().getColumn(1).setPreferredWidth(200);
-        tCustomers.getColumnModel().getColumn(2).setPreferredWidth(50);
-        tCustomers.getColumnModel().getColumn(3).setPreferredWidth(50);
-        tCustomers.getColumnModel().getColumn(4).setPreferredWidth(100);
+        tCustomers.getColumnModel().getColumn(2).setPreferredWidth(80);
+        tCustomers.getColumnModel().getColumn(3).setPreferredWidth(80);
+        tCustomers.getColumnModel().getColumn(4).setPreferredWidth(110);
         tCustomers.getColumnModel().getColumn(5).setPreferredWidth(100);
         tCustomers.getColumnModel().getColumn(6).setPreferredWidth(80);
         tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);

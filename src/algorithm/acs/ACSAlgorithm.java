@@ -313,6 +313,7 @@ public class ACSAlgorithm extends Algorithm {
         Database.getSolutionsList().add(bestAcsSolution);
         logger.info(bestAcsSolution.toString());
         logger.info("Saving solution has been completed.");
+        logger.info("----------------------------------------------------------------------------------------------------------------");
     }
 
 }
