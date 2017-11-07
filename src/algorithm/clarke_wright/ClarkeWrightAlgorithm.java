@@ -33,6 +33,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      */
     @Override
     public void runAlgorithm() {
+        logger.info("----------------------------------------------------------------------------------------------------------------");
         logger.info("Running the Clarke-Wright algorithm...");
         createSavings();
         sortSavings();
@@ -264,6 +265,5 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         Database.getSolutionsList().add(super.getSolution());
         logger.info(super.getSolution().toString());
         logger.info("Saving solution has been completed.");
-        logger.info("----------------------------------------------------------------------------------------------------------------");
     }
 }

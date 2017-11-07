@@ -94,6 +94,7 @@ public class ACSAlgorithm extends Algorithm {
      */
     @Override
     public void runAlgorithm() {
+        logger.info("----------------------------------------------------------------------------------------------------------------");
         logger.info("Running the Ant Colony System algorithm...");
         preInitialize();
         runNearestNeighbour();
@@ -120,12 +121,14 @@ public class ACSAlgorithm extends Algorithm {
      * Tworzy wstepne rozwiazanie dla jednej mrowki poruszajacej sie zawsze do najblizszego sasiada w celu wyznaczenia poczatkowej wartosci feromonu
      */
     private void runNearestNeighbour() {
+        logger.info("Calculating the initial solution with nearest neighbour heuristics...");
         nearestNeighbourSearch = true;
         Ant nearestNeighbourAnt = new Ant();
         resetAnt(nearestNeighbourAnt);
         Solution nearestNeighbourSolution = findAntSolution(nearestNeighbourAnt);
         saveAntSolution(nearestNeighbourSolution);
         initial_pheromone_level = 1 / nearestNeighbourSolution.getTotalDistanceCost();
+        logger.info("Calculating the initial solution with nearest neighbour heuristics has been completed.");
     }
 
     /**
@@ -145,6 +148,7 @@ public class ACSAlgorithm extends Algorithm {
      * Uruchamia glowna petle algorytmu ACS
      */
     private void processACS() {
+        logger.info("Calculating the solution...");
         nearestNeighbourSearch = false;
         int bestIteration = 1;
         int iteration = 1;
@@ -164,6 +168,7 @@ public class ACSAlgorithm extends Algorithm {
             globalPheromoneUpdate();
             iteration++;
         }
+        logger.info("Calculating the solution has been completed.");
     }
 
     /**
@@ -313,7 +318,6 @@ public class ACSAlgorithm extends Algorithm {
         Database.getSolutionsList().add(bestAcsSolution);
         logger.info(bestAcsSolution.toString());
         logger.info("Saving solution has been completed.");
-        logger.info("----------------------------------------------------------------------------------------------------------------");
     }
 
 }
