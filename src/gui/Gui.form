@@ -12,10 +12,13 @@
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <horizontalScrollBarPolicy value="30"/>
+          <verticalScrollBarPolicy value="20"/>
+        </properties>
         <border type="none"/>
         <children>
-          <grid id="c830b" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="c830b" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties/>
@@ -24,8 +27,9 @@
               <grid id="8d27d" binding="leftPanel" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="400" height="-1"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <minimum-size width="450" height="-1"/>
+                    <preferred-size width="-1" height="600"/>
                   </grid>
                 </constraints>
                 <properties>
@@ -48,6 +52,7 @@
                       <component id="66343" class="javax.swing.JTable" binding="tCustomers">
                         <constraints/>
                         <properties>
+                          <autoResizeMode value="2"/>
                           <preferredScrollableViewportSize width="100" height="100"/>
                           <showHorizontalLines value="true"/>
                           <showVerticalLines value="true"/>
@@ -77,6 +82,7 @@
                       <component id="7937d" class="javax.swing.JTable" binding="tRouteDetails">
                         <constraints/>
                         <properties>
+                          <enabled value="false"/>
                           <preferredScrollableViewportSize width="100" height="100"/>
                         </properties>
                       </component>
@@ -143,7 +149,7 @@
               <grid id="7c739" binding="mapPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="0" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <minimum-size width="645" height="645"/>
                     <preferred-size width="645" height="645"/>
                     <maximum-size width="645" height="645"/>
@@ -170,7 +176,7 @@
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="300" height="-1"/>
+                    <minimum-size width="250" height="-1"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -471,20 +477,28 @@
               <grid id="69ccb" binding="bottomPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="150"/>
+                  <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <minimum-size width="-1" height="50"/>
                   </grid>
                 </constraints>
                 <properties/>
-                <border type="etched" title="Log">
+                <border type="etched" title="">
                   <font size="11"/>
                 </border>
                 <children>
                   <scrollpane id="ad170">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <minimum-size width="-1" height="50"/>
+                        <preferred-size width="-1" height="50"/>
+                        <maximum-size width="-1" height="250"/>
+                      </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <horizontalScrollBarPolicy value="31"/>
+                      <verticalScrollBarPolicy value="22"/>
+                      <wheelScrollingEnabled value="true"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="24e27" class="javax.swing.JTextArea" binding="appLog">

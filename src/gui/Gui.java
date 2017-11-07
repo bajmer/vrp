@@ -602,16 +602,20 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tableModel.setDataVector(data, customersTableColumns);
         tCustomers.setModel(tableModel);
         tCustomers.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
-        tCustomers.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tCustomers.getColumnModel().getColumn(0).setPreferredWidth(15);
-        tCustomers.getColumnModel().getColumn(1).setPreferredWidth(200);
-        tCustomers.getColumnModel().getColumn(2).setPreferredWidth(80);
-        tCustomers.getColumnModel().getColumn(3).setPreferredWidth(80);
-        tCustomers.getColumnModel().getColumn(4).setPreferredWidth(110);
-        tCustomers.getColumnModel().getColumn(5).setPreferredWidth(100);
-        tCustomers.getColumnModel().getColumn(6).setPreferredWidth(80);
-        tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);
 
+        if (TEST) {
+            tCustomers.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        } else {
+            tCustomers.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            tCustomers.getColumnModel().getColumn(0).setPreferredWidth(15);
+            tCustomers.getColumnModel().getColumn(1).setPreferredWidth(200);
+            tCustomers.getColumnModel().getColumn(2).setPreferredWidth(80);
+            tCustomers.getColumnModel().getColumn(3).setPreferredWidth(80);
+            tCustomers.getColumnModel().getColumn(4).setPreferredWidth(110);
+            tCustomers.getColumnModel().getColumn(5).setPreferredWidth(100);
+            tCustomers.getColumnModel().getColumn(6).setPreferredWidth(80);
+            tCustomers.getColumnModel().getColumn(7).setPreferredWidth(80);
+        }
         tCustomers.changeSelection(0, 0, false, false);
     }
 
@@ -684,13 +688,18 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         tableModel.setDataVector(data, routeDetailsTableColumns);
         tRouteDetails.setModel(tableModel);
         tRouteDetails.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
-        tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(100);
-        tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(40);
-        tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(40);
-        tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(40);
-        tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(70);
+
+        if (TEST) {
+            tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        } else {
+            tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(170);
+            tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(45);
+            tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(170);
+            tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(45);
+            tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(70);
+            tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(70);
+        }
     }
 
     /**
