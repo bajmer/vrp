@@ -242,6 +242,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
      * Tworzy interfejs uzytkownika
      */
     public Gui() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setTitle("VRP System");
+
         bLoad.addActionListener(this);
         bTest.addActionListener(this);
         bGetDistance.addActionListener(this);
