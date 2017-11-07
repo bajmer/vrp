@@ -93,6 +93,7 @@ public class MapImage {
 
     /**
      * Tworzy nowa mape kolorow
+     *
      * @return Zwraca wypelniona mape kolorow
      */
     private static Map<String, String> fillColours() {
@@ -115,6 +116,7 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy z narysowanym rozwiazaniem
+     *
      * @param s Rozwiazanie, ktore zostanie naniesione na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
@@ -144,6 +146,7 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy z narysowana trasa
+     *
      * @param s Rozwiazanie
      * @param r Trasa, ktora zostanie naniesiona na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
@@ -161,8 +164,9 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy z narysowanym odcinkiem trasy
-     * @param s Rozwiazanie
-     * @param r Trasa
+     *
+     * @param s  Rozwiazanie
+     * @param r  Trasa
      * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
@@ -179,6 +183,7 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy zawierajacej magazyn i wszystkich klientow, z wyroznionym aktualnie wybranym klientem
+     *
      * @param c Aktualnie wybrany klient
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
@@ -195,7 +200,8 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
-     * @param s Rozwiazanie, ktore zostanie naniesione na mape
+     *
+     * @param s         Rozwiazanie, ktore zostanie naniesione na mape
      * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostuch linii
      * @return Zwraca sparsowany adres URL
      */
@@ -246,6 +252,7 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param r Trasa, ktora zostanie naniesiona na mape
      * @return Zwraca sparsowany adres URL
      */
@@ -276,6 +283,7 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
      * @return Zwraca sparsowany adres URL
      */
@@ -289,6 +297,7 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param c Aktualnie wybrany klient, ktory zostanie naniesiony na mape w postaci wiekszego znacznika
      * @return Zwraca sparsowany adres URL
      */
@@ -323,7 +332,8 @@ public class MapImage {
 
     /**
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
-     * @param url Adres URL, na ktory bedzie wyslane zapytanie
+     *
+     * @param url       Adres URL, na ktory bedzie wyslane zapytanie
      * @param imageName Nazwa obrazu mapy jaki zostanie utworzony
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */

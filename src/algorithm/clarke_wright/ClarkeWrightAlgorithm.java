@@ -21,6 +21,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 
     /**
      * Tworzy obiekt klasy
+     *
      * @param problem Obiekt problemu
      */
     public ClarkeWrightAlgorithm(Problem problem) {
@@ -226,6 +227,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 
     /**
      * Sprawdza, czy klient nalezy do trasy
+     *
      * @param customer Klient
      * @return Zwraca "false", jesli klient nie nalezy do trasy lub obiekt klienta jest magazynem, zas "true", gdy klient nalezy do trasy
      */

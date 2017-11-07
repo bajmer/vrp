@@ -39,6 +39,7 @@ public class DistanceMatrix extends JSON {
 
     /**
      * Pobiera odległości i czasy przejazdu między wszystkimi klientami z lokalnego serwera OSRM
+     *
      * @throws Exception Wyjatek bledu pobierania
      */
     public void downloadDistanceMatrix() throws Exception {
@@ -87,6 +88,7 @@ public class DistanceMatrix extends JSON {
 
     /**
      * Odczytuje odleglosc miedzy klientami z obiektu JSON
+     *
      * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
      * @return Zwraca odleglosc miedzy klientami w kilometrach
      */
@@ -107,6 +109,7 @@ public class DistanceMatrix extends JSON {
 
     /**
      * Odczytuje czas przejazdu miedzy klientami z obiektu JSON
+     *
      * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
      * @return Zwraca czas przejazdu miedzy klientami w sekundach
      */
@@ -124,6 +127,7 @@ public class DistanceMatrix extends JSON {
 
     /**
      * Odczytuje ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII z obiektu JSON
+     *
      * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
      * @return Zwraca ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
      */

@@ -307,18 +307,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         boxAlgorithms.addItem(CW_ALG);
         boxAlgorithms.addItem(ACS_ALG);
-        boxAlgorithms.setSelectedIndex(1);
+        boxAlgorithms.setSelectedIndex(0);
 
         bGetDistance.setEnabled(false);
         bFindSolution.setEnabled(false);
-
-        fWeightLimit.setEditable(false);
-        fSizeLimit.setEditable(false);
-        fAcsParam_i.setEditable(false);
-        fAcsParam_m.setEditable(false);
-        fAcsParam_q0.setEditable(false);
-        fAcsParam_beta.setEditable(false);
-        fAcsParam_ro.setEditable(false);
 
         this.createCustomerTable();
         this.createRouteDetailsTable();
@@ -331,6 +323,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     /**
      * Obsluguje wciskanie przyciskow
+     *
      * @param e Zdarzenie klikniecia przycisku
      */
     @Override
@@ -422,6 +415,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     /**
      * Obsluguje klikanie wezlow drzewa rozwiazan
+     *
      * @param e Zdarzenie wyboru wezla drzewa
      */
     @Override
@@ -486,6 +480,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     /**
      * Obsluguje wybieranie wierszy w tabeli klientow
+     *
      * @param e Zdarzenie wyboru wiersza w tabeli
      */
     @Override
@@ -595,6 +590,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     /**
      * Wypelnia tabele szczegolow trasy danymi
+     *
      * @param route Trasa, ktorej szczegoly maja zostac wyswietlone
      */
     private void fillRouteDetailsTable(Route route) {
@@ -655,7 +651,8 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
     /**
      * Czysci tabele
-     * @param table Tabela do wyczyszczenia
+     *
+     * @param table   Tabela do wyczyszczenia
      * @param columns Nazwy kolumn czyszczonej tabeli
      */
     private void setEmptyTable(JTable table, Vector<String> columns) {

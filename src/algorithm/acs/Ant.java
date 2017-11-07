@@ -133,8 +133,9 @@ public class Ant {
 
     /**
      * Wybiera kolejny odcinek, ktory zostanie dodany przez mrowke do trasy
-     * @param tmpCustomer Biezacy klient
-     * @param pheromoneLevel Mapa okreslajaca poziom feromonu na odcinkach
+     *
+     * @param tmpCustomer              Biezacy klient
+     * @param pheromoneLevel           Mapa okreslajaca poziom feromonu na odcinkach
      * @param isNearestNeighbourSearch Flaga okreslajaca, czy obecnie trwa budowanie trasy przez mrowke w trybie najblizszego klienta
      * @return Zwraca kolejny odcinek, ktory zostanie dodany przez mrowke do trasy
      */
@@ -164,6 +165,7 @@ public class Ant {
 
     /**
      * Wybiera kolejny odcinek trasy w oparciu o najblizszego klienta
+     *
      * @return Zwraca najkrotszy dostepny odcinek trasy
      */
     private RouteSegment chooseNearestNeighbour() {
@@ -180,6 +182,7 @@ public class Ant {
 
     /**
      * Wybiera losowo pierwszy odcinek trasy
+     *
      * @return Zwraca losowy odcinek, ktory bedzie pierwszym odcinkiem trasy
      */
     private RouteSegment chooseRandomRouteSegment() {
@@ -192,6 +195,7 @@ public class Ant {
 
     /**
      * Oblicza wspolczynniki eksploatacji dla dostepnych odcinkow i wybiera odcinek o najlepszym wspolczynniku
+     *
      * @param pheromoneLevel Mapa okreslajaca ilosc feromonu na odcinkach
      * @return Zwraca odcinek o najlepszym wspolczynniku eksploatacji
      */
@@ -214,6 +218,7 @@ public class Ant {
 
     /**
      * Wybiera losowo kolejny odcinek trasy w oparciu o prawdopodobienstwo
+     *
      * @return Zwraca losowy odcinek wylosowany w oparciu o prawdopodobienstwo
      */
     private RouteSegment chooseProbabilityRandomRouteSegment() {

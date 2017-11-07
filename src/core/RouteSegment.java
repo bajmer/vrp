@@ -75,8 +75,9 @@ public class RouteSegment implements Cloneable {
 
     /**
      * Tworzy odcinek trasy
-     * @param src Klient poczatkowy
-     * @param dst Klient docelowy
+     *
+     * @param src      Klient poczatkowy
+     * @param dst      Klient docelowy
      * @param distance Dlugosc odcinka
      * @param duration Czas przejazdu odcinka
      * @param geometry Ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
@@ -173,6 +174,7 @@ public class RouteSegment implements Cloneable {
 
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku
+     *
      * @param x Liczba do zaokraglenia
      * @return Zwraca zaokraglana liczbe
      */
@@ -182,6 +184,7 @@ public class RouteSegment implements Cloneable {
 
     /**
      * Wypisuje informacje o odcinku trasy
+     *
      * @return Zwraca opis odcinka trasy
      */
     @Override
@@ -197,6 +200,7 @@ public class RouteSegment implements Cloneable {
 
     /**
      * Klonuje odcinek trasy
+     *
      * @return Zwraca sklonowany odcinek trasy
      */
     @Override

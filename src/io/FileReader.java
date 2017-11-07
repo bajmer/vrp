@@ -2,12 +2,10 @@ package io;
 
 import core.Customer;
 import core.Database;
-import core.RouteSegment;
 import gui.Gui;
 import network.Geolocator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +13,6 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -77,6 +74,7 @@ public class FileReader {
 
     /**
      * Tworzy instancje klasy
+     *
      * @param geolocator Obiekt klasy geolocator
      */
     public FileReader(Geolocator geolocator) {
@@ -85,6 +83,7 @@ public class FileReader {
 
     /**
      * Otwiera okno modalne umozliwajace wybor pliku tekstowego
+     *
      * @param gui Interfejs uzytkownika
      * @return Zwraca wybrany plik
      */
@@ -105,6 +104,7 @@ public class FileReader {
 
     /**
      * Czyta wybrany plik z danymi klientow
+     *
      * @param file Wybrany plik z danymi klientow
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
@@ -198,6 +198,7 @@ public class FileReader {
 
     /**
      * Dzieli pole adresu na poszczegolne komponenty
+     *
      * @param fullAddress Pelny adres
      * @return Zwraca tablice napisow okreslajacych ulice i numer domu, kod pocztowy oraz miasto
      */
@@ -224,6 +225,7 @@ public class FileReader {
 
     /**
      * Czyta wybrany plik testowy
+     *
      * @param file Wybrany plik testowy
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */

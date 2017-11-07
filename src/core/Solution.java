@@ -52,9 +52,10 @@ public class Solution {
 
     /**
      * Tworzy rozwiazanie
-     * @param problemID Numer ID problemu
+     *
+     * @param problemID     Numer ID problemu
      * @param usedAlgorithm Uzyty algorytm
-     * @param depot Magazyn
+     * @param depot         Magazyn
      */
     public Solution(int problemID, String usedAlgorithm, Customer depot, boolean test) {
         this.solutionID = problemID;
@@ -132,6 +133,7 @@ public class Solution {
 
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku
+     *
      * @param x Liczba do zaokraglenia
      * @return Zwraca zaokraglana liczbe
      */
@@ -141,6 +143,7 @@ public class Solution {
 
     /**
      * Wypisuje informacje o rozwiazaniu
+     *
      * @return Zwraca opis rozwiazania
      */
     @Override

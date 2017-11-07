@@ -230,6 +230,7 @@ public class ACSAlgorithm extends Algorithm {
 
     /**
      * Tworzy nowa trase i dodaje magazyn na poczatek
+     *
      * @return Zwraca utworzona trase
      */
     private Route initializeNewRoute() {
@@ -240,6 +241,7 @@ public class ACSAlgorithm extends Algorithm {
 
     /**
      * Konczy biezaca trase dodajac do niej odcinek od biezacego klienta do magazynu
+     *
      * @param tmpCustomer
      * @param tmpRoute
      */
