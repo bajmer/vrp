@@ -29,7 +29,7 @@ public class ACSAlgorithm implements Algorithmic {
     /**
      * Poczatkowa wartosc feromonu
      */
-    private static double initial_pheromone_level;
+    private static double initialPheromoneLevel;
 
     /**
      * Ilosc iteracji algorytmu
@@ -126,7 +126,7 @@ public class ACSAlgorithm implements Algorithmic {
         resetAnt(nearestNeighbourAnt);
         Solution nearestNeighbourSolution = findAntSolution(nearestNeighbourAnt);
         saveAntSolution(nearestNeighbourSolution);
-        initial_pheromone_level = 1 / nearestNeighbourSolution.getTotalDistanceCost();
+        initialPheromoneLevel = 1 / nearestNeighbourSolution.getTotalDistanceCost();
         logger.info("Calculating the initial solution with nearest neighbour heuristics has been completed.");
     }
 
@@ -135,7 +135,7 @@ public class ACSAlgorithm implements Algorithmic {
      */
     private void initializeACS() {
         for (RouteSegment rs : Database.getRouteSegmentsList()) {
-            globalPheromoneLevel.put(rs.getId(), initial_pheromone_level);
+            globalPheromoneLevel.put(rs.getId(), initialPheromoneLevel);
         }
 
         for (int i = 0; i < m; i++) {
@@ -269,7 +269,7 @@ public class ACSAlgorithm implements Algorithmic {
         for (Route r : solution.getListOfRoutes()) {
             for (RouteSegment rs : r.getRouteSegments()) {
                 double tau = globalPheromoneLevel.get(rs.getId());
-                tau = (1 - ro) * tau + (ro * initial_pheromone_level);
+                tau = (1 - ro) * tau + (ro * initialPheromoneLevel);
                 globalPheromoneLevel.put(rs.getId(), tau);
             }
         }
