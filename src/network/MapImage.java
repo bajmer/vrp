@@ -155,9 +155,22 @@ public class MapImage {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
         logger.debug("Creating images of routes" + routeImageName + "...");
 
-        String urlForSingleRoute = parseURL(r);
-        sendRequestToGoogleMaps(urlForSingleRoute, routeImageName);
-        r.setImageIcon(new ImageIcon(routeImageName));
+        try {
+            String fullUrlForSingleRoute = parseURL(r, false);
+            if (fullUrlForSingleRoute.length() <= 8192) {
+                sendRequestToGoogleMaps(fullUrlForSingleRoute, routeImageName);
+            } else {
+                String simpleUrlForSingleRoute = parseURL(r, true);
+                if (simpleUrlForSingleRoute.length() <= 8192) {
+                    sendRequestToGoogleMaps(simpleUrlForSingleRoute, routeImageName);
+                } else {
+                    logger.warn("Cannot create an image of the solution because of too long URL address!");
+                }
+            }
+            r.setImageIcon(new ImageIcon(routeImageName));
+        } catch (Exception e) {
+            logger.warn("Unexpected error while creating an image of solution!");
+        }
 
         logger.debug("Creating images of routes" + routeImageName + " has been completed.");
     }
@@ -229,15 +242,10 @@ public class MapImage {
             String colour = (new ArrayList<>(COLOURS.values())).get(colourIndex);
             if (!simpleURL) {
                 for (RouteSegment rs : r.getRouteSegments()) {
-                    paths.append("&path=color:");
-                    paths.append(colour);
-                    paths.append("|weight:2|enc:");
-                    paths.append(rs.getGeometry());
+                    paths.append("&path=color:").append(colour).append("|weight:2|enc:").append(rs.getGeometry());
                 }
             } else {
-                paths.append("&path=color:");
-                paths.append(colour);
-                paths.append("|weight:2");
+                paths.append("&path=color:").append(colour).append("|weight:2");
                 for (Customer c : r.getCustomersInRoute()) {
                     paths.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
                 }
@@ -256,7 +264,7 @@ public class MapImage {
      * @param r Trasa, ktora zostanie naniesiona na mape
      * @return Zwraca sparsowany adres URL
      */
-    private String parseURL(Route r) {
+    private String parseURL(Route r, boolean simpleURL) {
         StringBuilder path = new StringBuilder();
         StringBuilder markers = new StringBuilder();
 
@@ -274,8 +282,15 @@ public class MapImage {
             }
         }
 
-        for (RouteSegment rs : r.getRouteSegments()) {
-            path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2|enc:").append(rs.getGeometry());
+        if (!simpleURL) {
+            for (RouteSegment rs : r.getRouteSegments()) {
+                path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2|enc:").append(rs.getGeometry());
+            }
+        } else {
+            path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2");
+            for (Customer c : r.getCustomersInRoute()) {
+                path.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
+            }
         }
 
         return BEGIN_OF_URL + markers.toString() + path.toString() + END_OF_URL;

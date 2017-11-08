@@ -59,11 +59,6 @@ public class RouteSegment implements Cloneable {
     private Duration duration;
 
     /**
-     * Oszczednosc obliczona dla odcinka w alogrytmie Clarka i Wrighta
-     */
-    private double clarkWrightSaving;
-
-    /**
      * Ksztalt odcinka w postaci kolejnych wspolrzednych zakodowanych kodem ASCII
      */
     private String geometry;
@@ -146,14 +141,6 @@ public class RouteSegment implements Cloneable {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
-    }
-
-    public double getClarkWrightSaving() {
-        return clarkWrightSaving;
-    }
-
-    public void setClarkWrightSaving(double clarkWrightSaving) {
-        this.clarkWrightSaving = clarkWrightSaving;
     }
 
     public String getGeometry() {

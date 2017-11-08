@@ -1,6 +1,5 @@
 package gui;
 
-import algorithm.Algorithm;
 import algorithm.acs.ACSAlgorithm;
 import algorithm.clarke_wright.ClarkeWrightAlgorithm;
 import core.*;
@@ -350,9 +349,10 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
      * Rozpoczyna w nowym watku wczytywanie danych klientow
      */
     private void actionLoadCustomers() {
+        bLoad.setEnabled(false);
+        bTest.setEnabled(false);
         try {
-            bLoad.setEnabled(false);
-            bTest.setEnabled(false);
+
             Geolocator geolocator = new Geolocator();
             FileReader fileReader = new FileReader(geolocator);
             File customersInputFile = fileReader.chooseFile(this);
@@ -369,20 +369,20 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 this.fillCustomerTable();
                 bGetDistance.setEnabled(true);
             }
-            bLoad.setEnabled(true);
-            bTest.setEnabled(true);
         } catch (Exception ex) {
             logger.error("Unexpected error while processing the file!", ex);
         }
+        bLoad.setEnabled(true);
+        bTest.setEnabled(true);
     }
 
     /**
      * Rozpoczyna w nowym watku wczytywanie danych testowych
      */
     private void actionLoadTestCase() {
+        bLoad.setEnabled(false);
+        bTest.setEnabled(false);
         try {
-            bLoad.setEnabled(false);
-            bTest.setEnabled(false);
             FileReader fileReader = new FileReader();
             File customersInputFile = fileReader.chooseFile(this);
             if (customersInputFile != null) {
@@ -397,17 +397,20 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                 this.fillCustomerTable();
                 bGetDistance.setEnabled(true);
             }
-            bLoad.setEnabled(true);
-            bTest.setEnabled(true);
         } catch (Exception ex) {
             logger.error("Unexpected error while processing the test file!", ex);
         }
+        bLoad.setEnabled(true);
+        bTest.setEnabled(true);
     }
 
     /**
      * Rozpoczyna w nowym watku pobieranie informacji o odleglosci i czasie przejazdu miedzy klientami z serwera OSRM
      */
     private void actionGetDistanceMatrix() {
+        bLoad.setEnabled(false);
+        bTest.setEnabled(false);
+        bGetDistance.setEnabled(false);
         try {
             DistanceMatrix distanceMatrix = new DistanceMatrix();
             if (TEST) {
@@ -420,22 +423,24 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         } catch (Exception ex) {
             logger.error("Unexpected error while downloading the distance matrix from server!", ex);
         }
+        bLoad.setEnabled(true);
+        bTest.setEnabled(true);
     }
 
     /**
      * Rozpoczyna w nowym watku proces rozwiazywania problemu przez wybrany algorytm
      */
     private void actionFindSolution() {
+        bLoad.setEnabled(false);
+        bTest.setEnabled(false);
+        bFindSolution.setEnabled(false);
         try {
-            bLoad.setEnabled(false);
-            bTest.setEnabled(false);
-            bFindSolution.setEnabled(false);
             double weightLimitDouble = Double.parseDouble(fWeightLimit.getText()) * 1000;
             double sizeLimitDouble = Double.parseDouble(fSizeLimit.getText());
             Problem problem = new Problem(weightLimitDouble, sizeLimitDouble, TEST);
             switch (algorithmName) {
                 case CW_ALG:
-                    Algorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
+                    ClarkeWrightAlgorithm clark_wright_algorithm = new ClarkeWrightAlgorithm(problem);
                     clark_wright_algorithm.runAlgorithm();
                     break;
                 case ACS_ALG:
@@ -444,17 +449,17 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
                     double alfa = Double.parseDouble(fAcsParam_q0.getText());
                     int beta = Integer.parseInt(fAcsParam_beta.getText());
                     double gamma = Double.parseDouble(fAcsParam_ro.getText());
-                    Algorithm acs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
+                    ACSAlgorithm acs_algorithm = new ACSAlgorithm(problem, numberOfIterations, numberOfAnts, alfa, beta, gamma);
                     acs_algorithm.runAlgorithm();
                     break;
             }
             this.addNodeToSolutionsTree();
-            bLoad.setEnabled(true);
-            bTest.setEnabled(true);
-            bFindSolution.setEnabled(true);
         } catch (Exception ex) {
             logger.error("Unexpected error while calculating the solution!", ex);
         }
+        bLoad.setEnabled(true);
+        bTest.setEnabled(true);
+        bFindSolution.setEnabled(true);
     }
 
     /**

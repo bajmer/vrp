@@ -1,6 +1,6 @@
 package algorithm.acs;
 
-import algorithm.Algorithm;
+import algorithm.Algorithmic;
 import core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Klasa implementujaca algorytm mrowkowy
  */
-public class ACSAlgorithm extends Algorithm {
+public class ACSAlgorithm implements Algorithmic {
 
     /**
      * Logger klasy
@@ -24,7 +24,7 @@ public class ACSAlgorithm extends Algorithm {
     /**
      * Nazwa algorytmu
      */
-    private static final String ACS = "Ant Colony System";
+    private static final String ALGORITHM_NAME = "Ant Colony System";
 
     /**
      * Poczatkowa wartosc feromonu
@@ -45,6 +45,11 @@ public class ACSAlgorithm extends Algorithm {
      * Parametr okreslajacy ilosc parujacego feromonu w zakresie 0-1
      */
     private final double ro;
+
+    /**
+     * Rozwiazywany problem
+     */
+    private Problem problem;
 
     /**
      * Najlepsze dotychczasowe rozwiazanie
@@ -77,7 +82,7 @@ public class ACSAlgorithm extends Algorithm {
      * @param ro      Parametr określający ilość wyparowanego feromonu
      */
     public ACSAlgorithm(Problem problem, int i, int m, double q0, int beta, double ro) {
-        super(problem, "Ant Colony System");
+        this.problem = problem;
         this.i = i;
         this.m = m;
         this.ro = ro;
@@ -107,9 +112,9 @@ public class ACSAlgorithm extends Algorithm {
      * Przypisuje kazdemu klientowi liste wychodzacych z niego odcinkow trasy
      */
     private void preInitialize() {
-        for (RouteSegment rs : super.getRouteSegments()) {
-            for (Customer c : super.getCustomers()) {
-                if (c.equals(rs.getSrc()) && c.getRouteSegmentsFromCustomer().size() < super.getCustomers().size() - 1) {
+        for (RouteSegment rs : Database.getRouteSegmentsList()) {
+            for (Customer c : Database.getCustomerList()) {
+                if (c.equals(rs.getSrc()) && c.getRouteSegmentsFromCustomer().size() < Database.getCustomerList().size() - 1) {
                     c.getRouteSegmentsFromCustomer().add(rs);
                     break;
                 }
@@ -135,7 +140,7 @@ public class ACSAlgorithm extends Algorithm {
      * Inicjalizuje algorytm ACS, odklada poczatkowa wartosc feromonu na odcinkach i tworzy kolonie mrowek
      */
     private void initializeACS() {
-        for (RouteSegment rs : super.getRouteSegments()) {
+        for (RouteSegment rs : Database.getRouteSegmentsList()) {
             globalPheromoneLevel.put(rs.getId(), initial_pheromone_level);
         }
 
@@ -182,7 +187,7 @@ public class ACSAlgorithm extends Algorithm {
         ant.getFeasibleRouteSegments().clear();
         ant.getUnvisitedCustomersID().clear();
 
-        for (Customer c : super.getCustomers()) {
+        for (Customer c : Database.getCustomerList()) {
             if (c.getId() != 0) {
                 ant.getUnvisitedCustomersID().add(c.getId());
             }
@@ -196,9 +201,9 @@ public class ACSAlgorithm extends Algorithm {
      * @return Zwraca jedno rozwiazanie znalezione przez jedna mrowke
      */
     private Solution findAntSolution(Ant ant) {
-        double weightLimit = super.getProblem().getWeightLimitPerVehicle();
-        double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
-        Solution antSolution = new Solution(super.getProblem().getProblemID(), ACS, super.getProblem().getDepot(), super.getProblem().isTest());
+        double weightLimit = problem.getWeightLimitPerVehicle();
+        double sizeLimit = problem.getSizeLimitPerVehicle();
+        Solution antSolution = new Solution(problem.getProblemID(), ALGORITHM_NAME, problem.getDepot(), problem.isTest());
 
         while (ant.getUnvisitedCustomersID().size() > 0) {
             Route tmpRoute = initializeNewRoute();
@@ -240,18 +245,18 @@ public class ACSAlgorithm extends Algorithm {
      */
     private Route initializeNewRoute() {
         Route route = new Route();
-        route.addCustomerAsLast(super.getProblem().getDepot());
+        route.addCustomerAsLast(problem.getDepot());
         return route;
     }
 
     /**
      * Konczy biezaca trase dodajac do niej odcinek od biezacego klienta do magazynu
      *
-     * @param tmpCustomer
-     * @param tmpRoute
+     * @param tmpCustomer Biezacy klient, u ktorego znajduje sie mrowka
+     * @param tmpRoute    Biezaca trasa
      */
     private void endRoute(Customer tmpCustomer, Route tmpRoute) {
-        Customer depot = super.getProblem().getDepot();
+        Customer depot = problem.getDepot();
         tmpRoute.addCustomerAsLast(depot); //dodanie magazynu do listy klienów trasy
         for (RouteSegment rs : tmpCustomer.getRouteSegmentsFromCustomer()) {
             if (rs.getDst().equals(depot)) {
@@ -310,7 +315,7 @@ public class ACSAlgorithm extends Algorithm {
      * Zapisuje najlepsze rozwiazanie znalezione przez algorytm mrowkowy
      */
     @Override
-    protected void saveSolution() {
+    public void saveSolution() {
         logger.info("Saving solution...");
         for (Route route : bestAcsSolution.getListOfRoutes()) {
             logger.info(route.toString());
