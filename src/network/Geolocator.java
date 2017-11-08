@@ -35,10 +35,11 @@ public class Geolocator extends JSON {
 
     /**
      * Pobiera wspolrzedne adresu
+     *
      * @param streetAndNumber Nazwa ulicy i numer domu
-     * @param postalCode Kod pocztowy
-     * @param city Miasto
-     * @param lineNumber Numer wiersza pliku z danymi klientow
+     * @param postalCode      Kod pocztowy
+     * @param city            Miasto
+     * @param lineNumber      Numer wiersza pliku z danymi klientow
      * @return Zwraca wspolrzedne adresu klienta
      * @throws Exception Wyjatek bledu pobierania wspolrzednych
      */
@@ -69,6 +70,7 @@ public class Geolocator extends JSON {
 
     /**
      * Odczytuje wspolrzedne adresu klienta z obiektu JSON
+     *
      * @param jsonObject Obiekt JSON, z ktorego nalezy odczytac dane
      * @return Zwraca wspolrzedne adresu klienta
      */

@@ -30,12 +30,13 @@ class JSON {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param beginOfURL Poczatek adresu URL
-     * @param srcLong Dlugosc geograficzna adresu klienta poczatkowego
-     * @param srcLat Szerokosc geograficzna adresu klienta poczatkowego
-     * @param dstLong Dlugosc geograficzna adresu klienta docelowego
-     * @param dstLat Szerokosc geograficzna adresu klienta docelowego
-     * @param endOfURL Koncowka adresu URL
+     * @param srcLong    Dlugosc geograficzna adresu klienta poczatkowego
+     * @param srcLat     Szerokosc geograficzna adresu klienta poczatkowego
+     * @param dstLong    Dlugosc geograficzna adresu klienta docelowego
+     * @param dstLat     Szerokosc geograficzna adresu klienta docelowego
+     * @param endOfURL   Koncowka adresu URL
      * @return Zwraca sparsowany adres URL
      */
     String parseURL(String beginOfURL, double srcLong, double srcLat, double dstLong, double dstLat, String endOfURL) {
@@ -44,11 +45,12 @@ class JSON {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
-     * @param beginOfURL Poczatek adresu URL
+     *
+     * @param beginOfURL      Poczatek adresu URL
      * @param streetAndNumber Nazwa ulicy i numer domu
-     * @param postalCode Kod pocztowy
-     * @param city Miasto
-     * @param endOfURL Koncowka adresu URL
+     * @param postalCode      Kod pocztowy
+     * @param city            Miasto
+     * @param endOfURL        Koncowka adresu URL
      * @return Zwraca sparsowany adres URL
      */
     String parseURL(String beginOfURL, String streetAndNumber, String postalCode, String city, String endOfURL) {
@@ -59,6 +61,7 @@ class JSON {
 
     /**
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
+     *
      * @param url Adres URL, na ktory bedzie wyslane zapytanie
      * @return Zwraca obiekt JSON zawierajacy odpowiedz serwera
      * @throws ConnectException Wyjatek bledu polaczenia

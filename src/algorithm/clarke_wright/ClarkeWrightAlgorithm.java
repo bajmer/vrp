@@ -1,18 +1,21 @@
 package algorithm.clarke_wright;
 
-import algorithm.Algorithm;
+import algorithm.Algorithmic;
 import core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Klasa implementujaca algorytm oszczednosciowy Clarka i Wrighta
  */
-public class ClarkeWrightAlgorithm extends Algorithm {
+public class ClarkeWrightAlgorithm implements Algorithmic {
 
     /**
      * Logger klasy
@@ -20,11 +23,34 @@ public class ClarkeWrightAlgorithm extends Algorithm {
     private static final Logger logger = LogManager.getLogger(ClarkeWrightAlgorithm.class);
 
     /**
+     * Nazwa algorytmu
+     */
+    private static final String ALGORITHM_NAME = "Clarke-Wright";
+
+    /**
+     * Rozwiazywany problem
+     */
+    private Problem problem;
+
+    /**
+     * Rozwiazanie, ktore zostanie znalezione przez algorytm
+     */
+    private Solution solution;
+
+    /**
+     * Mapa przypisujaca do kazdego odcinka "oszczednosc", ktora zostanie uzyskana przez wlaczenie tego odcinka do trasy
+     */
+    private Map<RouteSegment, Double> savings;
+
+    /**
      * Tworzy obiekt klasy
+     *
      * @param problem Obiekt problemu
      */
     public ClarkeWrightAlgorithm(Problem problem) {
-        super(problem, "Clarke-Wright");
+        this.problem = problem;
+        this.solution = new Solution(problem.getProblemID(), ALGORITHM_NAME, problem.getDepot(), problem.isTest());
+        this.savings = new HashMap<>();
     }
 
     /**
@@ -32,6 +58,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      */
     @Override
     public void runAlgorithm() {
+        logger.info("----------------------------------------------------------------------------------------------------------------");
         logger.info("Running the Clarke-Wright algorithm...");
         createSavings();
         sortSavings();
@@ -44,28 +71,16 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      */
     private void createSavings() {
         logger.info("Creating savings...");
-        Customer depot = super.getProblem().getDepot();
-        for (int i = 1; i < super.getCustomers().size(); i++) {
-            for (int j = 1; j < super.getCustomers().size(); j++) {
-                if (i != j) {
-                    Customer first = super.getCustomers().get(i);
-                    int firstID = super.getCustomers().get(i).getId();
-                    int secondID = super.getCustomers().get(j).getId();
-                    if ((depot.getDistances().get(firstID) != null) && (depot.getDistances().get(secondID) != null) && (first.getDistances().get(secondID) != null)) {
-                        double saving = depot.getDistances().get(firstID) + depot.getDistances().get(secondID) - first.getDistances().get(secondID);
-                        for (RouteSegment segment : super.getRouteSegments()) {
-                            int srcID = segment.getSrc().getId();
-                            int dstID = segment.getDst().getId();
+        Customer depot = problem.getDepot();
+        for (RouteSegment rs : Database.getRouteSegmentsList()) {
+            Customer first = rs.getSrc();
+            Customer second = rs.getDst();
 
-                            if (srcID == firstID && dstID == secondID) {
-                                segment.setClarkWrightSaving(saving);
-                                break;
-                            }
-                        }
-                        logger.debug("Saving for customers " + firstID + "-" + secondID + "= " + saving + " km");
-                    }
-                }
-            }
+            double saving = (depot.equals(first) ? 0.0 : depot.getDistances().get(first.getId()))
+                    - first.getDistances().get(second.getId())
+                    + (second.equals(depot) ? 0.0 : depot.getDistances().get(second.getId()));
+
+            savings.put(rs, saving);
         }
         logger.info("Creating savings has been completed.");
     }
@@ -75,7 +90,15 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      */
     private void sortSavings() {
         logger.info("Sorting route segments by savings...");
-        super.getRouteSegments().sort(Comparator.comparingDouble(RouteSegment::getClarkWrightSaving).reversed());
+        savings = savings.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
         logger.info("Sorting route segments by savings has been completed.");
     }
 
@@ -84,9 +107,10 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      */
     private void searchSolution() {
         logger.info("Calculating the solution...");
-        double weightLimit = super.getProblem().getWeightLimitPerVehicle();
-        double sizeLimit = super.getProblem().getSizeLimitPerVehicle();
-        for (RouteSegment segment : super.getRouteSegments()) {
+        double weightLimit = problem.getWeightLimitPerVehicle();
+        double sizeLimit = problem.getSizeLimitPerVehicle();
+        for (Map.Entry<RouteSegment, Double> entry : savings.entrySet()) {
+            RouteSegment segment = entry.getKey();
             logger.debug("Processing route segment: " + segment.getSrc().getId() + "-" + segment.getDst().getId());
 
             Customer src = segment.getSrc();
@@ -105,9 +129,9 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                     route.getCustomersInRoute().forEach(Customer -> logger.debug(Customer.getId() + "-"));
                     logger.debug("and current packages weight for this route is " + route.getCurrentPackagesWeight());
 
-                    if (!super.getRoutes().contains(route)) {
+                    if (!solution.getListOfRoutes().contains(route)) {
                         logger.debug("Adding route \"" + route.getId() + "\" to solution.");
-                        super.getRoutes().add(route);
+                        solution.getListOfRoutes().add(route);
                         continue;
                     }
                 }
@@ -115,7 +139,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 //            gdy klient początkowy odcinka (src) nie należy do żadnej trasy, zaś klient końcowy jest początkiem dowolnej trasy
 //            i spełnione sa warunki na dodanie klienta, wówczas dodajemy klienta src oraz odcinek na początku danej trasy
             else if (!isCustomerInRoute(src)) {
-                for (Route route : super.getRoutes()) {
+                for (Route route : solution.getListOfRoutes()) {
                     if (route.canAdd(src.getPackageWeight(), weightLimit, src.getPackageSize(), sizeLimit)) {
                         if (route.isCustomerFirst(dst)) {
                             route.addCustomerAsFirst(src);
@@ -135,7 +159,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 //            gdy klient docelowy odcinka (dst) nie należy do żadnej trasy, zaś klient początkowy jest końcem dowolnej trasy
 //            i spełnione sa warunki na dodanie klienta, wówczas dodajemy klienta dst oraz odcinek na końcu danej trasy
             else if (!isCustomerInRoute(dst)) {
-                for (Route route : super.getRoutes()) {
+                for (Route route : solution.getListOfRoutes()) {
                     if (route.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {
                         if (route.isCustomerLast(src)) {
                             route.addCustomerAsLast(dst);
@@ -154,8 +178,8 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 //            łączenie dwóch tras w jedną, jeśli klient początkowy i docelowy odcinka należą do różnych tras i spełnione są warunki na połączenie tras
             Route merged = null;
             Route saved = null;
-            for (Route routeA : super.getRoutes()) {
-                for (Route routeB : super.getRoutes()) {
+            for (Route routeA : solution.getListOfRoutes()) {
+                for (Route routeB : solution.getListOfRoutes()) {
                     if (routeA != routeB) {
                         boolean canMerge = false;
                         if (routeA.canAdd(routeB.getCurrentPackagesWeight(), weightLimit, routeB.getCurrentPackagesSize(), sizeLimit)) {
@@ -198,7 +222,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
                 logger.debug(", current packages weight is " + saved.getCurrentPackagesWeight() + "kg, current packages size is " + saved.getCurrentPackagesSize() + "m3.");
 
                 logger.debug("Removing route \"" + merged.getId() + "\" from solution because of merge.");
-                super.getRoutes().remove(merged);
+                solution.getListOfRoutes().remove(merged);
             }
         }
         logger.info("Calculating the solution has been completed.");
@@ -215,7 +239,7 @@ public class ClarkeWrightAlgorithm extends Algorithm {
         for (int i = 0; i < route.getCustomersInRoute().size() - 1; i++) {
             Customer source = route.getCustomersInRoute().get(i);
             Customer destination = route.getCustomersInRoute().get(i + 1);
-            for (RouteSegment rs : super.getRouteSegments()) {
+            for (RouteSegment rs : Database.getRouteSegmentsList()) {
                 if (rs.getSrc().equals(source) && rs.getDst().equals(destination)) {
                     route.getRouteSegments().add(rs);
                     break;
@@ -226,14 +250,15 @@ public class ClarkeWrightAlgorithm extends Algorithm {
 
     /**
      * Sprawdza, czy klient nalezy do trasy
+     *
      * @param customer Klient
      * @return Zwraca "false", jesli klient nie nalezy do trasy lub obiekt klienta jest magazynem, zas "true", gdy klient nalezy do trasy
      */
     private boolean isCustomerInRoute(Customer customer) {
-        if (customer.equals(getProblem().getDepot())) {
+        if (customer.equals(problem.getDepot())) {
             return false;
         }
-        for (Route route : super.getRoutes()) {
+        for (Route route : solution.getListOfRoutes()) {
             for (Customer c : route.getCustomersInRoute()) {
                 if (customer == c) {
                     return true;
@@ -247,20 +272,20 @@ public class ClarkeWrightAlgorithm extends Algorithm {
      * Zapisuje uzyskane rozwiazanie, oblicza calkowita dlugosc i czas rozwiazania oblicza czasy przyjazdu i odjazdu do kazdego klienta
      */
     @Override
-    protected void saveSolution() {
+    public void saveSolution() {
         logger.info("Saving solution...");
         double totalDistance = 0;
         Duration totalDuration = Duration.ZERO;
-        for (Route route : super.getRoutes()) {
-            route.setArrivalAndDepartureTimeForCustomers(super.getSolution().isTest());
+        for (Route route : solution.getListOfRoutes()) {
+            route.setArrivalAndDepartureTimeForCustomers(solution.isTest());
             totalDistance += route.getTotalDistance();
             totalDuration = totalDuration.plus(route.getTotalDuration());
             logger.info(route.toString());
         }
-        super.getSolution().setTotalDistanceCost(totalDistance);
-        super.getSolution().setTotalDurationCost(totalDuration);
-        Database.getSolutionsList().add(super.getSolution());
-        logger.info(super.getSolution().toString());
+        solution.setTotalDistanceCost(totalDistance);
+        solution.setTotalDurationCost(totalDuration);
+        Database.getSolutionsList().add(solution);
+        logger.info(solution.toString());
         logger.info("Saving solution has been completed.");
     }
 }

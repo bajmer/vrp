@@ -93,6 +93,7 @@ public class MapImage {
 
     /**
      * Tworzy nowa mape kolorow
+     *
      * @return Zwraca wypelniona mape kolorow
      */
     private static Map<String, String> fillColours() {
@@ -115,22 +116,29 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy z narysowanym rozwiazaniem
+     *
      * @param s Rozwiazanie, ktore zostanie naniesione na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSolutionImage(Solution s) throws IOException {
         String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
-        logger.debug("Creating an images of solution " + solutionImageName + "...");
+        logger.debug("Creating an image of solution " + solutionImageName + "...");
 
         try {
-            String url = parseURL(s, false);
-            sendRequestToGoogleMaps(url, solutionImageName);
+            String fullURL = parseURL(s, false);
+            if (fullURL.length() <= 8192) {
+                sendRequestToGoogleMaps(fullURL, solutionImageName);
+            } else {
+                String simpleURL = parseURL(s, true);
+                if (simpleURL.length() <= 8192) {
+                    sendRequestToGoogleMaps(simpleURL, solutionImageName);
+                } else {
+                    logger.warn("Cannot create an image of the solution because of too long URL address!");
+                }
+            }
             s.setImageIcon(new ImageIcon(solutionImageName));
         } catch (Exception e) {
-            logger.debug("Cannot create full solution image! Creating simple solution image...");
-            String simpleURL = parseURL(s, true);
-            sendRequestToGoogleMaps(simpleURL, solutionImageName);
-            s.setImageIcon(new ImageIcon(solutionImageName));
+            logger.warn("Unexpected error while creating an image of solution!");
         }
 
         logger.debug("Creating an image of solution " + solutionImageName + " has been completed.");
@@ -138,68 +146,86 @@ public class MapImage {
 
     /**
      * Pobiera obraz mapy z narysowana trasa
+     *
      * @param s Rozwiazanie
      * @param r Trasa, ktora zostanie naniesiona na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createRouteImage(Solution s, Route r) throws IOException {
         String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
-        logger.debug("Creating images of route" + routeImageName + "...");
+        logger.debug("Creating images of routes" + routeImageName + "...");
 
-        String urlForSingleRoute = parseURL(r);
-        sendRequestToGoogleMaps(urlForSingleRoute, routeImageName);
-        r.setImageIcon(new ImageIcon(routeImageName));
+        try {
+            String fullUrlForSingleRoute = parseURL(r, false);
+            if (fullUrlForSingleRoute.length() <= 8192) {
+                sendRequestToGoogleMaps(fullUrlForSingleRoute, routeImageName);
+            } else {
+                String simpleUrlForSingleRoute = parseURL(r, true);
+                if (simpleUrlForSingleRoute.length() <= 8192) {
+                    sendRequestToGoogleMaps(simpleUrlForSingleRoute, routeImageName);
+                } else {
+                    logger.warn("Cannot create an image of the solution because of too long URL address!");
+                }
+            }
+            r.setImageIcon(new ImageIcon(routeImageName));
+        } catch (Exception e) {
+            logger.warn("Unexpected error while creating an image of solution!");
+        }
 
-        logger.debug("Creating images of route" + routeImageName + " has been completed.");
+        logger.debug("Creating images of routes" + routeImageName + " has been completed.");
     }
 
     /**
      * Pobiera obraz mapy z narysowanym odcinkiem trasy
-     * @param s Rozwiazanie
-     * @param r Trasa
+     *
+     * @param s  Rozwiazanie
+     * @param r  Trasa
      * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
         String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
-        logger.debug("Creating images of route segment" + routeSegmentImageName + "...");
+        logger.debug("Creating images of route segments" + routeSegmentImageName + "...");
 
         String url = parseURL(rs);
         sendRequestToGoogleMaps(url, routeSegmentImageName);
         rs.setImageIcon(new ImageIcon(routeSegmentImageName));
 
-        logger.debug("Creating images of route segment " + routeSegmentImageName + " has been completed.");
+        logger.debug("Creating images of route segments " + routeSegmentImageName + " has been completed.");
     }
 
     /**
      * Pobiera obraz mapy zawierajacej magazyn i wszystkich klientow, z wyroznionym aktualnie wybranym klientem
+     *
      * @param c Aktualnie wybrany klient
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createCustomerImage(Customer c) throws IOException {
         String customerImageName = IMAGE_PATH + "C" + c.getMapId();
-        logger.debug("Creating images of customer" + customerImageName + "...");
+        logger.debug("Creating images of customers" + customerImageName + "...");
 
         String url = parseURL(c);
         sendRequestToGoogleMaps(url, customerImageName);
         c.setImageIcon(new ImageIcon(customerImageName));
 
-        logger.debug("Creating images of customer has been completed.");
+        logger.debug("Creating images of customers has been completed.");
     }
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
-     * @param s Rozwiazanie, ktore zostanie naniesione na mape
+     *
+     * @param s         Rozwiazanie, ktore zostanie naniesione na mape
      * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostuch linii
      * @return Zwraca sparsowany adres URL
      */
     private String parseURL(Solution s, boolean simpleURL) {
         StringBuilder paths = new StringBuilder();
         StringBuilder markers = new StringBuilder();
-        Database.getCustomerList().get(0);
+
         markers.append(DEFAULT_DEPOT_MARKER);
         markers.append(s.getDepot().getLatitude()).append(",").append(s.getDepot().getLongitude());
         markers.append(DEFAULT_CUSTOMER_MARKER);
+
         for (Customer c : Database.getCustomerList()) {
             if (c.getId() == 0) {
                 continue;
@@ -216,15 +242,10 @@ public class MapImage {
             String colour = (new ArrayList<>(COLOURS.values())).get(colourIndex);
             if (!simpleURL) {
                 for (RouteSegment rs : r.getRouteSegments()) {
-                    paths.append("&path=color:");
-                    paths.append(colour);
-                    paths.append("|weight:2|enc:");
-                    paths.append(rs.getGeometry());
+                    paths.append("&path=color:").append(colour).append("|weight:2|enc:").append(rs.getGeometry());
                 }
             } else {
-                paths.append("&path=color:");
-                paths.append(colour);
-                paths.append("|weight:2");
+                paths.append("&path=color:").append(colour).append("|weight:2");
                 for (Customer c : r.getCustomersInRoute()) {
                     paths.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
                 }
@@ -239,10 +260,11 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param r Trasa, ktora zostanie naniesiona na mape
      * @return Zwraca sparsowany adres URL
      */
-    private String parseURL(Route r) {
+    private String parseURL(Route r, boolean simpleURL) {
         StringBuilder path = new StringBuilder();
         StringBuilder markers = new StringBuilder();
 
@@ -260,8 +282,15 @@ public class MapImage {
             }
         }
 
-        for (RouteSegment rs : r.getRouteSegments()) {
-            path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2|enc:").append(rs.getGeometry());
+        if (!simpleURL) {
+            for (RouteSegment rs : r.getRouteSegments()) {
+                path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2|enc:").append(rs.getGeometry());
+            }
+        } else {
+            path.append("&path=color:").append(COLOURS.get("blue")).append("|weight:2");
+            for (Customer c : r.getCustomersInRoute()) {
+                path.append("|").append(c.getLatitude()).append(",").append(c.getLongitude());
+            }
         }
 
         return BEGIN_OF_URL + markers.toString() + path.toString() + END_OF_URL;
@@ -269,6 +298,7 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param rs Odcinek trasy, ktory zostanie naniesiony na mape
      * @return Zwraca sparsowany adres URL
      */
@@ -282,6 +312,7 @@ public class MapImage {
 
     /**
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
+     *
      * @param c Aktualnie wybrany klient, ktory zostanie naniesiony na mape w postaci wiekszego znacznika
      * @return Zwraca sparsowany adres URL
      */
@@ -316,7 +347,8 @@ public class MapImage {
 
     /**
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
-     * @param url Adres URL, na ktory bedzie wyslane zapytanie
+     *
+     * @param url       Adres URL, na ktory bedzie wyslane zapytanie
      * @param imageName Nazwa obrazu mapy jaki zostanie utworzony
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
@@ -337,10 +369,10 @@ public class MapImage {
             outputStream.close();
 
         } catch (MalformedURLException e) {
-            logger.error("Bad URL address!");
+            logger.error("Invalid URL address!");
             throw e;
         } catch (IOException e) {
-            logger.error("Unexpected error while connecting to server!");
+            logger.error("Unexpected error while connecting to GoogleMaps server!");
             throw e;
         }
         logger.debug("Sending request to Google Maps has been completed.");

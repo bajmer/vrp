@@ -150,6 +150,7 @@ public class Route {
 
     /**
      * Dodaje klienta do poczatku trasy, zwieksza biezaca mase i objetosc paczek
+     *
      * @param customer Dodawany klient
      */
     public void addCustomerAsFirst(Customer customer) {
@@ -161,6 +162,7 @@ public class Route {
 
     /**
      * Dodaje klienta do konca trasy, zwieksza biezaca mase i objetosc paczek
+     *
      * @param customer Dodawany klient
      */
     public void addCustomerAsLast(Customer customer) {
@@ -171,6 +173,7 @@ public class Route {
 
     /**
      * Laczy dwie trasy w jedna, dodaje mase i objetosc paczek, a takze klientow i odcinki dolaczanej trasy. Aktualizuje dlugosc nowej trasy i czas jej przejazdu
+     *
      * @param route Dolaczana trasa
      */
     public void mergeRoute(Route route) {
@@ -186,6 +189,7 @@ public class Route {
 
     /**
      * Dodaje odcinek do poczatku trasy, zwieksza dlugosc trasy i czas jej przejazdu
+     *
      * @param routeSegment Dodawany odcinek
      */
     public void addSegmentAsFirst(RouteSegment routeSegment) {
@@ -197,6 +201,7 @@ public class Route {
 
     /**
      * Dodaje odcinek do konca trasy, zwieksza dlugosc trasy i czas jej przejazdu
+     *
      * @param routeSegment Dodawany odcinek
      */
     public void addSegmentAsLast(RouteSegment routeSegment) {
@@ -211,10 +216,11 @@ public class Route {
 
     /**
      * Sprawdza, czy mozna dodac klienta do trasy
+     *
      * @param packageWeight Masa paczki
-     * @param weightLimit Maksymalna dopuszczalna masa ladunku
-     * @param packageSize Objetosc paczki
-     * @param sizeLimit Maksymalna dopuszczalna objetosc ladunku
+     * @param weightLimit   Maksymalna dopuszczalna masa ladunku
+     * @param packageSize   Objetosc paczki
+     * @param sizeLimit     Maksymalna dopuszczalna objetosc ladunku
      * @return Zwraca "true" jezeli mozna dodac klienta do trasy, w przeciwnym razie "false"
      */
     public boolean canAdd(double packageWeight, double weightLimit, double packageSize, double sizeLimit) {
@@ -223,8 +229,9 @@ public class Route {
 
     /**
      * Sprawdza, czy masa paczki nie przekroczy maksymalna dopuszczalna masy ladunku
+     *
      * @param packageWeight Masa paczki
-     * @param weightLimit Maksymalna dopuszczalna masa ladunku
+     * @param weightLimit   Maksymalna dopuszczalna masa ladunku
      * @return Zwraca "true" jezeli na pojazd mozna dolozyc paczke o danej masie i nie spowoduje to przekroczenia ladownosci pojazdu, w przeciwnym razie "false"
      */
     private boolean canAddWeight(double packageWeight, double weightLimit) {
@@ -233,8 +240,9 @@ public class Route {
 
     /**
      * Sprawdza czy paczka zmiesci sie do pojazdu
+     *
      * @param packageSize Objetosc paczki
-     * @param sizeLimit Maksymalna dopuszczalna objetosc paczek
+     * @param sizeLimit   Maksymalna dopuszczalna objetosc paczek
      * @return Zwraca "true" jezeli do pojazdu zmiesci sie paczka o danej objetosci, w przeciwnym razie "false"
      */
     private boolean canAddSize(double packageSize, double sizeLimit) {
@@ -243,6 +251,7 @@ public class Route {
 
     /**
      * Sprawdza, czy klient jest pierwszy w kolejnosci na trasie
+     *
      * @param customer Sprawdzany klient
      * @return Zwraca "true" jezeli klient jest pierwszy w kolejnosci na trasie, w przeciwnym razie "false"
      */
@@ -252,6 +261,7 @@ public class Route {
 
     /**
      * Sprawdza, czy klient jest ostatni w kolejnosci na trasie
+     *
      * @param customer Sprawdzany klient
      * @return Zwraca "true" jezeli klient jest ostatni w kolejnosci na trasie, w przeciwnym razie "false"
      */
@@ -261,6 +271,7 @@ public class Route {
 
     /**
      * Pobiera ostatniego w kolejnosci klienta na trasie
+     *
      * @return Zwracany klient
      */
     public Customer getLastCustomer() {
@@ -269,6 +280,7 @@ public class Route {
 
     /**
      * Zaokroagla liczbe double do jednego miejsca po przecinku
+     *
      * @param x Liczba do zaokraglenia
      * @return Zwraca zaokraglana liczbe
      */
@@ -301,6 +313,7 @@ public class Route {
 
     /**
      * Wypisuje informacje o trasie
+     *
      * @return Zwraca opis trasy
      */
     @Override

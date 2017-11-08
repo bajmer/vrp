@@ -109,20 +109,16 @@ public class Customer {
     private ImageIcon imageIcon;
 
     /**
-     * Prawdopodobienstwo wyboru klienta w algorytmie mrowkowym
-     */
-    private double acsChoiceProbability;
-
-    /**
      * Tworzy obiekt klienta na podstawie rzeczywistych danych pobranych z pliku tekstowego
-     * @param fullAddress Pelny adres
+     *
+     * @param fullAddress     Pelny adres
      * @param streetAndNumber Nazwa ulicy i numer domu
-     * @param postalCode Kod pocztowy
-     * @param city Miasto
-     * @param latitude Szerokosc geograficzna adresu
-     * @param longitude Dlugosc geograficzna adresu
-     * @param packageWeight Masa zamowionej przesylki
-     * @param packageSize Objetosc zamowionej przesylki
+     * @param postalCode      Kod pocztowy
+     * @param city            Miasto
+     * @param latitude        Szerokosc geograficzna adresu
+     * @param longitude       Dlugosc geograficzna adresu
+     * @param packageWeight   Masa zamowionej przesylki
+     * @param packageSize     Objetosc zamowionej przesylki
      * @param minDeliveryHour Najwczesniejsza mozliwa godzina odbioru przesylki
      * @param maxDeliveryHour Najpozniejsza mozliwa godzina odbioru przesylki
      */
@@ -147,8 +143,9 @@ public class Customer {
 
     /**
      * Tworzy obiekt klienta na podstawie danych testowych
-     * @param x Polozenie klienta na osi X
-     * @param y Polozenie klienta na osi Y
+     *
+     * @param x      Polozenie klienta na osi X
+     * @param y      Polozenie klienta na osi Y
      * @param demand Masa zamowionej przesylki
      */
     public Customer(double x, double y, double demand) {
@@ -313,13 +310,5 @@ public class Customer {
 
     public void setImageIcon(ImageIcon imageIcon) {
         this.imageIcon = imageIcon;
-    }
-
-    public double getAcsChoiceProbability() {
-        return acsChoiceProbability;
-    }
-
-    public void setAcsChoiceProbability(double acsChoiceProbability) {
-        this.acsChoiceProbability = acsChoiceProbability;
     }
 }
