@@ -92,6 +92,15 @@ public class ACSAlgorithm implements Algorithmic {
 
         this.globalPheromoneLevel = new HashMap<>();
         this.ants = new ArrayList<>();
+
+        for (RouteSegment rs : Database.getRouteSegmentsList()) {
+            for (Customer c : Database.getCustomerList()) {
+                if (c.equals(rs.getSrc()) && c.getRouteSegmentsFromCustomer().size() < Database.getCustomerList().size() - 1) {
+                    c.getRouteSegmentsFromCustomer().add(rs);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -101,25 +110,10 @@ public class ACSAlgorithm implements Algorithmic {
     public void runAlgorithm() {
         logger.info("----------------------------------------------------------------------------------------------------------------");
         logger.info("Running the Ant Colony System algorithm...");
-        preInitialize();
         runNearestNeighbour();
         initializeACS();
         findBestAcsSolution();
         saveSolution();
-    }
-
-    /**
-     * Przypisuje kazdemu klientowi liste wychodzacych z niego odcinkow trasy
-     */
-    private void preInitialize() {
-        for (RouteSegment rs : Database.getRouteSegmentsList()) {
-            for (Customer c : Database.getCustomerList()) {
-                if (c.equals(rs.getSrc()) && c.getRouteSegmentsFromCustomer().size() < Database.getCustomerList().size() - 1) {
-                    c.getRouteSegmentsFromCustomer().add(rs);
-                    break;
-                }
-            }
-        }
     }
 
     /**

@@ -198,7 +198,7 @@ public class ClarkeWrightAlgorithm implements Algorithmic {
 
 //                            przypadek 3 (...,...,src + ...,...,dst) - klient src odcinka jest ostatnim klientem trasy A
 //                            oraz klient dst jest ostatnim klientem trasy B: obracamy trasę B i łączymy dwie trasy
-                            else if (routeA.isCustomerLast(src) && routeB.isCustomerLast(dst)) { // (7) .....s   .....d
+                            else if (routeA.isCustomerLast(src) && routeB.isCustomerLast(dst)) {
                                 rotateRoute(routeB);
                                 canMerge = true;
                             }
