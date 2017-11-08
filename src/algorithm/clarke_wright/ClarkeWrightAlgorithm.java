@@ -62,7 +62,7 @@ public class ClarkeWrightAlgorithm implements Algorithmic {
         logger.info("Running the Clarke-Wright algorithm...");
         createSavings();
         sortSavings();
-        searchSolution();
+        constructClarkeWrightSolution();
         saveSolution();
     }
 
@@ -105,7 +105,7 @@ public class ClarkeWrightAlgorithm implements Algorithmic {
     /**
      * Wyznacza najoptymalniejsza trase w oparciu o wyliczone oszczednosci
      */
-    private void searchSolution() {
+    private void constructClarkeWrightSolution() {
         logger.info("Calculating the solution...");
         double weightLimit = problem.getWeightLimitPerVehicle();
         double sizeLimit = problem.getSizeLimitPerVehicle();

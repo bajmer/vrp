@@ -104,7 +104,7 @@ public class ACSAlgorithm implements Algorithmic {
         preInitialize();
         runNearestNeighbour();
         initializeACS();
-        processACS();
+        findBestAcsSolution();
         saveSolution();
     }
 
@@ -152,7 +152,7 @@ public class ACSAlgorithm implements Algorithmic {
     /**
      * Uruchamia glowna petle algorytmu ACS
      */
-    private void processACS() {
+    private void findBestAcsSolution() {
         logger.info("Calculating the solution...");
         nearestNeighbourSearch = false;
         int bestIteration = 1;
