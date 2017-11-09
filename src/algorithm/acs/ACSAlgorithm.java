@@ -47,6 +47,16 @@ public class ACSAlgorithm implements Algorithmic {
     private final double ro;
 
     /**
+     * Parametr okreslajacy proporcje miedzy eksploatacja najlepszej krawedzi i eksploracja nowej
+     */
+    private double q0;
+
+    /**
+     * Parametr regulujacy wpływ ni (odwrotnosc odległosci)
+     */
+    private int beta;
+
+    /**
      * Rozwiazywany problem
      */
     private Problem problem;
@@ -85,6 +95,8 @@ public class ACSAlgorithm implements Algorithmic {
         this.problem = problem;
         this.i = i;
         this.m = m;
+        this.q0 = q0;
+        this.beta = beta;
         this.ro = ro;
         this.bestAcsSolution = null;
         Ant.setQ0(q0);
@@ -109,7 +121,12 @@ public class ACSAlgorithm implements Algorithmic {
     @Override
     public void runAlgorithm() {
         logger.info("----------------------------------------------------------------------------------------------------------------");
-        logger.info("Running the Ant Colony System algorithm...");
+        logger.info("Running the Ant Colony System algorithm with parameters:" +
+                " i=" + i +
+                ", m=" + m +
+                ", q0=" + q0 +
+                ", beta=" + beta +
+                ", ro=" + ro + "...");
         runNearestNeighbour();
         initializeACS();
         findBestAcsSolution();
@@ -151,7 +168,8 @@ public class ACSAlgorithm implements Algorithmic {
         nearestNeighbourSearch = false;
         int bestIteration = 1;
         int iteration = 1;
-        while (i > 0 ? iteration <= i : iteration - bestIteration < 1000) {
+        int iterationLeft = 7500;
+        while (i > 0 ? iteration <= i : iteration - bestIteration < iterationLeft) {
             for (Ant ant : ants) {
                 resetAnt(ant);
                 Solution antSolution = findAntSolution(ant);
@@ -161,7 +179,8 @@ public class ACSAlgorithm implements Algorithmic {
                 if (bestAcsSolution == null || antSolution.getTotalDistanceCost() < bestAcsSolution.getTotalDistanceCost()) {
                     bestAcsSolution = antSolution;
                     bestIteration = iteration;
-                    logger.debug("The best solution was found! Iteration: " + bestIteration + ", distance: " + bestAcsSolution.getTotalDistanceCost());
+                    iterationLeft = (15000 - iteration) / 2;
+                    logger.info("The best solution was found! Iteration: " + bestIteration + ", distance: " + bestAcsSolution.getTotalDistanceCost() + ". Number of iterations to end: " + iterationLeft);
                 }
             }
             globalPheromoneUpdate();
