@@ -246,7 +246,6 @@ public class ACSAlgorithm implements Algorithmic {
     /**
      * Konczy biezaca trase dodajac do niej odcinek od biezacego klienta do magazynu
      *
-     * @param tmpCustomer Biezacy klient, u ktorego znajduje sie mrowka
      * @param tmpRoute    Biezaca trasa
      */
     private void endRoute(Route tmpRoute) {
