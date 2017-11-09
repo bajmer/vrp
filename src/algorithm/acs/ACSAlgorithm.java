@@ -222,7 +222,7 @@ public class ACSAlgorithm implements Algorithmic {
             }
 
             if (tmpRoute.getTotalDistance() != 0) {
-                endRoute(tmpCustomer, tmpRoute);
+                endRoute(tmpRoute);
                 antSolution.getListOfRoutes().add(tmpRoute);
             } else {
                 break;
@@ -249,15 +249,15 @@ public class ACSAlgorithm implements Algorithmic {
      * @param tmpCustomer Biezacy klient, u ktorego znajduje sie mrowka
      * @param tmpRoute    Biezaca trasa
      */
-    private void endRoute(Customer tmpCustomer, Route tmpRoute) {
+    private void endRoute(Route tmpRoute) {
         Customer depot = problem.getDepot();
-        tmpRoute.addCustomerAsLast(depot); //dodanie magazynu do listy klienów trasy
-        for (RouteSegment rs : tmpCustomer.getRouteSegmentsFromCustomer()) {
+        for (RouteSegment rs : tmpRoute.getLastCustomer().getRouteSegmentsFromCustomer()) {
             if (rs.getDst().equals(depot)) {
                 tmpRoute.addSegmentAsLast(rs); //dodanie odcinka ostatni klient-magazyn do trasy
                 break;
             }
         }
+        tmpRoute.addCustomerAsLast(depot); //dodanie magazynu do listy klienów trasy
     }
 
     /**
