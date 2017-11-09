@@ -104,14 +104,13 @@ public class Ant {
     /**
      * Aktualizuje dostepne odcinki, ktorymi moze poruszac sie mrowka w kolejnym kroku
      *
-     * @param tmpCustomer Biezacy klient, u ktorego znajduje sie mrowka
      * @param tmpRoute    Biezaca trasa
      * @param weightLimit Maksymalna dopuszczalna masa ladunku
      * @param sizeLimit   Maksymalna dopuszczalna objetosc ladunku
      */
-    void updateFeasibleRouteSegments(Customer tmpCustomer, Route tmpRoute, double weightLimit, double sizeLimit) {
+    void updateFeasibleRouteSegments(Route tmpRoute, double weightLimit, double sizeLimit) {
         feasibleRouteSegments.clear();
-        for (RouteSegment rs : tmpCustomer.getRouteSegmentsFromCustomer()) {
+        for (RouteSegment rs : tmpRoute.getLastCustomer().getRouteSegmentsFromCustomer()) {
             Customer dst = rs.getDst();
             if (unvisitedCustomersID.contains(dst.getId())) {
                 if (tmpRoute.canAdd(dst.getPackageWeight(), weightLimit, dst.getPackageSize(), sizeLimit)) {

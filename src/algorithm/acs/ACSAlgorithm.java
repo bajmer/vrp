@@ -202,7 +202,7 @@ public class ACSAlgorithm implements Algorithmic {
         while (ant.getUnvisitedCustomersID().size() > 0) {
             Route tmpRoute = initializeNewRoute();
             Customer tmpCustomer = tmpRoute.getLastCustomer();
-            ant.updateFeasibleRouteSegments(tmpCustomer, tmpRoute, weightLimit, sizeLimit);
+            ant.updateFeasibleRouteSegments(tmpRoute, weightLimit, sizeLimit);
             while (ant.getFeasibleRouteSegments().size() > 0) {
                 RouteSegment nextRouteSegment = ant.chooseNextRouteSegment(tmpCustomer, globalPheromoneLevel, nearestNeighbourSearch);
                 Customer nextCustomer = nextRouteSegment.getDst();
@@ -211,7 +211,7 @@ public class ACSAlgorithm implements Algorithmic {
                 tmpRoute.addSegmentAsLast(nextRouteSegment);
 
                 ant.removeFromUnvisitedCustomers(nextCustomer.getId());
-                ant.updateFeasibleRouteSegments(nextCustomer, tmpRoute, weightLimit, sizeLimit);
+                ant.updateFeasibleRouteSegments(tmpRoute, weightLimit, sizeLimit);
                 tmpCustomer = nextCustomer;
 
 //                if (tmpRoute.getCurrentPackagesWeight() > weightLimit * 0.8) {
