@@ -265,7 +265,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
 
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
-        DecimalFormat doubleFormat = new DecimalFormat("###.##", dfs);
+        DecimalFormat doubleFormat = new DecimalFormat("###.###", dfs);
         doubleFormat.setGroupingUsed(false);
         NumberFormatter doubleFormatter = new NumberFormatter(doubleFormat);
         doubleFormatter.setValueClass(Double.class);
@@ -755,7 +755,7 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
         TreePath rootPath = new TreePath(root.getPath());
         TreePath solutionPath = new TreePath(solutionNode.getPath());
         treeSolutions.expandPath(rootPath);
-        treeSolutions.scrollPathToVisible(solutionPath);
         treeSolutions.setSelectionPath(solutionPath);
+        treeSolutions.scrollPathToVisible(solutionPath);
     }
 }
