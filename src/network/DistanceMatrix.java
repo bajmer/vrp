@@ -157,7 +157,7 @@ public class DistanceMatrix extends JSON {
 
                         double xd = srcLat - dstLat;
                         double yd = srcLon - dstLon;
-                        double distance = (double) Math.round(Math.sqrt(xd * xd + yd * yd));
+                        double distance = Math.sqrt(Math.pow(xd, 2) + Math.pow(yd, 2));
 
                         Database.getRouteSegmentsList().add(new RouteSegment(src, dst, distance, Duration.ZERO, null));
                         src.getDistances().put(dst.getId(), distance);
