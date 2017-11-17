@@ -4,11 +4,11 @@ import core.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.io.FileOutputStream;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,11 +39,6 @@ public class MapImage {
      * Koncowka adresu URL
      */
     private static final String END_OF_URL = "&key=AIzaSyC-Nh-HTfhZ_KeuVwiF0XSGqeoJopBonRA";
-
-    /**
-     * Sciezka do folderu, w ktorym beda zapisywane mapy
-     */
-    private static final String IMAGE_PATH = "img/";
 
     /**
      * Fragment adresu URL odpowiadajacy domyslnemu znacznikowi magazynu
@@ -121,27 +116,27 @@ public class MapImage {
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSolutionImage(Solution s) throws IOException {
-        String solutionImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
-        logger.debug("Creating an image of solution " + solutionImageName + "...");
-
+        String solutionImageName = "S" + s.getSolutionID() + "_" + s.getUsedAlgorithm();
+        logger.info("Creating an image of solution " + solutionImageName + "...");
+        ImageIcon mapIcon = null;
         try {
             String fullURL = parseURL(s, false);
             if (fullURL.length() <= 8192) {
-                sendRequestToGoogleMaps(fullURL, solutionImageName);
+                mapIcon = sendRequestToGoogleMaps(fullURL);
             } else {
                 String simpleURL = parseURL(s, true);
                 if (simpleURL.length() <= 8192) {
-                    sendRequestToGoogleMaps(simpleURL, solutionImageName);
+                    mapIcon = sendRequestToGoogleMaps(simpleURL);
                 } else {
                     logger.warn("Cannot create an image of the solution because of too long URL address!");
                 }
             }
-            s.setImageIcon(new ImageIcon(solutionImageName));
+            s.setImageIcon(mapIcon);
         } catch (Exception e) {
             logger.warn("Unexpected error while creating an image of solution!");
         }
 
-        logger.debug("Creating an image of solution " + solutionImageName + " has been completed.");
+        logger.info("Creating an image of solution " + solutionImageName + " has been completed.");
     }
 
     /**
@@ -152,27 +147,27 @@ public class MapImage {
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createRouteImage(Solution s, Route r) throws IOException {
-        String routeImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId();
-        logger.debug("Creating images of routes" + routeImageName + "...");
-
+        String routeImageName = "S" + s.getSolutionID() + "_R" + r.getId();
+        logger.info("Creating an image of route " + routeImageName + "...");
+        ImageIcon mapIcon = null;
         try {
             String fullUrlForSingleRoute = parseURL(r, false);
             if (fullUrlForSingleRoute.length() <= 8192) {
-                sendRequestToGoogleMaps(fullUrlForSingleRoute, routeImageName);
+                mapIcon = sendRequestToGoogleMaps(fullUrlForSingleRoute);
             } else {
                 String simpleUrlForSingleRoute = parseURL(r, true);
                 if (simpleUrlForSingleRoute.length() <= 8192) {
-                    sendRequestToGoogleMaps(simpleUrlForSingleRoute, routeImageName);
+                    mapIcon = sendRequestToGoogleMaps(simpleUrlForSingleRoute);
                 } else {
-                    logger.warn("Cannot create an image of the solution because of too long URL address!");
+                    logger.warn("Cannot create an image of the route because of too long URL address!");
                 }
             }
-            r.setImageIcon(new ImageIcon(routeImageName));
+            r.setImageIcon(mapIcon);
         } catch (Exception e) {
             logger.warn("Unexpected error while creating an image of solution!");
         }
 
-        logger.debug("Creating images of routes" + routeImageName + " has been completed.");
+        logger.info("Creating an image of route " + routeImageName + " has been completed.");
     }
 
     /**
@@ -184,14 +179,14 @@ public class MapImage {
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createSegmentImage(Solution s, Route r, RouteSegment rs) throws IOException {
-        String routeSegmentImageName = IMAGE_PATH + "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
-        logger.debug("Creating images of route segments" + routeSegmentImageName + "...");
+        String routeSegmentImageName = "S" + s.getSolutionID() + "_R" + r.getId() + "_RS" + rs.getSrc().getId() + "-" + rs.getDst().getId();
+        logger.info("Creating an image of route segment " + routeSegmentImageName + "...");
 
         String url = parseURL(rs);
-        sendRequestToGoogleMaps(url, routeSegmentImageName);
-        rs.setImageIcon(new ImageIcon(routeSegmentImageName));
+        ImageIcon mapIcon = sendRequestToGoogleMaps(url);
+        rs.setImageIcon(mapIcon);
 
-        logger.debug("Creating images of route segments " + routeSegmentImageName + " has been completed.");
+        logger.info("Creating an image of route segment " + routeSegmentImageName + " has been completed.");
     }
 
     /**
@@ -201,14 +196,14 @@ public class MapImage {
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
     public void createCustomerImage(Customer c) throws IOException {
-        String customerImageName = IMAGE_PATH + "C" + c.getMapId();
-        logger.debug("Creating images of customers" + customerImageName + "...");
+        String customerImageName = "C" + c.getId();
+        logger.info("Creating an image of customer " + customerImageName + "...");
 
         String url = parseURL(c);
-        sendRequestToGoogleMaps(url, customerImageName);
-        c.setImageIcon(new ImageIcon(customerImageName));
+        ImageIcon mapIcon = sendRequestToGoogleMaps(url);
+        c.setImageIcon(mapIcon);
 
-        logger.debug("Creating images of customers has been completed.");
+        logger.info("Creating an image of customer " + customerImageName + " has been completed.");
     }
 
     /**
@@ -348,25 +343,19 @@ public class MapImage {
     /**
      * Wysyla zapytanie HTTP na serwer, a nastepnie pobiera odpowiedz i opakowuje ja w obiekt JSON
      *
-     * @param url       Adres URL, na ktory bedzie wyslane zapytanie
-     * @param imageName Nazwa obrazu mapy jaki zostanie utworzony
+     * @param url Adres URL, na ktory bedzie wyslane zapytanie
      * @throws IOException Wyjatek bledu wejscia/wyjscia
      */
-    private void sendRequestToGoogleMaps(String url, String imageName) throws IOException {
+    private ImageIcon sendRequestToGoogleMaps(String url) throws IOException {
         logger.debug("Sending request to Google Maps...");
+        ImageIcon imageIcon;
         try {
             InputStream inputStream = new URL(url).openStream();
-            OutputStream outputStream = new FileOutputStream(imageName);
+            Image image = ImageIO.read(inputStream);
 
-            byte[] b = new byte[2048];
-            int length;
-
-            while ((length = inputStream.read(b)) != -1) {
-                outputStream.write(b, 0, length);
-            }
+            imageIcon = new ImageIcon(image);
 
             inputStream.close();
-            outputStream.close();
 
         } catch (MalformedURLException e) {
             logger.error("Invalid URL address!");
@@ -376,5 +365,7 @@ public class MapImage {
             throw e;
         }
         logger.debug("Sending request to Google Maps has been completed.");
+
+        return imageIcon;
     }
 }

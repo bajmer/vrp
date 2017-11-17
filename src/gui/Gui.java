@@ -698,12 +698,12 @@ public class Gui extends JFrame implements ActionListener, TreeSelectionListener
             tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         } else {
             tRouteDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(170);
-            tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(45);
-            tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(170);
-            tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(45);
-            tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(70);
-            tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(70);
+            tRouteDetails.getColumnModel().getColumn(0).setPreferredWidth(200);
+            tRouteDetails.getColumnModel().getColumn(1).setPreferredWidth(60);
+            tRouteDetails.getColumnModel().getColumn(2).setPreferredWidth(200);
+            tRouteDetails.getColumnModel().getColumn(3).setPreferredWidth(60);
+            tRouteDetails.getColumnModel().getColumn(4).setPreferredWidth(100);
+            tRouteDetails.getColumnModel().getColumn(5).setPreferredWidth(100);
         }
     }
 

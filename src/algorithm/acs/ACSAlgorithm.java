@@ -265,7 +265,7 @@ public class ACSAlgorithm implements Algorithmic {
     /**
      * Konczy biezaca trase dodajac do niej odcinek od biezacego klienta do magazynu
      *
-     * @param tmpRoute    Biezaca trasa
+     * @param tmpRoute Biezaca trasa
      */
     private void endRoute(Route tmpRoute) {
         Customer depot = problem.getDepot();
