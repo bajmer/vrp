@@ -6,8 +6,8 @@ Aby uruchomić serwer routingowy należy skorzystać z obrazu dockerowego wykonu
   3) docker run -t -v $(pwd):/data osrm/osrm-backend osrm-contract /data/poland-latest.osrm
   4) docker run -t -i -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed /data/poland-latest.osrm (uruchomienie serwera na porcie 5000).
   
-Po uruchomieniu programu należy:
-  1) Wcisnąć przycisk "Load customers", w celu wczytania klientów (uwaga - pierwsza pozycja na liście to magazyn, czyli punkt startowy dla pojazdów). Przykładowa lokalizacja pliku z klientami: /input/Customers_15.csv
+Aplikację można uruchomić poprzez odpalenie pliku vrp.jar. Po uruchomieniu programu należy:
+  1) Wcisnąć przycisk "Load customers", w celu wczytania klientów (uwaga - pierwsza pozycja na liście to magazyn, czyli punkt startowy dla pojazdów). Przykładowa lokalizacja pliku z klientami: /input/Polska_10.csv
   Po jego wybraniu w oknie "Customers" pojawi się lista klientów. Kliknięcie w klienta na liście spowoduje wyświetlenie jego położenia na mapie.
   2) Wcisnąć przycisk "Get distance matrix" - w tym momencie serwer routingowy wysyła do programu odległości między każdą parą klientów.
   3) W oknie "General parameters" ustawić suwakami ładowność pojazdu w kg oraz pojemność w m3.
