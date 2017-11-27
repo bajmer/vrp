@@ -210,7 +210,7 @@ public class MapImage {
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
      *
      * @param s         Rozwiazanie, ktore zostanie naniesione na mape
-     * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostuch linii
+     * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostych linii
      * @return Zwraca sparsowany adres URL
      */
     private String parseURL(Solution s, boolean simpleURL) {
@@ -257,6 +257,7 @@ public class MapImage {
      * Parsuje adres URL, na ktory zostanie wyslane zapytanie
      *
      * @param r Trasa, ktora zostanie naniesiona na mape
+     * @param simpleURL Flaga okreslajaca, czy rozwiazanie ma zostac przedstawione w uproszczony sposob za pomoca prostych linii
      * @return Zwraca sparsowany adres URL
      */
     private String parseURL(Route r, boolean simpleURL) {
@@ -345,6 +346,7 @@ public class MapImage {
      *
      * @param url Adres URL, na ktory bedzie wyslane zapytanie
      * @throws IOException Wyjatek bledu wejscia/wyjscia
+     * @return Zwraca obraz pobranej mapy
      */
     private ImageIcon sendRequestToGoogleMaps(String url) throws IOException {
         logger.debug("Sending request to Google Maps...");

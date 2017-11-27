@@ -290,6 +290,7 @@ public class Route {
 
     /**
      * Ustawia czasy przyjazdu i odjazdu dla klientow nalezacych do trasy
+     * @param isTest Flaga okreslajaca czy wczytany jest plik testowy
      */
     public void setArrivalAndDepartureTimeForCustomers(boolean isTest) {
         if (!isTest) {

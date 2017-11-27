@@ -40,6 +40,7 @@ public class Problem {
      *
      * @param weightLimitPerVehicle Maksymalna masa ladunku jaka mozna zaladowac do pojazdu
      * @param sizeLimitPerVehicle   Maksymalna objetosc ladunku jaka mozna zaladowac do pojazdu
+     * @param test Flaga okreslajaca, czy wczytany jest plik testowy
      */
     public Problem(double weightLimitPerVehicle, double sizeLimitPerVehicle, boolean test) {
         ID++;

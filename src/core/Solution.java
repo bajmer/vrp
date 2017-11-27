@@ -56,6 +56,7 @@ public class Solution {
      * @param problemID     Numer ID problemu
      * @param usedAlgorithm Uzyty algorytm
      * @param depot         Magazyn
+     * @param test Flaga okreslajaca czy wczytany jest plik testowy
      */
     public Solution(int problemID, String usedAlgorithm, Customer depot, boolean test) {
         this.solutionID = problemID;
